@@ -4,6 +4,19 @@
 
 // Services
 export { SidebarService } from './lib/services/sidebar.service';
+export { LoadingService } from './lib/loading/loading.service';
+export { DialogService } from './lib/dialog/dialog.service';
+
+// Dialog
+export { DialogRef } from './lib/dialog/dialog-ref';
+export { ModalComponent } from './lib/dialog/modal.component';
+export { DIALOG_DATA, DIALOG_REF } from './lib/dialog/dialog.config';
+export type { DialogConfig, ModalSize } from './lib/dialog/dialog.config';
+
+// Loading
+export { LoadingDirective } from './lib/loading/loading.directive';
+export type { Loadable } from './lib/loading/loadable';
+export { LOADABLE } from './lib/loading/loadable';
 
 // Components
 export { ButtonComponent } from './lib/components/button/button.component';

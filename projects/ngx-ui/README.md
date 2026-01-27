@@ -338,6 +338,263 @@ export class MyComponent {
 
 ---
 
+## Loading System
+
+A centralized loading state management system with a service and directive for easy integration.
+
+### LoadingService
+
+Injectable service to manage loading states by identifier.
+
+```typescript
+import { LoadingService } from '@m1z23r/ngx-ui';
+
+@Component({...})
+export class MyComponent {
+  private loadingService = inject(LoadingService);
+
+  async login() {
+    this.loadingService.start('login');
+    try {
+      await this.authService.login();
+    } finally {
+      this.loadingService.stop('login');
+    }
+  }
+
+  async submitForm() {
+    this.loadingService.start('submit');
+    try {
+      await this.formService.submit();
+    } finally {
+      this.loadingService.stop('submit');
+    }
+  }
+}
+```
+
+#### Methods
+
+| Method | Parameters | Description |
+|--------|------------|-------------|
+| `start(id)` | `id: string` | Start loading for identifier |
+| `stop(id)` | `id: string` | Stop loading for identifier |
+| `set(id, loading)` | `id: string, loading: boolean` | Set loading state |
+| `toggle(id)` | `id: string` | Toggle loading state |
+| `isLoading(id)` | `id: string` | Returns `Signal<boolean>` for the identifier |
+| `isAnyLoading()` | - | Returns `Signal<boolean>` true if any loading is active |
+| `clear(id)` | `id: string` | Remove loading state for identifier |
+| `clearAll()` | - | Remove all loading states |
+
+### LoadingDirective
+
+Directive that automatically connects a component's loading state to the LoadingService.
+
+```typescript
+import { ButtonComponent, LoadingDirective, LoadingService } from '@m1z23r/ngx-ui';
+
+@Component({
+  imports: [ButtonComponent, LoadingDirective],
+  template: `
+    <!-- These buttons automatically show loading when their identifier is active -->
+    <ui-button uiLoading="login" (clicked)="login()">Login</ui-button>
+    <ui-button uiLoading="submit" (clicked)="submit()">Submit</ui-button>
+    <ui-button uiLoading="delete" variant="outline">Delete</ui-button>
+  `
+})
+export class MyComponent {
+  private loadingService = inject(LoadingService);
+
+  async login() {
+    this.loadingService.start('login');  // Button with uiLoading="login" shows spinner
+    try {
+      await this.authService.login();
+    } finally {
+      this.loadingService.stop('login'); // Spinner stops
+    }
+  }
+}
+```
+
+### Making Custom Components Loadable
+
+Any component can support the `uiLoading` directive by implementing the `Loadable` interface:
+
+```typescript
+import { Loadable, LOADABLE } from '@m1z23r/ngx-ui';
+
+@Component({
+  selector: 'my-custom-button',
+  providers: [{ provide: LOADABLE, useExisting: MyCustomButtonComponent }],
+  template: `
+    <button [disabled]="loading()">
+      @if (loading()) {
+        <span class="spinner"></span>
+      }
+      <ng-content />
+    </button>
+  `
+})
+export class MyCustomButtonComponent implements Loadable {
+  private readonly loading = signal(false);
+
+  // Required by Loadable interface
+  setLoading(loading: boolean): void {
+    this.loading.set(loading);
+  }
+}
+```
+
+Now the directive works with your custom component:
+
+```html
+<my-custom-button uiLoading="save">Save</my-custom-button>
+```
+
+### Combining with Direct Loading Input
+
+The `ui-button` component supports both the directive and direct `loading` input. The button shows loading if either is true:
+
+```html
+<!-- Via directive (controlled by LoadingService) -->
+<ui-button uiLoading="login">Login</ui-button>
+
+<!-- Via direct input -->
+<ui-button [loading]="isSubmitting()">Submit</ui-button>
+
+<!-- Both work together - loading shows if either is true -->
+<ui-button uiLoading="save" [loading]="manualLoading()">Save</ui-button>
+```
+
+---
+
+## Dialog System
+
+A simple, Promise-based dialog system for opening modal dialogs programmatically. No RxJS required.
+
+### DialogService
+
+Injectable service to open dialogs programmatically.
+
+```typescript
+import { DialogService, DIALOG_DATA, DIALOG_REF, DialogRef, ModalComponent, ButtonComponent } from '@m1z23r/ngx-ui';
+
+// 1. Create a dialog component
+@Component({
+  imports: [ModalComponent, ButtonComponent],
+  template: `
+    <ui-modal [title]="data.title" size="sm">
+      <p>{{ data.message }}</p>
+
+      <ng-container footer>
+        <ui-button variant="outline" (clicked)="dialogRef.close(false)">Cancel</ui-button>
+        <ui-button (clicked)="dialogRef.close(true)">Confirm</ui-button>
+      </ng-container>
+    </ui-modal>
+  `
+})
+export class ConfirmDialog {
+  dialogRef = inject(DIALOG_REF) as DialogRef<boolean>;
+  data = inject(DIALOG_DATA) as { title: string; message: string };
+}
+
+// 2. Open the dialog
+@Component({...})
+export class MyComponent {
+  private dialogService = inject(DialogService);
+
+  async confirmAction() {
+    const dialogRef = this.dialogService.open(ConfirmDialog, {
+      data: { title: 'Confirm', message: 'Are you sure?' }
+    });
+
+    const confirmed = await dialogRef.afterClosed();
+    if (confirmed) {
+      // User confirmed
+    }
+  }
+}
+```
+
+### ModalComponent
+
+A wrapper component that provides the modal UI with backdrop, header, body, and footer. Uses content projection.
+
+```html
+<ui-modal [title]="'My Dialog'" [size]="'md'" [closeOnEscape]="true" [closeOnBackdropClick]="true">
+  <!-- Body content (default slot) -->
+  <p>This is the modal body content.</p>
+
+  <!-- Footer content (named slot) -->
+  <ng-container footer>
+    <ui-button variant="outline" (clicked)="cancel()">Cancel</ui-button>
+    <ui-button (clicked)="save()">Save</ui-button>
+  </ng-container>
+</ui-modal>
+```
+
+#### Modal Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `title` | `string` | - | Title displayed in the modal header |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'full'` | `'md'` | Modal size preset |
+| `width` | `string` | - | Custom width (overrides size) |
+| `maxWidth` | `string` | - | Custom max-width (overrides size) |
+| `closeOnBackdropClick` | `boolean` | `true` | Close when clicking backdrop |
+| `closeOnEscape` | `boolean` | `true` | Close when pressing Escape |
+| `showCloseButton` | `boolean` | `true` | Show close button in header |
+| `panelClass` | `string` | - | Custom CSS class for container |
+
+#### Modal Size Reference
+
+| Size | Max Width |
+|------|-----------|
+| `sm` | 400px |
+| `md` | 560px |
+| `lg` | 800px |
+| `xl` | 1140px |
+| `full` | 100vw - padding |
+
+### DialogConfig
+
+Configuration options when opening a dialog.
+
+```typescript
+interface DialogConfig<TData = unknown> {
+  data?: TData;                    // Data passed via DIALOG_DATA
+  width?: string;                  // CSS width value
+  maxWidth?: string;               // CSS max-width value
+  size?: ModalSize;                // Size preset
+  closeOnBackdropClick?: boolean;  // Default: true
+  closeOnEscape?: boolean;         // Default: true
+  panelClass?: string;             // Custom CSS class
+}
+```
+
+### DialogRef
+
+Reference to an opened dialog, used to close it and get results.
+
+```typescript
+class DialogRef<TResult> {
+  // Close the dialog with an optional result
+  close(result?: TResult): void;
+
+  // Get a promise that resolves when the dialog closes
+  afterClosed(): Promise<TResult | undefined>;
+}
+```
+
+### Injection Tokens
+
+| Token | Type | Description |
+|-------|------|-------------|
+| `DIALOG_DATA` | `unknown` | Data passed to the dialog via config |
+| `DIALOG_REF` | `DialogRef` | Reference to close the dialog |
+
+---
+
 ## Theming
 
 All components use CSS custom properties for styling. Override these in your global stylesheet:

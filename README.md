@@ -8,6 +8,7 @@ A modern, themeable Angular UI component library built with standalone component
 - **Input** - Form input with label, hint, error, and validation support
 - **Table** - Data table with sorting and custom cell templates
 - **Layout System** - Shell, Navbar, Sidebar, Content, Footer components for building app layouts
+- **Loading System** - Centralized loading state management with `LoadingService` and `uiLoading` directive
 
 ## Quick Start
 

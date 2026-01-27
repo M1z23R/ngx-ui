@@ -12,7 +12,9 @@ import {
   FooterComponent,
   SidebarService,
   TableColumn,
+  DialogService,
 } from '@m1z23r/ngx-ui';
+import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 
 interface User {
   id: number;
@@ -133,6 +135,22 @@ interface User {
           <h2>Table</h2>
           <ui-table [data]="users()" [columns]="columns" />
         </section>
+
+        <section class="section">
+          <h2>Dialog</h2>
+          <p class="section-description">
+            Open modal dialogs programmatically with the DialogService.
+          </p>
+          <div class="button-row">
+            <ui-button (clicked)="openConfirmDialog()">Open Confirm Dialog</ui-button>
+            <ui-button variant="outline" (clicked)="openDeleteDialog()">Delete Item</ui-button>
+          </div>
+          @if (dialogResult() !== null) {
+            <p class="result-text">
+              Last dialog result: <strong>{{ dialogResult() ? 'Confirmed' : 'Cancelled' }}</strong>
+            </p>
+          }
+        </section>
       </ui-content>
 
       <ui-footer>
@@ -196,12 +214,26 @@ interface User {
     .navbar-title {
       font-weight: 600;
     }
+
+    .section-description {
+      margin-bottom: 1rem;
+      color: var(--ui-text-muted);
+    }
+
+    .result-text {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: var(--ui-bg-secondary);
+      border-radius: var(--ui-radius-md);
+    }
   `],
 })
 export class App {
   protected readonly sidebarService = inject(SidebarService);
+  protected readonly dialogService = inject(DialogService);
 
   protected readonly isLoading = signal(false);
+  protected readonly dialogResult = signal<boolean | null>(null);
   protected readonly username = signal('');
   protected readonly errorValue = signal('');
   protected readonly disabledValue = signal('Cannot edit');
@@ -224,5 +256,33 @@ export class App {
   protected toggleLoading(): void {
     this.isLoading.set(true);
     setTimeout(() => this.isLoading.set(false), 2000);
+  }
+
+  protected async openConfirmDialog(): Promise<void> {
+    const dialogRef = this.dialogService.open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, {
+      data: {
+        title: 'Confirm Action',
+        message: 'Are you sure you want to proceed with this action?',
+        confirmText: 'Yes, proceed',
+        cancelText: 'No, cancel',
+      },
+    });
+
+    const result = await dialogRef.afterClosed();
+    this.dialogResult.set(result ?? false);
+  }
+
+  protected async openDeleteDialog(): Promise<void> {
+    const dialogRef = this.dialogService.open<ConfirmDialog, ConfirmDialogData, boolean>(ConfirmDialog, {
+      data: {
+        title: 'Delete Item',
+        message: 'This action cannot be undone. Are you sure you want to delete this item?',
+        confirmText: 'Delete',
+        cancelText: 'Keep it',
+      },
+    });
+
+    const result = await dialogRef.afterClosed();
+    this.dialogResult.set(result ?? false);
   }
 }
