@@ -1,0 +1,29 @@
+/* Import library styles */
+@use 'src/styles.scss' as ui;
+
+/* Global reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ui-text);
+  background-color: var(--ui-bg);
+}
+
+/* Optional: Custom theme overrides */
+:root {
+  /* Uncomment to customize:
+  --ui-primary: #6366f1;
+  --ui-primary-hover: #4f46e5;
+  */
+}

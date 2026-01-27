@@ -1,0 +1,52 @@
+// Main entry point for @m1z23r/ngx-ui styles
+@use 'lib/styles/variables';
+
+// Reset and base styles
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// Custom scrollbar styling
+.ui-scrollbar,
+.ui-content,
+.ui-sidebar__nav {
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-border-hover) transparent;
+
+  // WebKit (Chrome, Safari, Edge)
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--ui-border);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ui-border-hover);
+  }
+}
+
+// Utility classes
+.ui-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
