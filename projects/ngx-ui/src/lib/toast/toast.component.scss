@@ -1,0 +1,233 @@
+:host {
+  display: block;
+}
+
+.ui-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ui-spacing-sm);
+  min-width: 300px;
+  max-width: 420px;
+  padding: var(--ui-spacing-md);
+  background-color: var(--ui-bg);
+  border-radius: var(--ui-radius-lg);
+  box-shadow: var(--ui-shadow-lg);
+  border: 1px solid var(--ui-border);
+  position: relative;
+  overflow: hidden;
+  animation: slideIn var(--ui-transition-normal) ease-out;
+}
+
+.ui-toast--exiting {
+  animation: slideOut 300ms ease-in forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateX(30%) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+}
+
+/* Left-side animations */
+:host-context(.ui-toast-container--top-left) .ui-toast,
+:host-context(.ui-toast-container--bottom-left) .ui-toast {
+  animation-name: slideInLeft;
+}
+
+:host-context(.ui-toast-container--top-left) .ui-toast--exiting,
+:host-context(.ui-toast-container--bottom-left) .ui-toast--exiting {
+  animation-name: slideOutLeft;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideOutLeft {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateX(-30%) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-100%) scale(0.9);
+  }
+}
+
+/* Center animations */
+:host-context(.ui-toast-container--top-center) .ui-toast,
+:host-context(.ui-toast-container--bottom-center) .ui-toast {
+  animation-name: slideInCenter;
+}
+
+:host-context(.ui-toast-container--top-center) .ui-toast--exiting,
+:host-context(.ui-toast-container--bottom-center) .ui-toast--exiting {
+  animation-name: slideOutCenter;
+}
+
+@keyframes slideInCenter {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideOutCenter {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+  }
+}
+
+.ui-toast__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.ui-toast__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ui-toast__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ui-toast__title {
+  font-weight: 600;
+  font-size: var(--ui-font-sm);
+  color: var(--ui-text);
+  margin-bottom: 2px;
+}
+
+.ui-toast__message {
+  font-size: var(--ui-font-sm);
+  color: var(--ui-text-muted);
+  line-height: 1.4;
+}
+
+.ui-toast__close {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ui-text-muted);
+  cursor: pointer;
+  border-radius: var(--ui-radius-sm);
+  transition: all var(--ui-transition-fast);
+}
+
+.ui-toast__close:hover {
+  color: var(--ui-text);
+  background-color: var(--ui-bg-hover);
+}
+
+.ui-toast__close svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ui-toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--ui-bg-tertiary);
+}
+
+.ui-toast__progress-bar {
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  animation: progress linear forwards;
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Variants */
+.ui-toast--success .ui-toast__icon {
+  color: var(--ui-success);
+}
+
+.ui-toast--success .ui-toast__progress-bar {
+  background-color: var(--ui-success);
+}
+
+.ui-toast--error .ui-toast__icon {
+  color: var(--ui-danger);
+}
+
+.ui-toast--error .ui-toast__progress-bar {
+  background-color: var(--ui-danger);
+}
+
+.ui-toast--warning .ui-toast__icon {
+  color: var(--ui-warning);
+}
+
+.ui-toast--warning .ui-toast__progress-bar {
+  background-color: var(--ui-warning);
+}
+
+.ui-toast--info .ui-toast__icon {
+  color: var(--ui-primary);
+}
+
+.ui-toast--info .ui-toast__progress-bar {
+  background-color: var(--ui-primary);
+}

@@ -1,0 +1,9 @@
+<div class="ui-shell"
+     [class.ui-shell--sidebar-collapsed]="sidebarService.collapsed()"
+     [class.ui-shell--mobile]="sidebarService.isMobile()"
+     [class.ui-shell--mobile-open]="sidebarService.mobileOpen()">
+  <ng-content />
+  @if (sidebarService.isMobile() && sidebarService.mobileOpen()) {
+    <div class="ui-shell__backdrop" (click)="sidebarService.closeMobile()"></div>
+  }
+</div>

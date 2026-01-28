@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  grid-area: content;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ui-content {
+  flex: 1;
+  padding: var(--ui-spacing-lg);
+  background-color: var(--ui-bg-secondary);
+  overflow-y: auto;
+}

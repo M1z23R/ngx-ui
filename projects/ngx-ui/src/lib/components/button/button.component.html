@@ -1,0 +1,13 @@
+<button
+  [type]="type()"
+  [disabled]="disabled() || isLoading()"
+  [class]="buttonClasses()"
+  (click)="handleClick($event)"
+>
+  @if (isLoading()) {
+    <span class="ui-button__spinner"></span>
+  }
+  <span class="ui-button__content" [class.ui-button__content--hidden]="isLoading()">
+    <ng-content />
+  </span>
+</button>

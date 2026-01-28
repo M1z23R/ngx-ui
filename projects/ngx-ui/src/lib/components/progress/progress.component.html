@@ -1,0 +1,10 @@
+<div [class]="trackClass()" role="progressbar"
+     [attr.aria-valuenow]="indeterminate() ? null : clampedValue()"
+     [attr.aria-valuemin]="indeterminate() ? null : 0"
+     [attr.aria-valuemax]="indeterminate() ? null : 100">
+  <div [class]="barClass()" [style.width]="barWidth()">
+    @if (showLabel() && !indeterminate()) {
+      <span class="ui-progress__label">{{ clampedValue() }}%</span>
+    }
+  </div>
+</div>

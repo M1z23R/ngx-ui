@@ -4,11 +4,40 @@ A modern, themeable Angular UI component library built with standalone component
 
 ## Components
 
-- **Button** - Configurable button with variants (primary, secondary, outline, ghost) and sizes
-- **Input** - Form input with label, hint, error, and validation support
-- **Table** - Data table with sorting and custom cell templates
-- **Layout System** - Shell, Navbar, Sidebar, Content, Footer components for building app layouts
-- **Loading System** - Centralized loading state management with `LoadingService` and `uiLoading` directive
+### Form Controls
+- **Button** - Variants (primary, secondary, outline, ghost) with loading state
+- **Input** - Text input with label, hint, error support
+- **Textarea** - Multi-line input with character counter
+- **Select** - Single/multi-select dropdown with search
+- **Checkbox** - Checkbox with indeterminate state
+- **Switch** - Toggle switch
+- **File Chooser** - Drag-and-drop file upload
+
+### Feedback
+- **Alert** - Contextual feedback messages (info, success, warning, danger)
+- **Badge** - Status indicators and labels
+- **Progress** - Linear progress bar (animated, striped, indeterminate)
+- **Circular Progress** - Ring progress with configurable stroke
+- **Spinner** - Loading spinner
+- **Tooltip** - Hover tooltips (directive)
+
+### Layout
+- **Card** - Content container with header/footer
+- **Table** - Data table with sorting
+- **Dropdown** - Context menu
+- **Dialog/Modal** - Modal dialogs via service
+
+### App Shell
+- **Shell** - Main layout container
+- **Navbar** - Top navigation bar
+- **Sidebar** - Collapsible side navigation
+- **Content** - Main content area
+- **Footer** - Page footer
+
+### Services
+- **DialogService** - Programmatic modal dialogs
+- **LoadingService** - Centralized loading state
+- **SidebarService** - Sidebar state management
 
 ## Quick Start
 

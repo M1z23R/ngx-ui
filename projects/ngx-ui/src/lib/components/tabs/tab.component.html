@@ -1,0 +1,10 @@
+@if (isActive()) {
+  <div
+    class="ui-tab-panel"
+    role="tabpanel"
+    [attr.id]="'panel-' + (id() || _index())"
+    [attr.aria-labelledby]="'tab-' + (id() || _index())"
+  >
+    <ng-content />
+  </div>
+}

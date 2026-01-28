@@ -1,0 +1,37 @@
+<div class="ui-textarea-wrapper" [class.ui-textarea-wrapper--error]="error()" [class.ui-textarea-wrapper--disabled]="disabled()">
+  @if (label()) {
+    <label class="ui-textarea__label" [attr.for]="textareaId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="ui-textarea__required">*</span>
+      }
+    </label>
+  }
+  <div class="ui-textarea__container">
+    <textarea
+      [class]="textareaClass()"
+      [id]="textareaId()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [readonly]="readonly()"
+      [required]="required()"
+      [rows]="rows()"
+      [attr.maxlength]="maxlength()"
+      [(ngModel)]="value"
+    ></textarea>
+  </div>
+  <div class="ui-textarea__footer">
+    @if (error()) {
+      <span class="ui-textarea__error">{{ error() }}</span>
+    } @else if (hint()) {
+      <span class="ui-textarea__hint">{{ hint() }}</span>
+    } @else {
+      <span></span>
+    }
+    @if (maxlength()) {
+      <span class="ui-textarea__counter" [class.ui-textarea__counter--limit]="isAtLimit()">
+        {{ value().toString().length }} / {{ maxlength() }}
+      </span>
+    }
+  </div>
+</div>

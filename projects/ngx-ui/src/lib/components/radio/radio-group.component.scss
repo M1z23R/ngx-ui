@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+.ui-radio-group {
+  display: inline-flex;
+  gap: var(--ui-spacing-sm);
+}
+
+.ui-radio-group--vertical {
+  flex-direction: column;
+}
+
+.ui-radio-group--horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.ui-radio-group--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Segmented variant */
+.ui-radio-group--segmented {
+  gap: 0;
+  background-color: var(--ui-bg-tertiary);
+  border-radius: var(--ui-radius-md);
+  padding: 3px;
+}
+
+.ui-radio-group--segmented.ui-radio-group--sm {
+  padding: 2px;
+  border-radius: var(--ui-radius-sm);
+}
+
+.ui-radio-group--segmented.ui-radio-group--lg {
+  padding: 4px;
+  border-radius: var(--ui-radius-lg);
+}

@@ -1,0 +1,24 @@
+<label
+  class="ui-switch"
+  [class]="switchClasses()"
+  [class.ui-switch--disabled]="disabled()"
+  [class.ui-switch--checked]="checked()"
+>
+  <input
+    type="checkbox"
+    class="ui-switch__input"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="handleChange($event)"
+    role="switch"
+    [attr.aria-checked]="checked()"
+  />
+  <span class="ui-switch__track">
+    <span class="ui-switch__thumb"></span>
+  </span>
+  @if (hasLabel()) {
+    <span class="ui-switch__label">
+      <ng-content />
+    </span>
+  }
+</label>

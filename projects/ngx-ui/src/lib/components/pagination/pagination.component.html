@@ -1,0 +1,71 @@
+<nav class="ui-pagination" [class]="paginationClasses()" aria-label="Pagination">
+  @if (showFirstLast()) {
+    <button
+      type="button"
+      class="ui-pagination__btn ui-pagination__btn--nav"
+      [disabled]="page() === 1"
+      (click)="goToPage(1)"
+      aria-label="First page"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="11 17 6 12 11 7" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="18 17 13 12 18 7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  }
+
+  <button
+    type="button"
+    class="ui-pagination__btn ui-pagination__btn--nav"
+    [disabled]="page() === 1"
+    (click)="goToPage(page() - 1)"
+    aria-label="Previous page"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="15 18 9 12 15 6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  @for (item of visiblePages(); track item.value) {
+    @if (item.type === 'ellipsis') {
+      <span class="ui-pagination__ellipsis">...</span>
+    } @else {
+      <button
+        type="button"
+        class="ui-pagination__btn ui-pagination__btn--page"
+        [class.ui-pagination__btn--active]="item.value === page()"
+        [attr.aria-current]="item.value === page() ? 'page' : null"
+        (click)="goToPage(item.value)"
+      >
+        {{ item.value }}
+      </button>
+    }
+  }
+
+  <button
+    type="button"
+    class="ui-pagination__btn ui-pagination__btn--nav"
+    [disabled]="page() === totalPages()"
+    (click)="goToPage(page() + 1)"
+    aria-label="Next page"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="9 18 15 12 9 6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  @if (showFirstLast()) {
+    <button
+      type="button"
+      class="ui-pagination__btn ui-pagination__btn--nav"
+      [disabled]="page() === totalPages()"
+      (click)="goToPage(totalPages())"
+      aria-label="Last page"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="13 17 18 12 13 7" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="6 17 11 12 6 7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  }
+</nav>

@@ -2,7 +2,6 @@ import {
   Component,
   input,
   signal,
-  computed,
   ChangeDetectionStrategy,
   ElementRef,
   inject,
@@ -11,73 +10,8 @@ import {
 @Component({
   selector: 'ui-option',
   standalone: true,
-  template: `
-    <div
-      class="ui-option"
-      [class.ui-option--selected]="selected()"
-      [class.ui-option--disabled]="disabled()"
-      [class.ui-option--focused]="focused()"
-      [attr.role]="'option'"
-      [attr.aria-selected]="selected()"
-      [attr.aria-disabled]="disabled()"
-    >
-      @if (multiple() && selected()) {
-        <svg class="ui-option__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      }
-      <span class="ui-option__content">
-        <ng-content />
-      </span>
-    </div>
-  `,
-  styles: [`
-    :host {
-      display: block;
-    }
-
-    .ui-option {
-      display: flex;
-      align-items: center;
-      gap: var(--ui-spacing-sm);
-      padding: var(--ui-spacing-sm) var(--ui-spacing-md);
-      cursor: pointer;
-      transition: background-color var(--ui-transition-fast);
-      user-select: none;
-    }
-
-    .ui-option:hover:not(.ui-option--disabled) {
-      background-color: var(--ui-option-hover-bg, var(--ui-bg-hover));
-    }
-
-    .ui-option--focused:not(.ui-option--disabled) {
-      background-color: var(--ui-option-hover-bg, var(--ui-bg-hover));
-    }
-
-    .ui-option--selected {
-      background-color: var(--ui-option-selected-bg, color-mix(in srgb, var(--ui-primary) 10%, transparent));
-      color: var(--ui-primary);
-    }
-
-    .ui-option--selected:hover:not(.ui-option--disabled) {
-      background-color: var(--ui-option-selected-bg, color-mix(in srgb, var(--ui-primary) 15%, transparent));
-    }
-
-    .ui-option--disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .ui-option__check {
-      flex-shrink: 0;
-      color: var(--ui-primary);
-    }
-
-    .ui-option__content {
-      flex: 1;
-      min-width: 0;
-    }
-  `],
+  templateUrl: './option.component.html',
+  styleUrl: './option.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OptionComponent<T = unknown> {

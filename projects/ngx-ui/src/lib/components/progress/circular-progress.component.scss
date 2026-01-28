@@ -1,0 +1,75 @@
+:host {
+  display: inline-flex;
+}
+
+.ui-circular-progress {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    transform: rotate(-90deg);
+  }
+}
+
+.ui-circular-progress--indeterminate svg {
+  animation: ui-circular-spin 1.5s linear infinite;
+}
+
+.ui-circular-progress__track {
+  stroke: var(--ui-bg-tertiary);
+}
+
+.ui-circular-progress__circle {
+  transition: stroke-dashoffset var(--ui-transition-normal) ease;
+}
+
+.ui-circular-progress__circle--primary { stroke: var(--ui-primary); }
+.ui-circular-progress__circle--success { stroke: var(--ui-success); }
+.ui-circular-progress__circle--warning { stroke: var(--ui-warning); }
+.ui-circular-progress__circle--danger { stroke: var(--ui-danger); }
+
+.ui-circular-progress__circle--indeterminate {
+  stroke-dashoffset: 0 !important;
+  animation: ui-circular-dash 1.5s ease-in-out infinite;
+}
+
+.ui-circular-progress__label {
+  position: absolute;
+  font-weight: 600;
+  color: var(--ui-text);
+}
+
+.ui-circular-progress--sm .ui-circular-progress__label { font-size: 0.625rem; }
+.ui-circular-progress--md .ui-circular-progress__label { font-size: 0.75rem; }
+.ui-circular-progress--lg .ui-circular-progress__label { font-size: 0.875rem; }
+.ui-circular-progress--xl .ui-circular-progress__label { font-size: 1rem; }
+
+.ui-circular-progress__content:empty {
+  display: none;
+}
+
+.ui-circular-progress__content {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes ui-circular-spin {
+  from { transform: rotate(-90deg); }
+  to { transform: rotate(270deg); }
+}
+
+@keyframes ui-circular-dash {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dashoffset: calc(var(--circumference) * 0.75);
+  }
+  100% {
+    stroke-dashoffset: calc(var(--circumference) * 1.5);
+  }
+}

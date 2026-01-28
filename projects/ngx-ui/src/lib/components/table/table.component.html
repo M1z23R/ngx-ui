@@ -1,0 +1,59 @@
+<div class="ui-table-container">
+  <table class="ui-table">
+    <thead>
+      <tr>
+        @for (col of columns(); track col.key) {
+          <th
+            [style.width]="col.width"
+            [class.ui-table__th--sortable]="col.sortable"
+            (click)="handleHeaderClick(col)"
+          >
+            <span class="ui-table__th-content">
+              {{ col.header }}
+              @if (col.sortable) {
+                <span class="ui-table__sort-icon">
+                  @if (sortState().column === col.key) {
+                    @if (sortState().direction === 'asc') {
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 14l5-5 5 5H7z"/>
+                      </svg>
+                    } @else if (sortState().direction === 'desc') {
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5H7z"/>
+                      </svg>
+                    }
+                  } @else {
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+                      <path d="M7 10l5-5 5 5H7zm0 4l5 5 5-5H7z"/>
+                    </svg>
+                  }
+                </span>
+              }
+            </span>
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of sortedData(); track trackByFn()(row); let i = $index) {
+        <tr>
+          @for (col of columns(); track col.key) {
+            <td>
+              @if (getCellTemplate(getKeyAsString(col.key)); as template) {
+                <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, index: i, value: getValueInternal(row, getKeyAsString(col.key)) }" />
+              } @else {
+                {{ getValueInternal(row, getKeyAsString(col.key)) }}
+              }
+            </td>
+          }
+        </tr>
+      } @empty {
+        <tr>
+          <td [attr.colspan]="columns().length" class="ui-table__empty">
+            <ng-content select="[slot=empty]">No data available</ng-content>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

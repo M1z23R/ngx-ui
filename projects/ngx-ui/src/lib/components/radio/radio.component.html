@@ -1,0 +1,26 @@
+<label
+  class="ui-radio"
+  [class]="radioClasses()"
+  [class.ui-radio--disabled]="isDisabled()"
+  [class.ui-radio--checked]="_checked()"
+>
+  <input
+    #inputEl
+    type="radio"
+    class="ui-radio__input"
+    [attr.name]="_groupName()"
+    [value]="value()"
+    [checked]="_checked()"
+    [disabled]="isDisabled()"
+    (change)="handleChange()"
+    (keydown)="handleKeyDown($event)"
+  />
+  @if (_variant() === 'default') {
+    <span class="ui-radio__circle">
+      <span class="ui-radio__dot"></span>
+    </span>
+  }
+  <span class="ui-radio__label">
+    <ng-content />
+  </span>
+</label>

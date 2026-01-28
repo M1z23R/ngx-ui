@@ -1,0 +1,91 @@
+<div
+  class="ui-select-wrapper"
+  [class.ui-select-wrapper--error]="error()"
+  [class.ui-select-wrapper--disabled]="disabled()"
+  [class.ui-select-wrapper--open]="isOpen()"
+>
+  @if (label()) {
+    <label class="ui-select__label">
+      {{ label() }}
+    </label>
+  }
+
+  <div
+    class="ui-select__trigger"
+    [class]="triggerClasses()"
+    [attr.role]="'combobox'"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-haspopup]="'listbox'"
+    [attr.aria-disabled]="disabled()"
+    [attr.tabindex]="disabled() ? -1 : 0"
+    (click)="toggle()"
+    (keydown)="handleTriggerKeydown($event)"
+  >
+    <span class="ui-select__value">
+      @if (displayValue()) {
+        {{ displayValue() }}
+      } @else {
+        <span class="ui-select__placeholder">{{ placeholder() }}</span>
+      }
+    </span>
+
+    <div class="ui-select__icons">
+      @if (clearable() && hasValue() && !disabled()) {
+        <button
+          type="button"
+          class="ui-select__clear"
+          (click)="clear($event)"
+          aria-label="Clear selection"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      }
+      <svg
+        class="ui-select__arrow"
+        [class.ui-select__arrow--open]="isOpen()"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
+  </div>
+
+  <div
+    class="ui-select__dropdown"
+    [class.ui-select__dropdown--open]="isOpen()"
+    [attr.role]="'listbox'"
+    [attr.aria-multiselectable]="multiple()"
+  >
+    @if (searchable()) {
+      <div class="ui-select__search">
+        <input
+          type="text"
+          class="ui-select__search-input"
+          placeholder="Search..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          (keydown)="handleSearchKeydown($event)"
+          #searchInput
+        />
+      </div>
+    }
+    <div class="ui-select__options">
+      <ng-content />
+    </div>
+  </div>
+
+  @if (error()) {
+    <span class="ui-select__error">{{ error() }}</span>
+  }
+  @if (hint() && !error()) {
+    <span class="ui-select__hint">{{ hint() }}</span>
+  }
+</div>

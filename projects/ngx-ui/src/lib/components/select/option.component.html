@@ -1,0 +1,18 @@
+<div
+  class="ui-option"
+  [class.ui-option--selected]="selected()"
+  [class.ui-option--disabled]="disabled()"
+  [class.ui-option--focused]="focused()"
+  [attr.role]="'option'"
+  [attr.aria-selected]="selected()"
+  [attr.aria-disabled]="disabled()"
+>
+  @if (multiple() && selected()) {
+    <svg class="ui-option__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  }
+  <span class="ui-option__content">
+    <ng-content />
+  </span>
+</div>

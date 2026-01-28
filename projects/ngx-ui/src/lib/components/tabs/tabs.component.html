@@ -1,0 +1,42 @@
+<div class="ui-tabs" [class]="tabsClasses()">
+  <div
+    #tabList
+    class="ui-tabs__list"
+    role="tablist"
+    [attr.aria-label]="ariaLabel()"
+  >
+    @for (tab of tabs(); track tab.id() || $index; let i = $index) {
+      <button
+        #tabButton
+        type="button"
+        class="ui-tabs__tab"
+        role="tab"
+        [class.ui-tabs__tab--active]="isActive(tab, i)"
+        [class.ui-tabs__tab--disabled]="tab.disabled()"
+        [attr.aria-selected]="isActive(tab, i)"
+        [attr.aria-controls]="'panel-' + (tab.id() || i)"
+        [attr.tabindex]="isActive(tab, i) ? 0 : -1"
+        [disabled]="tab.disabled()"
+        (click)="selectTab(tab, i)"
+        (keydown)="handleKeyDown($event, i)"
+      >
+        @if (tab.iconTemplate()) {
+          <span class="ui-tabs__tab-icon">
+            <ng-container *ngTemplateOutlet="tab.iconTemplate()!" />
+          </span>
+        }
+        {{ tab.label() }}
+      </button>
+    }
+    @if (variant() === 'underline') {
+      <span
+        class="ui-tabs__indicator"
+        [style.left.px]="indicatorLeft()"
+        [style.width.px]="indicatorWidth()"
+      ></span>
+    }
+  </div>
+  <div class="ui-tabs__panels">
+    <ng-content />
+  </div>
+</div>

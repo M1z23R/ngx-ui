@@ -1,0 +1,11 @@
+<div [class]="cardClass()" [attr.role]="clickable() ? 'button' : null" [attr.tabindex]="clickable() ? 0 : null" (click)="onClick()" (keydown.enter)="onClick()" (keydown.space)="onClick()">
+  <div class="ui-card__header">
+    <ng-content select="[card-header]" />
+  </div>
+  <div class="ui-card__body">
+    <ng-content />
+  </div>
+  <div class="ui-card__footer">
+    <ng-content select="[card-footer]" />
+  </div>
+</div>

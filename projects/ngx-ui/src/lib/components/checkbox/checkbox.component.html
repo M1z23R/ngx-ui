@@ -1,0 +1,33 @@
+<label
+  class="ui-checkbox"
+  [class]="checkboxClasses()"
+  [class.ui-checkbox--disabled]="disabled()"
+  [class.ui-checkbox--checked]="checked()"
+  [class.ui-checkbox--indeterminate]="indeterminate()"
+>
+  <input
+    type="checkbox"
+    class="ui-checkbox__input"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    [indeterminate]="indeterminate()"
+    (change)="handleChange($event)"
+  />
+  <span class="ui-checkbox__box">
+    @if (checked() && !indeterminate()) {
+      <svg class="ui-checkbox__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    }
+    @if (indeterminate()) {
+      <svg class="ui-checkbox__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    }
+  </span>
+  @if (hasLabel()) {
+    <span class="ui-checkbox__label">
+      <ng-content />
+    </span>
+  }
+</label>

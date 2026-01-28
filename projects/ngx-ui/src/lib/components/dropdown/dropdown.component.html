@@ -1,0 +1,15 @@
+<div class="ui-dropdown">
+  <div class="ui-dropdown__trigger">
+    <ng-content select="[uiDropdownTrigger]" />
+  </div>
+
+  @if (isOpen()) {
+    <div
+      class="ui-dropdown__menu"
+      [class]="menuPositionClass()"
+      [attr.role]="'menu'"
+    >
+      <ng-content />
+    </div>
+  }
+</div>

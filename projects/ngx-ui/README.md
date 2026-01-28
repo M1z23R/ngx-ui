@@ -468,6 +468,500 @@ The `ui-button` component supports both the directive and direct `loading` input
 
 ---
 
+## Textarea
+
+A multi-line text input with character counter and resize options.
+
+```typescript
+import { TextareaComponent } from '@m1z23r/ngx-ui';
+
+<ui-textarea
+  label="Description"
+  placeholder="Enter description..."
+  [maxlength]="500"
+  resize="vertical"
+  [(value)]="description"
+/>
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `label` | `string` | `''` | Label text |
+| `placeholder` | `string` | `''` | Placeholder text |
+| `hint` | `string` | `''` | Helper text |
+| `error` | `string` | `''` | Error message |
+| `rows` | `number` | `3` | Initial rows |
+| `maxlength` | `number \| null` | `null` | Max characters (shows counter) |
+| `resize` | `'none' \| 'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | Resize behavior |
+| `disabled` | `boolean` | `false` | Disabled state |
+| `readonly` | `boolean` | `false` | Read-only state |
+| `required` | `boolean` | `false` | Required indicator |
+
+| Model | Type | Description |
+|-------|------|-------------|
+| `value` | `string` | Two-way bound value |
+
+---
+
+## Badge
+
+A small status indicator or label component.
+
+```typescript
+import { BadgeComponent } from '@m1z23r/ngx-ui';
+
+<ui-badge variant="primary">New</ui-badge>
+<ui-badge variant="success" [rounded]="true">Active</ui-badge>
+<ui-badge variant="danger" [removable]="true" (removed)="onRemove()">Tag</ui-badge>
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `variant` | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'default'` | Color variant |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Badge size |
+| `rounded` | `boolean` | `false` | Pill/rounded style |
+| `removable` | `boolean` | `false` | Show remove button |
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `removed` | `void` | Emitted when remove clicked |
+
+---
+
+## Progress
+
+A linear progress bar with multiple variants.
+
+```typescript
+import { ProgressComponent } from '@m1z23r/ngx-ui';
+
+<ui-progress [value]="75" />
+<ui-progress [value]="50" variant="success" [showLabel]="true" size="lg" />
+<ui-progress [value]="60" [striped]="true" [animated]="true" />
+<ui-progress [indeterminate]="true" />
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `value` | `number` | `0` | Progress value (0-100) |
+| `variant` | `'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | Color variant |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Bar height |
+| `showLabel` | `boolean` | `false` | Show percentage label |
+| `striped` | `boolean` | `false` | Striped pattern |
+| `animated` | `boolean` | `false` | Animate stripes |
+| `indeterminate` | `boolean` | `false` | Indeterminate loading |
+
+---
+
+## Circular Progress
+
+A circular/ring progress indicator with configurable stroke width.
+
+```typescript
+import { CircularProgressComponent } from '@m1z23r/ngx-ui';
+
+<ui-circular-progress [value]="75" [showLabel]="true" />
+<ui-circular-progress [value]="50" size="lg" [strokeWidth]="6" />
+<ui-circular-progress [indeterminate]="true" variant="primary" />
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `value` | `number` | `0` | Progress value (0-100) |
+| `variant` | `'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | Color variant |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Circle size |
+| `strokeWidth` | `number` | `4` | Stroke width in pixels |
+| `showLabel` | `boolean` | `false` | Show percentage in center |
+| `indeterminate` | `boolean` | `false` | Spinning animation |
+
+---
+
+## Spinner
+
+A simple loading spinner component.
+
+```typescript
+import { SpinnerComponent } from '@m1z23r/ngx-ui';
+
+<ui-spinner />
+<ui-spinner size="lg" variant="primary" />
+<ui-spinner size="sm" variant="white" /> <!-- for dark backgrounds -->
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `size` | `'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Spinner size |
+| `variant` | `'primary' \| 'secondary' \| 'white'` | `'primary'` | Color variant |
+
+---
+
+## Alert
+
+A contextual feedback message component.
+
+```typescript
+import { AlertComponent } from '@m1z23r/ngx-ui';
+
+<ui-alert variant="info" title="Information">
+  This is an informational message.
+</ui-alert>
+
+<ui-alert variant="danger" [dismissible]="true" (dismissed)="onDismiss()">
+  An error occurred.
+</ui-alert>
+
+<ui-alert variant="success" [showIcon]="false">
+  Success without icon.
+</ui-alert>
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `variant` | `'info' \| 'success' \| 'warning' \| 'danger'` | `'info'` | Alert type |
+| `title` | `string` | `''` | Alert title |
+| `dismissible` | `boolean` | `false` | Show close button |
+| `showIcon` | `boolean` | `true` | Show variant icon |
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `dismissed` | `void` | Emitted when dismissed |
+
+---
+
+## Card
+
+A flexible container component with header/footer slots.
+
+```typescript
+import { CardComponent } from '@m1z23r/ngx-ui';
+
+<ui-card>
+  <div card-header><strong>Card Title</strong></div>
+  Card content goes here.
+  <div card-footer>Footer content</div>
+</ui-card>
+
+<ui-card variant="elevated" [clickable]="true" (clicked)="onClick()">
+  Clickable card with shadow
+</ui-card>
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `variant` | `'default' \| 'outlined' \| 'elevated'` | `'default'` | Card style |
+| `padding` | `'none' \| 'sm' \| 'md' \| 'lg'` | `'md'` | Content padding |
+| `clickable` | `boolean` | `false` | Enable click interaction |
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `clicked` | `void` | Emitted when clickable card clicked |
+
+**Slots:**
+- `card-header` - Header section
+- Default content - Body section
+- `card-footer` - Footer section
+
+---
+
+## Tooltip
+
+A directive that shows a tooltip on hover/focus.
+
+```typescript
+import { TooltipDirective } from '@m1z23r/ngx-ui';
+
+<button uiTooltip="This is a tooltip">Hover me</button>
+<button uiTooltip="Bottom tooltip" tooltipPosition="bottom">Bottom</button>
+<span uiTooltip="Delayed" [tooltipDelay]="500">Delayed tooltip</span>
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `uiTooltip` | `string` | Required | Tooltip text |
+| `tooltipPosition` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Position |
+| `tooltipDelay` | `number` | `200` | Delay in ms |
+| `tooltipDisabled` | `boolean` | `false` | Disable tooltip |
+
+---
+
+## Radio / RadioGroup
+
+A radio button group with traditional and segmented control variants.
+
+```typescript
+import { RadioGroupComponent, RadioComponent } from '@m1z23r/ngx-ui';
+
+// Traditional radio buttons
+<ui-radio-group [(value)]="selectedOption">
+  <ui-radio value="option1">Option 1</ui-radio>
+  <ui-radio value="option2">Option 2</ui-radio>
+  <ui-radio value="option3">Option 3</ui-radio>
+</ui-radio-group>
+
+// Horizontal layout
+<ui-radio-group [(value)]="size" orientation="horizontal">
+  <ui-radio value="sm">Small</ui-radio>
+  <ui-radio value="md">Medium</ui-radio>
+  <ui-radio value="lg">Large</ui-radio>
+</ui-radio-group>
+
+// Segmented control (button style)
+<ui-radio-group [(value)]="view" variant="segmented">
+  <ui-radio value="list">List</ui-radio>
+  <ui-radio value="grid">Grid</ui-radio>
+  <ui-radio value="table">Table</ui-radio>
+</ui-radio-group>
+```
+
+### RadioGroup Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `string` | auto-generated | Radio group name |
+| `disabled` | `boolean` | `false` | Disable all radios |
+| `orientation` | `'horizontal' \| 'vertical'` | `'vertical'` | Layout direction (default variant) |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Radio size |
+| `variant` | `'default' \| 'segmented'` | `'default'` | Style variant |
+| `ariaLabel` | `string` | `''` | Accessibility label |
+
+### RadioGroup Two-way Binding
+
+| Model | Type | Description |
+|-------|------|-------------|
+| `value` | `T \| null` | Selected value |
+
+### RadioGroup Outputs
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `changed` | `T \| null` | Emitted when selection changes |
+
+### Radio Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `value` | `T` | Required | Radio value |
+| `disabled` | `boolean` | `false` | Disable this radio |
+
+### Keyboard Navigation
+
+- **Arrow Up/Left**: Select previous option
+- **Arrow Down/Right**: Select next option
+- **Space/Enter**: Select focused option
+
+---
+
+## Tabs
+
+A tabbed interface component with multiple style variants.
+
+```typescript
+import { TabsComponent, TabComponent } from '@m1z23r/ngx-ui';
+
+// Default tabs
+<ui-tabs [(activeTab)]="activeTab">
+  <ui-tab label="Account">Account content here</ui-tab>
+  <ui-tab label="Security">Security content here</ui-tab>
+  <ui-tab label="Notifications" [disabled]="true">Disabled tab</ui-tab>
+</ui-tabs>
+
+// Pills variant
+<ui-tabs [(activeTab)]="activeTab" variant="pills">
+  <ui-tab label="Overview">...</ui-tab>
+  <ui-tab label="Analytics">...</ui-tab>
+</ui-tabs>
+
+// Underline variant (animated indicator)
+<ui-tabs [(activeTab)]="activeTab" variant="underline">
+  <ui-tab label="Profile">...</ui-tab>
+  <ui-tab label="Billing">...</ui-tab>
+</ui-tabs>
+
+// With string IDs
+<ui-tabs [(activeTab)]="activeTabId">
+  <ui-tab id="account" label="Account">...</ui-tab>
+  <ui-tab id="security" label="Security">...</ui-tab>
+</ui-tabs>
+```
+
+### Tabs Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `variant` | `'default' \| 'pills' \| 'underline'` | `'default'` | Tab style |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size |
+| `ariaLabel` | `string` | `''` | Accessibility label |
+
+### Tabs Two-way Binding
+
+| Model | Type | Description |
+|-------|------|-------------|
+| `activeTab` | `string \| number` | Active tab ID or index |
+
+### Tabs Outputs
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `changed` | `string \| number` | Emitted when active tab changes |
+
+### Tab Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `id` | `string \| number` | auto (index) | Tab identifier |
+| `label` | `string` | Required | Tab button text |
+| `disabled` | `boolean` | `false` | Disable tab |
+
+### Keyboard Navigation
+
+- **Arrow Left/Right**: Navigate between tabs
+- **Home**: Go to first tab
+- **End**: Go to last tab
+
+---
+
+## Toast
+
+A service-based toast notification system with multiple variants and positions.
+
+```typescript
+import { ToastService } from '@m1z23r/ngx-ui';
+
+@Component({...})
+export class MyComponent {
+  private toastService = inject(ToastService);
+
+  // Simple variants
+  save() {
+    this.toastService.success('File saved successfully', 'Success');
+  }
+
+  handleError() {
+    this.toastService.error('Something went wrong', 'Error');
+  }
+
+  warn() {
+    this.toastService.warning('Please check your input');
+  }
+
+  notify() {
+    this.toastService.info('New message received');
+  }
+
+  // Custom configuration
+  showCustom() {
+    const toastRef = this.toastService.show({
+      message: 'Custom toast message',
+      title: 'Custom Title',
+      variant: 'success',
+      duration: 3000,        // 0 = no auto-dismiss
+      position: 'bottom-right',
+      dismissible: true,
+      showProgress: true,
+    });
+
+    // Dismiss programmatically
+    toastRef.dismiss();
+  }
+
+  // Dismiss all toasts
+  clearAll() {
+    this.toastService.dismissAll();
+  }
+}
+```
+
+### ToastService Methods
+
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `show(config)` | `ToastConfig` | `ToastRef` | Show toast with full config |
+| `success(message, title?)` | `string, string?` | `ToastRef` | Success toast |
+| `error(message, title?)` | `string, string?` | `ToastRef` | Error toast |
+| `warning(message, title?)` | `string, string?` | `ToastRef` | Warning toast |
+| `info(message, title?)` | `string, string?` | `ToastRef` | Info toast |
+| `dismiss(id)` | `string` | `void` | Dismiss specific toast |
+| `dismissAll()` | - | `void` | Dismiss all toasts |
+
+### ToastConfig
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `message` | `string` | Required | Toast message |
+| `title` | `string` | - | Optional title |
+| `variant` | `'success' \| 'error' \| 'warning' \| 'info'` | `'info'` | Toast type |
+| `duration` | `number` | `5000` | Auto-dismiss delay (0 = manual) |
+| `position` | `ToastPosition` | `'top-right'` | Screen position |
+| `dismissible` | `boolean` | `true` | Show close button |
+| `showProgress` | `boolean` | `true` | Show countdown bar |
+
+### ToastPosition Values
+
+- `'top-right'` (default)
+- `'top-left'`
+- `'top-center'`
+- `'bottom-right'`
+- `'bottom-left'`
+- `'bottom-center'`
+
+---
+
+## Pagination
+
+A pagination component for navigating through pages of content.
+
+```typescript
+import { PaginationComponent } from '@m1z23r/ngx-ui';
+
+<ui-pagination
+  [(page)]="currentPage"
+  [total]="totalItems"
+  [pageSize]="10"
+/>
+
+// With more options
+<ui-pagination
+  [(page)]="currentPage"
+  [total]="500"
+  [pageSize]="20"
+  [maxPages]="7"
+  [showFirstLast]="true"
+  size="md"
+  (changed)="onPageChange($event)"
+/>
+```
+
+### Inputs
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `total` | `number` | Required | Total number of items |
+| `pageSize` | `number` | `10` | Items per page |
+| `maxPages` | `number` | `5` | Max page buttons to show |
+| `showFirstLast` | `boolean` | `true` | Show first/last buttons |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size |
+
+### Two-way Binding
+
+| Model | Type | Description |
+|-------|------|-------------|
+| `page` | `number` | Current page (1-indexed) |
+
+### Outputs
+
+| Output | Type | Description |
+|--------|------|-------------|
+| `changed` | `number` | Emitted when page changes |
+
+### Features
+
+- **Smart truncation**: Shows ellipsis when there are many pages
+- **First/Last buttons**: Quick navigation to beginning/end
+- **Prev/Next buttons**: Sequential navigation
+- **Keyboard accessible**: Tab navigation and focus styles
+
+---
+
 ## Dialog System
 
 A simple, Promise-based dialog system for opening modal dialogs programmatically. No RxJS required.

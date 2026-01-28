@@ -1,0 +1,8 @@
+<div class="ui-toast-container" [class]="containerClass()">
+  @for (toast of toasts(); track toast.id) {
+    <ui-toast
+      [data]="toast"
+      (dismissed)="onDismiss($event)"
+    />
+  }
+</div>

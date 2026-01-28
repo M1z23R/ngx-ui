@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+.ui-dropdown-divider {
+  height: 1px;
+  margin: var(--ui-spacing-xs) 0;
+  background-color: var(--ui-border);
+}

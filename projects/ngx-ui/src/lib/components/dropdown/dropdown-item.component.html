@@ -1,0 +1,19 @@
+<div
+  class="ui-dropdown-item"
+  [class.ui-dropdown-item--disabled]="disabled()"
+  [class.ui-dropdown-item--focused]="focused()"
+  [attr.role]="'menuitem'"
+  [attr.aria-disabled]="disabled()"
+  [attr.tabindex]="disabled() ? -1 : 0"
+  (click)="handleClick($event)"
+  (keydown)="handleKeydown($event)"
+>
+  @if (icon()) {
+    <span class="ui-dropdown-item__icon">
+      <ng-content select="[slot=icon]" />
+    </span>
+  }
+  <span class="ui-dropdown-item__content">
+    <ng-content />
+  </span>
+</div>

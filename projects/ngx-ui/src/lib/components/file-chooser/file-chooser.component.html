@@ -1,0 +1,91 @@
+<div
+  class="ui-file-chooser"
+  [class]="containerClasses()"
+  [class.ui-file-chooser--dragover]="dragOver"
+  [class.ui-file-chooser--disabled]="disabled()"
+  [class.ui-file-chooser--error]="error()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="openFilePicker()"
+  (keydown.enter)="openFilePicker()"
+  (keydown.space)="openFilePicker(); $event.preventDefault()"
+  [attr.tabindex]="disabled() ? -1 : 0"
+  role="button"
+  [attr.aria-label]="ariaLabel()"
+  [attr.aria-disabled]="disabled()"
+>
+  <input
+    #fileInput
+    type="file"
+    class="ui-file-chooser__input"
+    [accept]="accept()"
+    [multiple]="multiple()"
+    [disabled]="disabled()"
+    (change)="onFileSelected($event)"
+    (click)="$event.stopPropagation()"
+  />
+
+  @if (variant() !== 'minimal') {
+    <div class="ui-file-chooser__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" y1="3" x2="12" y2="15" />
+      </svg>
+    </div>
+  }
+
+  <div class="ui-file-chooser__content">
+    @if (variant() === 'default') {
+      <span class="ui-file-chooser__title">{{ dropzoneText() }}</span>
+      <span class="ui-file-chooser__subtitle">{{ browseText() }}</span>
+      @if (acceptHint()) {
+        <span class="ui-file-chooser__hint">{{ acceptHint() }}</span>
+      }
+    } @else if (variant() === 'compact') {
+      <span class="ui-file-chooser__title">{{ dropzoneText() }} <span class="ui-file-chooser__link">{{ browseText() }}</span></span>
+    } @else {
+      <span class="ui-file-chooser__link">{{ browseText() }}</span>
+    }
+  </div>
+</div>
+
+@if (error()) {
+  <span class="ui-file-chooser__error">{{ error() }}</span>
+}
+
+@if (showFileList() && value().length > 0) {
+  <ul class="ui-file-chooser__list" role="list">
+    @for (file of value(); track fileKey(file)) {
+      <li class="ui-file-chooser__file">
+        @if (showPreviews() && getPreview(file); as preview) {
+          <img [src]="preview" alt="" class="ui-file-chooser__preview" />
+        } @else {
+          <div class="ui-file-chooser__file-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+          </div>
+        }
+        <div class="ui-file-chooser__file-info">
+          <span class="ui-file-chooser__file-name">{{ file.name }}</span>
+          <span class="ui-file-chooser__file-size">{{ formatFileSize(file.size) }}</span>
+        </div>
+        <button
+          type="button"
+          class="ui-file-chooser__remove"
+          (click)="removeFile(file); $event.stopPropagation()"
+          [attr.aria-label]="'Remove ' + file.name"
+          [disabled]="disabled()"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </li>
+    }
+  </ul>
+}

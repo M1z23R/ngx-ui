@@ -1,0 +1,103 @@
+:host {
+  display: block;
+}
+
+.ui-pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-spacing-xs);
+}
+
+.ui-pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ui-border);
+  background-color: var(--ui-bg);
+  color: var(--ui-text);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--ui-transition-fast);
+}
+
+.ui-pagination__btn:hover:not(:disabled) {
+  background-color: var(--ui-bg-secondary);
+  border-color: var(--ui-border-hover);
+}
+
+.ui-pagination__btn:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
+.ui-pagination__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-pagination__btn--active {
+  background-color: var(--ui-primary);
+  border-color: var(--ui-primary);
+  color: var(--ui-primary-text);
+}
+
+.ui-pagination__btn--active:hover:not(:disabled) {
+  background-color: var(--ui-primary-hover);
+  border-color: var(--ui-primary-hover);
+}
+
+.ui-pagination__btn--nav svg {
+  width: 1em;
+  height: 1em;
+}
+
+.ui-pagination__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui-text-muted);
+  user-select: none;
+}
+
+/* Sizes */
+.ui-pagination--sm .ui-pagination__btn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 var(--ui-spacing-xs);
+  font-size: var(--ui-font-xs);
+  border-radius: var(--ui-radius-sm);
+}
+
+.ui-pagination--sm .ui-pagination__ellipsis {
+  min-width: 28px;
+  height: 28px;
+  font-size: var(--ui-font-xs);
+}
+
+.ui-pagination--md .ui-pagination__btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 var(--ui-spacing-sm);
+  font-size: var(--ui-font-sm);
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-pagination--md .ui-pagination__ellipsis {
+  min-width: 36px;
+  height: 36px;
+  font-size: var(--ui-font-sm);
+}
+
+.ui-pagination--lg .ui-pagination__btn {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 var(--ui-spacing-md);
+  font-size: var(--ui-font-md);
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-pagination--lg .ui-pagination__ellipsis {
+  min-width: 44px;
+  height: 44px;
+  font-size: var(--ui-font-md);
+}

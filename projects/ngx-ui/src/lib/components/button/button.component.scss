@@ -1,0 +1,124 @@
+:host {
+  display: inline-block;
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-spacing-sm);
+  font-family: inherit;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--ui-transition-fast);
+  position: relative;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}
+
+/* Sizes */
+.ui-button--sm {
+  padding: var(--ui-spacing-xs) var(--ui-spacing-sm);
+  font-size: var(--ui-font-sm);
+  border-radius: var(--ui-radius-sm);
+}
+
+.ui-button--md {
+  padding: var(--ui-spacing-sm) var(--ui-spacing-md);
+  font-size: var(--ui-font-md);
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-button--lg {
+  padding: var(--ui-spacing-md) var(--ui-spacing-lg);
+  font-size: var(--ui-font-lg);
+  border-radius: var(--ui-radius-md);
+}
+
+/* Primary variant */
+.ui-button--primary {
+  background-color: var(--ui-primary);
+  color: var(--ui-primary-text);
+}
+
+.ui-button--primary:hover:not(:disabled) {
+  background-color: var(--ui-primary-hover);
+}
+
+.ui-button--primary:active:not(:disabled) {
+  background-color: var(--ui-primary-active);
+}
+
+/* Secondary variant */
+.ui-button--secondary {
+  background-color: var(--ui-secondary);
+  color: var(--ui-secondary-text);
+}
+
+.ui-button--secondary:hover:not(:disabled) {
+  background-color: var(--ui-secondary-hover);
+}
+
+.ui-button--secondary:active:not(:disabled) {
+  background-color: var(--ui-secondary-active);
+}
+
+/* Outline variant */
+.ui-button--outline {
+  background-color: transparent;
+  border-color: var(--ui-border);
+  color: var(--ui-text);
+}
+
+.ui-button--outline:hover:not(:disabled) {
+  background-color: var(--ui-bg-secondary);
+  border-color: var(--ui-border-hover);
+}
+
+.ui-button--outline:active:not(:disabled) {
+  background-color: var(--ui-bg-tertiary);
+}
+
+/* Ghost variant */
+.ui-button--ghost {
+  background-color: transparent;
+  color: var(--ui-text);
+}
+
+.ui-button--ghost:hover:not(:disabled) {
+  background-color: var(--ui-bg-secondary);
+}
+
+.ui-button--ghost:active:not(:disabled) {
+  background-color: var(--ui-bg-tertiary);
+}
+
+/* Loading spinner */
+.ui-button__spinner {
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.ui-button__content--hidden {
+  visibility: hidden;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

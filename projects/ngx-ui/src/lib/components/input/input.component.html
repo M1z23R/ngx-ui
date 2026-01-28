@@ -1,0 +1,28 @@
+<div class="ui-input-wrapper" [class.ui-input-wrapper--error]="error()" [class.ui-input-wrapper--disabled]="disabled()">
+  @if (label()) {
+    <label class="ui-input__label" [attr.for]="inputId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="ui-input__required">*</span>
+      }
+    </label>
+  }
+  <div class="ui-input__container">
+    <input
+      class="ui-input"
+      [id]="inputId()"
+      [type]="type()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [readonly]="readonly()"
+      [required]="required()"
+      [(ngModel)]="value"
+    />
+  </div>
+  @if (error()) {
+    <span class="ui-input__error">{{ error() }}</span>
+  }
+  @if (hint() && !error()) {
+    <span class="ui-input__hint">{{ hint() }}</span>
+  }
+</div>

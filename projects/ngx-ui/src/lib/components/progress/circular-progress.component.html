@@ -1,0 +1,34 @@
+<div [class]="containerClass()" role="progressbar"
+     [attr.aria-valuenow]="indeterminate() ? null : clampedValue()"
+     [attr.aria-valuemin]="indeterminate() ? null : 0"
+     [attr.aria-valuemax]="indeterminate() ? null : 100"
+     [style.width.px]="sizeValue()"
+     [style.height.px]="sizeValue()">
+  <svg [attr.viewBox]="viewBox()">
+    <circle
+      class="ui-circular-progress__track"
+      [attr.cx]="center()"
+      [attr.cy]="center()"
+      [attr.r]="radius()"
+      [attr.stroke-width]="strokeWidth()"
+      fill="none"
+    />
+    <circle
+      [class]="circleClass()"
+      [attr.cx]="center()"
+      [attr.cy]="center()"
+      [attr.r]="radius()"
+      [attr.stroke-width]="strokeWidth()"
+      [attr.stroke-dasharray]="circumference()"
+      [attr.stroke-dashoffset]="dashOffset()"
+      fill="none"
+      stroke-linecap="round"
+    />
+  </svg>
+  @if (showLabel() && !indeterminate()) {
+    <span class="ui-circular-progress__label">{{ clampedValue() }}%</span>
+  }
+  <span class="ui-circular-progress__content">
+    <ng-content />
+  </span>
+</div>
