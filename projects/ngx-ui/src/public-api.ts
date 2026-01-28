@@ -28,6 +28,24 @@ export type { InputType } from './lib/components/input/input.component';
 export { TableComponent, CellTemplateDirective } from './lib/components/table/table.component';
 export type { TableColumn, SortDirection, SortState } from './lib/components/table/table.component';
 
+export { SelectComponent } from './lib/components/select/select.component';
+export type { SelectVariant, SelectSize } from './lib/components/select/select.component';
+export { OptionComponent } from './lib/components/select/option.component';
+export { OptionTemplateDirective } from './lib/components/select/option-template.directive';
+export type { OptionTemplateContext } from './lib/components/select/option-template.directive';
+
+export { DropdownComponent } from './lib/components/dropdown/dropdown.component';
+export type { DropdownPosition, DropdownAlign } from './lib/components/dropdown/dropdown.component';
+export { DropdownItemComponent } from './lib/components/dropdown/dropdown-item.component';
+export { DropdownDividerComponent } from './lib/components/dropdown/dropdown-divider.component';
+export { DropdownTriggerDirective } from './lib/components/dropdown/dropdown-trigger.directive';
+
+export { CheckboxComponent } from './lib/components/checkbox/checkbox.component';
+export type { CheckboxSize } from './lib/components/checkbox/checkbox.component';
+
+export { SwitchComponent } from './lib/components/switch/switch.component';
+export type { SwitchSize } from './lib/components/switch/switch.component';
+
 // Layout Components
 export { ShellComponent } from './lib/components/layout/shell/shell.component';
 export { NavbarComponent } from './lib/components/layout/navbar/navbar.component';

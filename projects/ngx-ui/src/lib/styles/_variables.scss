@@ -74,4 +74,16 @@
   --ui-font-md: 1rem;
   --ui-font-lg: 1.125rem;
   --ui-font-xl: 1.25rem;
+
+  // Dropdown & Select
+  --ui-dropdown-bg: var(--ui-bg);
+  --ui-dropdown-border: var(--ui-border);
+  --ui-dropdown-shadow: var(--ui-shadow-lg);
+  --ui-dropdown-radius: var(--ui-radius-md);
+  --ui-dropdown-max-height: 300px;
+
+  // Option/Item states
+  --ui-option-hover-bg: var(--ui-bg-hover);
+  --ui-option-selected-bg: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  --ui-option-selected-text: var(--ui-primary);
 }

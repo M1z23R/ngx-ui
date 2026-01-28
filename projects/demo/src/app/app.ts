@@ -13,6 +13,14 @@ import {
   SidebarService,
   TableColumn,
   DialogService,
+  SelectComponent,
+  OptionComponent,
+  DropdownComponent,
+  DropdownItemComponent,
+  DropdownDividerComponent,
+  DropdownTriggerDirective,
+  CheckboxComponent,
+  SwitchComponent,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 
@@ -36,6 +44,14 @@ interface User {
     SidebarToggleComponent,
     ContentComponent,
     FooterComponent,
+    SelectComponent,
+    OptionComponent,
+    DropdownComponent,
+    DropdownItemComponent,
+    DropdownDividerComponent,
+    DropdownTriggerDirective,
+    CheckboxComponent,
+    SwitchComponent,
   ],
   template: `
     <ui-shell>
@@ -132,6 +148,75 @@ interface User {
         </section>
 
         <section class="section">
+          <h2>Select</h2>
+          <div class="input-grid">
+            <ui-select [(value)]="selectedCity" placeholder="Select a city" label="City">
+              @for (city of cities; track city.id) {
+                <ui-option [value]="city">{{ city.name }}</ui-option>
+              }
+            </ui-select>
+            <ui-select [(value)]="selectedCities" placeholder="Select cities" label="Multiple Cities" [multiple]="true">
+              @for (city of cities; track city.id) {
+                <ui-option [value]="city">{{ city.name }}</ui-option>
+              }
+            </ui-select>
+            <ui-select [(value)]="searchableCity" placeholder="Search cities..." label="Searchable" [searchable]="true" [clearable]="true">
+              @for (city of cities; track city.id) {
+                <ui-option [value]="city">{{ city.name }}</ui-option>
+              }
+            </ui-select>
+          </div>
+          <p>Selected city: {{ selectedCity()?.name || 'None' }}</p>
+        </section>
+
+        <section class="section">
+          <h2>Dropdown Menu</h2>
+          <div class="button-row">
+            <ui-dropdown>
+              <button uiDropdownTrigger ui-button variant="outline">Actions</button>
+              <ui-dropdown-item (clicked)="handleAction('edit')">Edit</ui-dropdown-item>
+              <ui-dropdown-item (clicked)="handleAction('duplicate')">Duplicate</ui-dropdown-item>
+              <ui-dropdown-divider />
+              <ui-dropdown-item (clicked)="handleAction('delete')">Delete</ui-dropdown-item>
+            </ui-dropdown>
+
+            <ui-dropdown position="bottom-end">
+              <button uiDropdownTrigger ui-button>More Options</button>
+              <ui-dropdown-item (clicked)="handleAction('share')">Share</ui-dropdown-item>
+              <ui-dropdown-item (clicked)="handleAction('export')">Export</ui-dropdown-item>
+              <ui-dropdown-item [disabled]="true">Archive (disabled)</ui-dropdown-item>
+            </ui-dropdown>
+          </div>
+          @if (lastAction()) {
+            <p class="result-text">Last action: <strong>{{ lastAction() }}</strong></p>
+          }
+        </section>
+
+        <section class="section">
+          <h2>Checkbox</h2>
+          <div class="checkbox-grid">
+            <ui-checkbox [(checked)]="checkbox1">Default checkbox</ui-checkbox>
+            <ui-checkbox [(checked)]="checkbox2" size="sm">Small checkbox</ui-checkbox>
+            <ui-checkbox [(checked)]="checkbox3" size="lg">Large checkbox</ui-checkbox>
+            <ui-checkbox [checked]="true" [disabled]="true">Disabled checked</ui-checkbox>
+            <ui-checkbox [indeterminate]="true">Indeterminate</ui-checkbox>
+          </div>
+          <p>Checkbox 1: {{ checkbox1() }}, Checkbox 2: {{ checkbox2() }}, Checkbox 3: {{ checkbox3() }}</p>
+        </section>
+
+        <section class="section">
+          <h2>Switch</h2>
+          <div class="checkbox-grid">
+            <ui-switch [(checked)]="switch1">Enable notifications</ui-switch>
+            <ui-switch [(checked)]="switch2" size="sm">Small switch</ui-switch>
+            <ui-switch [(checked)]="switch3" size="lg">Large switch</ui-switch>
+            <ui-switch [checked]="true" [disabled]="true">Disabled on</ui-switch>
+            <ui-switch [checked]="false" [disabled]="true">Disabled off</ui-switch>
+          </div>
+          <p>Switch 1: {{ switch1() }}, Switch 2: {{ switch2() }}, Switch 3: {{ switch3() }}</p>
+        </section>
+
+        <section class="section">
           <h2>Table</h2>
           <ui-table [data]="users()" [columns]="columns" />
         </section>
@@ -193,6 +278,13 @@ interface User {
       margin-bottom: 1rem;
     }
 
+    .checkbox-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
     .nav-links {
       display: flex;
       flex-direction: column;
@@ -246,6 +338,31 @@ export class App {
     { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'User' },
   ]);
 
+  // Select demo data
+  protected readonly cities = [
+    { id: 1, name: 'New York' },
+    { id: 2, name: 'Los Angeles' },
+    { id: 3, name: 'Chicago' },
+    { id: 4, name: 'Houston' },
+    { id: 5, name: 'Phoenix' },
+  ];
+  protected readonly selectedCity = signal<{ id: number; name: string } | null>(null);
+  protected readonly selectedCities = signal<{ id: number; name: string }[]>([]);
+  protected readonly searchableCity = signal<{ id: number; name: string } | null>(null);
+
+  // Dropdown demo
+  protected readonly lastAction = signal<string>('');
+
+  // Checkbox demo
+  protected readonly checkbox1 = signal(false);
+  protected readonly checkbox2 = signal(true);
+  protected readonly checkbox3 = signal(false);
+
+  // Switch demo
+  protected readonly switch1 = signal(true);
+  protected readonly switch2 = signal(false);
+  protected readonly switch3 = signal(true);
+
   protected readonly columns: TableColumn<User>[] = [
     { key: 'id', header: 'ID', width: '60px', sortable: true },
     { key: 'name', header: 'Name', sortable: true },
@@ -256,6 +373,10 @@ export class App {
   protected toggleLoading(): void {
     this.isLoading.set(true);
     setTimeout(() => this.isLoading.set(false), 2000);
+  }
+
+  protected handleAction(action: string): void {
+    this.lastAction.set(action);
   }
 
   protected async openConfirmDialog(): Promise<void> {
