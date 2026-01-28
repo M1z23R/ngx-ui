@@ -1036,7 +1036,7 @@ export class App {
   }
 
   protected showSuccessToast(): void {
-    this.toastService.success('Your changes have been saved successfully.', 'Success');
+    this.toastService.success('Your changes have been saved successfully.', 'Success', 200);
   }
 
   protected showErrorToast(): void {

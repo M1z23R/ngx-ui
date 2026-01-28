@@ -26,7 +26,13 @@ import {
  * this.toastService.success('File saved successfully');
  * this.toastService.error('Failed to save file', 'Error');
  *
- * // With config
+ * // With custom duration (3 seconds)
+ * this.toastService.warning('Session expiring soon', 'Warning', 3000);
+ *
+ * // Persistent toast (no auto-dismiss)
+ * this.toastService.info('Processing...', undefined, 0);
+ *
+ * // With full config
  * const toastRef = this.toastService.show({
  *   message: 'Custom toast',
  *   variant: 'info',
@@ -87,30 +93,42 @@ export class ToastService {
 
   /**
    * Show a success toast.
+   * @param message Toast message
+   * @param title Optional title
+   * @param duration Optional duration in ms (0 = no auto-dismiss)
    */
-  success(message: string, title?: string): ToastRef {
-    return this.show({ message, title, variant: 'success' });
+  success(message: string, title?: string, duration?: number): ToastRef {
+    return this.show({ message, title, variant: 'success', duration });
   }
 
   /**
    * Show an error toast.
+   * @param message Toast message
+   * @param title Optional title
+   * @param duration Optional duration in ms (0 = no auto-dismiss)
    */
-  error(message: string, title?: string): ToastRef {
-    return this.show({ message, title, variant: 'error' });
+  error(message: string, title?: string, duration?: number): ToastRef {
+    return this.show({ message, title, variant: 'error', duration });
   }
 
   /**
    * Show a warning toast.
+   * @param message Toast message
+   * @param title Optional title
+   * @param duration Optional duration in ms (0 = no auto-dismiss)
    */
-  warning(message: string, title?: string): ToastRef {
-    return this.show({ message, title, variant: 'warning' });
+  warning(message: string, title?: string, duration?: number): ToastRef {
+    return this.show({ message, title, variant: 'warning', duration });
   }
 
   /**
    * Show an info toast.
+   * @param message Toast message
+   * @param title Optional title
+   * @param duration Optional duration in ms (0 = no auto-dismiss)
    */
-  info(message: string, title?: string): ToastRef {
-    return this.show({ message, title, variant: 'info' });
+  info(message: string, title?: string, duration?: number): ToastRef {
+    return this.show({ message, title, variant: 'info', duration });
   }
 
   /**
