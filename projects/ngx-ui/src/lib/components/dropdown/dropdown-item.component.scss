@@ -9,6 +9,7 @@
   padding: var(--ui-spacing-sm) var(--ui-spacing-md);
   cursor: pointer;
   transition: background-color var(--ui-transition-fast);
+  -webkit-user-select: none;
   user-select: none;
   outline: none;
 }

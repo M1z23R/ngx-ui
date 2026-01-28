@@ -6,6 +6,7 @@ import {
   ElementRef,
   viewChild,
   ChangeDetectionStrategy,
+  model,
 } from '@angular/core';
 import type { RadioGroupComponent, RadioGroupVariant } from './radio-group.component';
 
@@ -17,7 +18,7 @@ import type { RadioGroupComponent, RadioGroupVariant } from './radio-group.compo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RadioComponent<T = unknown> {
-  readonly value = input.required<T>();
+  readonly value = model.required<T>();
   readonly disabled = input(false);
 
   private readonly inputEl = viewChild.required<ElementRef<HTMLInputElement>>('inputEl');

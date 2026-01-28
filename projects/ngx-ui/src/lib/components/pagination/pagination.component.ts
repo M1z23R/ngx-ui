@@ -1,11 +1,4 @@
-import {
-  Component,
-  input,
-  model,
-  output,
-  computed,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, input, model, computed, ChangeDetectionStrategy } from '@angular/core';
 
 export type PaginationSize = 'sm' | 'md' | 'lg';
 
@@ -24,8 +17,6 @@ export class PaginationComponent {
   readonly size = input<PaginationSize>('md');
 
   readonly page = model(1);
-
-  readonly changed = output<number>();
 
   protected readonly totalPages = computed(() => {
     return Math.max(1, Math.ceil(this.total() / this.pageSize()));
@@ -96,7 +87,6 @@ export class PaginationComponent {
 
     if (newPage !== this.page()) {
       this.page.set(newPage);
-      this.changed.emit(newPage);
     }
   }
 }

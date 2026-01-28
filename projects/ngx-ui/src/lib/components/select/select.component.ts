@@ -46,7 +46,6 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
   // Outputs
   readonly opened = output<void>();
   readonly closed = output<void>();
-  readonly selectionChange = output<T | T[]>();
 
   // Content children
   readonly options = contentChildren(OptionComponent);
@@ -65,7 +64,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
       const opts = this.options();
       const isMultiple = this.multiple();
 
-      opts.forEach(opt => {
+      opts.forEach((opt) => {
         opt.multiple.set(isMultiple);
         if (isMultiple && Array.isArray(currentValue)) {
           opt.selected.set(currentValue.includes(opt.value()));
@@ -82,7 +81,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
       const opts = this.options();
 
       let visibleIndex = 0;
-      opts.forEach(opt => {
+      opts.forEach((opt) => {
         const label = opt.getLabel().toLowerCase();
         const isVisible = !query || label.includes(query);
         opt.elementRef.nativeElement.style.display = isVisible ? '' : 'none';
@@ -99,7 +98,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
 
   ngAfterContentInit(): void {
     // Set up click handlers on options
-    this.options().forEach(opt => {
+    this.options().forEach((opt) => {
       opt.elementRef.nativeElement.addEventListener('click', (event: MouseEvent) => {
         this.selectOption(opt, event);
       });
@@ -124,15 +123,15 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
 
     if (this.multiple() && Array.isArray(val)) {
       if (val.length === 0) return '';
-      const labels = val.map(v => {
-        const opt = opts.find(o => o.value() === v);
+      const labels = val.map((v) => {
+        const opt = opts.find((o) => o.value() === v);
         return opt?.getLabel() || String(v);
       });
       return labels.join(', ');
     }
 
     if (val === null || val === undefined) return '';
-    const opt = opts.find(o => o.value() === val);
+    const opt = opts.find((o) => o.value() === val);
     return opt?.getLabel() || String(val);
   });
 
@@ -142,7 +141,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
 
     if (!query) return [...opts];
 
-    return opts.filter(opt => {
+    return opts.filter((opt) => {
       const label = opt.getLabel().toLowerCase();
       return label.includes(query);
     });
@@ -200,10 +199,8 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
       }
 
       this.value.set(newValue);
-      this.selectionChange.emit(newValue);
     } else {
       this.value.set(optionValue);
-      this.selectionChange.emit(optionValue);
       this.close();
     }
   }
@@ -212,7 +209,6 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
     event.stopPropagation();
     if (this.multiple()) {
       this.value.set([]);
-      this.selectionChange.emit([]);
     } else {
       this.value.set(null);
     }

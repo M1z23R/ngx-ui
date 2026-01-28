@@ -48,7 +48,7 @@ export class DropdownComponent {
     // Handle item clicks
     effect(() => {
       const menuItems = this.items();
-      menuItems.forEach(item => {
+      menuItems.forEach((item) => {
         item.clicked.subscribe(() => {
           if (this.closeOnSelect()) {
             this.close();

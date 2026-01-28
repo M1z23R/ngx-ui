@@ -29,6 +29,7 @@ th {
 
 .ui-table__th--sortable {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 

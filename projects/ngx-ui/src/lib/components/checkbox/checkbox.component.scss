@@ -7,6 +7,7 @@
   align-items: center;
   gap: var(--ui-spacing-sm);
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   position: relative;
 }

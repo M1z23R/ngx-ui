@@ -1,11 +1,4 @@
-import {
-  Component,
-  input,
-  model,
-  output,
-  computed,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, input, model, output, computed, ChangeDetectionStrategy } from '@angular/core';
 
 export type CheckboxSize = 'sm' | 'md' | 'lg';
 
@@ -23,8 +16,6 @@ export class CheckboxComponent {
 
   readonly checked = model(false);
 
-  readonly changed = output<boolean>();
-
   // Check if there's label content
   protected readonly hasLabel = input(true);
 
@@ -35,6 +26,5 @@ export class CheckboxComponent {
   protected handleChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.checked.set(target.checked);
-    this.changed.emit(target.checked);
   }
 }

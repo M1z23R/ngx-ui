@@ -33,8 +33,6 @@ export class TabsComponent implements AfterContentInit {
 
   readonly activeTab = model<string | number>(0);
 
-  readonly changed = output<string | number>();
-
   readonly tabs = contentChildren(TabComponent);
 
   private readonly tabList = viewChild<ElementRef<HTMLElement>>('tabList');
@@ -80,14 +78,14 @@ export class TabsComponent implements AfterContentInit {
   protected selectTab(tab: TabComponent, index: number): void {
     if (tab.disabled()) return;
     const tabId = tab.id();
-    const value = (tabId !== '' && tabId !== undefined) ? tabId : index;
+    const value = tabId !== '' && tabId !== undefined ? tabId : index;
     this.activeTab.set(value);
-    this.changed.emit(value);
   }
 
   protected handleKeyDown(event: KeyboardEvent, currentIndex: number): void {
     const tabList = this.tabs();
-    const enabledTabs = tabList.map((t, i) => ({ tab: t, index: i }))
+    const enabledTabs = tabList
+      .map((t, i) => ({ tab: t, index: i }))
       .filter(({ tab }) => !tab.disabled());
 
     if (enabledTabs.length === 0) return;

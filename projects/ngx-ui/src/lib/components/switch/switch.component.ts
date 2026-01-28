@@ -1,11 +1,4 @@
-import {
-  Component,
-  input,
-  model,
-  output,
-  computed,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, input, model, computed, ChangeDetectionStrategy } from '@angular/core';
 
 export type SwitchSize = 'sm' | 'md' | 'lg';
 
@@ -22,8 +15,6 @@ export class SwitchComponent {
 
   readonly checked = model(false);
 
-  readonly changed = output<boolean>();
-
   // Check if there's label content
   protected readonly hasLabel = input(true);
 
@@ -34,6 +25,5 @@ export class SwitchComponent {
   protected handleChange(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.checked.set(target.checked);
-    this.changed.emit(target.checked);
   }
 }
