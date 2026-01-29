@@ -1,6 +1,6 @@
 {
   "name": "ngx-ui",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "scripts": {
     "ng": "ng",
     "prestart" : "npm run build",
