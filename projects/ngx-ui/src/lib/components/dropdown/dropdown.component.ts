@@ -177,6 +177,7 @@ export class DropdownComponent implements OnDestroy {
     const menu = this.menuRef?.nativeElement;
     if (!menu) return;
 
+    menu.style.display = 'block';
     document.body.appendChild(menu);
     this.updateMenuPosition();
     this.addPositionListeners();
@@ -193,6 +194,7 @@ export class DropdownComponent implements OnDestroy {
       }
     }
 
+    menu.style.display = '';
     menu.style.position = '';
     menu.style.top = '';
     menu.style.left = '';

@@ -137,14 +137,14 @@
   border-radius: var(--ui-dropdown-radius, var(--ui-radius-md));
   box-shadow: var(--ui-dropdown-shadow, var(--ui-shadow-lg));
   overflow: hidden;
-  visibility: hidden;
+  display: none;
   opacity: 0;
   transform: translateY(-8px);
-  transition: opacity var(--ui-transition-fast), transform var(--ui-transition-fast), visibility var(--ui-transition-fast);
+  transition: opacity var(--ui-transition-fast), transform var(--ui-transition-fast);
 }
 
 .ui-select__dropdown--open {
-  visibility: visible;
+  display: block;
   opacity: 1;
   transform: translateY(0);
 }

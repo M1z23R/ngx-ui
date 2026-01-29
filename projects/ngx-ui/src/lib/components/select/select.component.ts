@@ -338,6 +338,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     const dropdown = this.dropdownRef?.nativeElement;
     if (!dropdown) return;
 
+    dropdown.style.display = 'block';
     document.body.appendChild(dropdown);
     this.updateDropdownPosition();
     this.addPositionListeners();
@@ -354,6 +355,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
       }
     }
 
+    dropdown.style.display = '';
     dropdown.style.position = '';
     dropdown.style.top = '';
     dropdown.style.left = '';
