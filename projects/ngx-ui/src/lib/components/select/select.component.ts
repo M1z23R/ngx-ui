@@ -12,6 +12,8 @@ import {
   effect,
   HostListener,
   AfterContentInit,
+  OnDestroy,
+  ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { OptionComponent } from './option.component';
@@ -27,7 +29,7 @@ export type SelectSize = 'sm' | 'md' | 'lg';
   styleUrl: './select.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SelectComponent<T = unknown> implements AfterContentInit {
+export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy {
   // Inputs
   readonly variant = input<SelectVariant>('default');
   readonly size = input<SelectSize>('md');
@@ -50,12 +52,17 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
   // Content children
   readonly options = contentChildren(OptionComponent);
 
+  // View children for dropdown portal
+  @ViewChild('triggerRef', { static: true }) triggerRef!: ElementRef<HTMLElement>;
+  @ViewChild('dropdownRef', { static: true }) dropdownRef!: ElementRef<HTMLElement>;
+
   // Internal state
   readonly isOpen = signal(false);
   readonly searchQuery = signal('');
   readonly focusedIndex = signal(-1);
 
   private readonly elementRef = inject(ElementRef);
+  private positionCleanup: (() => void) | null = null;
 
   constructor() {
     // Sync selected state to options
@@ -105,6 +112,14 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
     });
   }
 
+  ngOnDestroy(): void {
+    const dropdown = this.dropdownRef?.nativeElement;
+    if (dropdown?.parentElement === document.body) {
+      document.body.removeChild(dropdown);
+    }
+    this.removePositionListeners();
+  }
+
   protected readonly triggerClasses = computed(() => {
     return `ui-select__trigger--${this.variant()} ui-select__trigger--${this.size()}`;
   });
@@ -149,7 +164,11 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
+    const target = event.target as Node;
+    if (
+      !this.elementRef.nativeElement.contains(target) &&
+      !this.dropdownRef?.nativeElement?.contains(target)
+    ) {
       this.close();
     }
   }
@@ -169,10 +188,12 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
     this.searchQuery.set('');
     this.focusedIndex.set(-1);
     this.opened.emit();
+    this.portalDropdown();
   }
 
   close(): void {
     if (!this.isOpen()) return;
+    this.unportalDropdown();
     this.isOpen.set(false);
     this.searchQuery.set('');
     this.focusedIndex.set(-1);
@@ -311,5 +332,82 @@ export class SelectComponent<T = unknown> implements AfterContentInit {
     if (focused) {
       focused.elementRef.nativeElement.scrollIntoView({ block: 'nearest' });
     }
+  }
+
+  private portalDropdown(): void {
+    const dropdown = this.dropdownRef?.nativeElement;
+    if (!dropdown) return;
+
+    document.body.appendChild(dropdown);
+    this.updateDropdownPosition();
+    this.addPositionListeners();
+  }
+
+  private unportalDropdown(): void {
+    const dropdown = this.dropdownRef?.nativeElement;
+    if (!dropdown) return;
+
+    if (dropdown.parentElement === document.body) {
+      const wrapper = this.elementRef.nativeElement.querySelector('.ui-select-wrapper');
+      if (wrapper) {
+        wrapper.appendChild(dropdown);
+      }
+    }
+
+    dropdown.style.position = '';
+    dropdown.style.top = '';
+    dropdown.style.left = '';
+    dropdown.style.bottom = '';
+    dropdown.style.width = '';
+    dropdown.style.zIndex = '';
+    dropdown.style.margin = '';
+
+    this.removePositionListeners();
+  }
+
+  private updateDropdownPosition(): void {
+    const trigger = this.triggerRef?.nativeElement;
+    const dropdown = this.dropdownRef?.nativeElement;
+    if (!trigger || !dropdown) return;
+
+    const triggerRect = trigger.getBoundingClientRect();
+    const dropdownHeight = dropdown.scrollHeight;
+    const gap = 4;
+    const spaceBelow = window.innerHeight - triggerRect.bottom;
+    const spaceAbove = triggerRect.top;
+    const openAbove = spaceBelow < dropdownHeight + gap && spaceAbove > spaceBelow;
+
+    dropdown.style.position = 'fixed';
+    dropdown.style.width = `${triggerRect.width}px`;
+    dropdown.style.left = `${triggerRect.left}px`;
+    dropdown.style.zIndex = '99999';
+    dropdown.style.margin = '0';
+
+    if (openAbove) {
+      dropdown.style.top = 'auto';
+      dropdown.style.bottom = `${window.innerHeight - triggerRect.top + gap}px`;
+    } else {
+      dropdown.style.top = `${triggerRect.bottom + gap}px`;
+      dropdown.style.bottom = 'auto';
+    }
+  }
+
+  private addPositionListeners(): void {
+    const update = () => {
+      if (this.isOpen()) {
+        this.updateDropdownPosition();
+      }
+    };
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    this.positionCleanup = () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+    };
+  }
+
+  private removePositionListeners(): void {
+    this.positionCleanup?.();
+    this.positionCleanup = null;
   }
 }

@@ -11,6 +11,7 @@
   }
 
   <div
+    #triggerRef
     class="ui-select__trigger"
     [class]="triggerClasses()"
     [attr.role]="'combobox'"
@@ -59,6 +60,7 @@
   </div>
 
   <div
+    #dropdownRef
     class="ui-select__dropdown"
     [class.ui-select__dropdown--open]="isOpen()"
     [attr.role]="'listbox'"
