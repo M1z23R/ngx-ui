@@ -3,6 +3,7 @@
   "version": "1.0.3",
   "scripts": {
     "ng": "ng",
+    "prestart" : "npm run build",
     "start": "ng serve",
     "build": "ng build ngx-ui",
     "build:lib": "ng build ngx-ui --configuration production",
