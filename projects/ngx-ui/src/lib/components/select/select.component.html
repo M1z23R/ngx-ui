@@ -18,17 +18,32 @@
     [attr.aria-expanded]="isOpen()"
     [attr.aria-haspopup]="'listbox'"
     [attr.aria-disabled]="disabled()"
-    [attr.tabindex]="disabled() ? -1 : 0"
+    [attr.tabindex]="searchable() ? -1 : (disabled() ? -1 : 0)"
     (click)="toggle()"
     (keydown)="handleTriggerKeydown($event)"
   >
-    <span class="ui-select__value">
-      @if (displayValue()) {
-        {{ displayValue() }}
-      } @else {
-        <span class="ui-select__placeholder">{{ placeholder() }}</span>
-      }
-    </span>
+    @if (searchable()) {
+      <input
+        #searchInput
+        type="text"
+        class="ui-select__input"
+        [placeholder]="displayValue() || placeholder()"
+        [value]="isOpen() ? searchQuery() : displayValue()"
+        [disabled]="disabled()"
+        (input)="onSearchInput($any($event.target).value)"
+        (keydown)="handleSearchInputKeydown($event)"
+        (focus)="toggle()"
+        autocomplete="off"
+      />
+    } @else {
+      <span class="ui-select__value">
+        @if (displayValue()) {
+          {{ displayValue() }}
+        } @else {
+          <span class="ui-select__placeholder">{{ placeholder() }}</span>
+        }
+      </span>
+    }
 
     <div class="ui-select__icons">
       @if (clearable() && hasValue() && !disabled()) {
@@ -66,22 +81,24 @@
     [attr.role]="'listbox'"
     [attr.aria-multiselectable]="multiple()"
   >
-    @if (searchable()) {
-      <div class="ui-select__search">
-        <input
-          type="text"
-          class="ui-select__search-input"
-          placeholder="Search..."
-          [ngModel]="searchQuery()"
-          (ngModelChange)="searchQuery.set($event)"
-          (keydown)="handleSearchKeydown($event)"
-          #searchInput
-        />
-      </div>
-    }
     <div class="ui-select__options">
       <ng-content />
+      @if (visibleOptions().length === 0 && !(creatable() && searchQuery().trim())) {
+        <div class="ui-select__empty">No options found</div>
+      }
     </div>
+    @if (creatable() && searchQuery().trim() && !exactMatchExists()) {
+      <div
+        class="ui-select__create"
+        (click)="handleCreate()"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Create "{{ searchQuery().trim() }}"
+      </div>
+    }
   </div>
 
   @if (error()) {

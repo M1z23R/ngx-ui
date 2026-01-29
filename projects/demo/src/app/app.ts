@@ -375,8 +375,21 @@ interface User {
                 <ui-option [value]="city">{{ city.name }}</ui-option>
               }
             </ui-select>
+            <ui-select
+              [(value)]="creatableCity"
+              placeholder="Type to search or create..."
+              label="Creatable"
+              [searchable]="true"
+              [creatable]="true"
+              [clearable]="true"
+              (created)="onCityCreated($event)">
+              @for (city of creatableCities(); track city.id) {
+                <ui-option [value]="city">{{ city.name }}</ui-option>
+              }
+            </ui-select>
           </div>
           <p>Selected city: {{ selectedCity()?.name || 'None' }}</p>
+          <p>Creatable city: {{ creatableCity()?.name || 'None' }}</p>
         </section>
 
         <section class="section">
@@ -1012,6 +1025,15 @@ export class App {
   protected readonly selectedCity = signal<{ id: number; name: string } | null>(null);
   protected readonly selectedCities = signal<{ id: number; name: string }[]>([]);
   protected readonly searchableCity = signal<{ id: number; name: string } | null>(null);
+  protected readonly creatableCity = signal<{ id: number; name: string } | null>(null);
+  protected readonly creatableCities = signal([
+    { id: 1, name: 'New York' },
+    { id: 2, name: 'Los Angeles' },
+    { id: 3, name: 'Chicago' },
+    { id: 4, name: 'Houston' },
+    { id: 5, name: 'Phoenix' },
+  ]);
+  private nextCityId = 6;
 
   // Dropdown demo
   protected readonly lastAction = signal<string>('');
@@ -1084,6 +1106,13 @@ export class App {
     if (files.length > 0) {
       console.log('Minimal file selected:', files[0].name);
     }
+  }
+
+  protected onCityCreated(name: string): void {
+    const newCity = { id: this.nextCityId++, name };
+    this.creatableCities.update((cities) => [...cities, newCity]);
+    // Select the newly created city after options update
+    setTimeout(() => this.creatableCity.set(newCity));
   }
 
   protected onBadgeRemoved(): void {

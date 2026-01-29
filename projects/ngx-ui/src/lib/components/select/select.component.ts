@@ -41,6 +41,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly multiple = input(false);
   readonly searchable = input(false);
   readonly clearable = input(false);
+  readonly creatable = input(false);
 
   // Two-way binding
   readonly value = model<T | T[] | null>(null);
@@ -48,6 +49,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   // Outputs
   readonly opened = output<void>();
   readonly closed = output<void>();
+  readonly created = output<string>();
 
   // Content children
   readonly options = contentChildren(OptionComponent);
@@ -55,6 +57,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   // View children for dropdown portal
   @ViewChild('triggerRef', { static: true }) triggerRef!: ElementRef<HTMLElement>;
   @ViewChild('dropdownRef', { static: true }) dropdownRef!: ElementRef<HTMLElement>;
+  @ViewChild('searchInput') searchInputRef?: ElementRef<HTMLInputElement>;
 
   // Internal state
   readonly isOpen = signal(false);
@@ -162,6 +165,12 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     });
   });
 
+  protected readonly exactMatchExists = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    if (!query) return true;
+    return this.options().some((opt) => opt.getLabel().toLowerCase() === query);
+  });
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as Node;
@@ -175,10 +184,17 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
 
   toggle(): void {
     if (this.disabled()) return;
-    if (this.isOpen()) {
-      this.close();
+    if (this.searchable()) {
+      // In combobox mode, clicking trigger always opens
+      if (!this.isOpen()) {
+        this.open();
+      }
     } else {
-      this.open();
+      if (this.isOpen()) {
+        this.close();
+      } else {
+        this.open();
+      }
     }
   }
 
@@ -189,6 +205,16 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     this.focusedIndex.set(-1);
     this.opened.emit();
     this.portalDropdown();
+
+    if (this.searchable()) {
+      setTimeout(() => {
+        const input = this.searchInputRef?.nativeElement;
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    }
   }
 
   close(): void {
@@ -220,6 +246,12 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
       }
 
       this.value.set(newValue);
+      // In multiple+searchable mode, clear search and refocus input
+      if (this.searchable()) {
+        this.searchQuery.set('');
+        this.focusedIndex.set(-1);
+        setTimeout(() => this.searchInputRef?.nativeElement?.focus());
+      }
     } else {
       this.value.set(optionValue);
       this.close();
@@ -273,28 +305,67 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     }
   }
 
-  protected handleSearchKeydown(event: KeyboardEvent): void {
+  protected handleSearchInputKeydown(event: KeyboardEvent): void {
+    // Stop propagation so the trigger's keydown handler doesn't
+    // interfere (e.g. space would otherwise preventDefault).
+    event.stopPropagation();
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        this.focusNext();
+        if (!this.isOpen()) {
+          this.open();
+        } else {
+          this.focusNext();
+        }
         break;
       case 'ArrowUp':
         event.preventDefault();
-        this.focusPrevious();
+        if (this.isOpen()) {
+          this.focusPrevious();
+        }
         break;
       case 'Enter':
         event.preventDefault();
-        const focused = this.visibleOptions()[this.focusedIndex()];
-        if (focused) {
-          this.selectOption(focused);
+        if (this.isOpen()) {
+          const visible = this.visibleOptions();
+          const focused = visible[this.focusedIndex()];
+          if (focused) {
+            this.selectOption(focused);
+          } else if (visible.length === 1) {
+            this.selectOption(visible[0]);
+          } else if (this.creatable() && this.searchQuery().trim() && !this.exactMatchExists()) {
+            this.handleCreate();
+          }
+        } else {
+          this.open();
         }
         break;
       case 'Escape':
         event.preventDefault();
         this.close();
         break;
+      case 'Tab':
+        this.close();
+        break;
     }
+  }
+
+  protected onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+    // Auto-highlight when exactly one option is visible
+    const visible = this.visibleOptions();
+    this.focusedIndex.set(visible.length === 1 ? 0 : -1);
+    if (!this.isOpen()) {
+      this.open();
+    }
+  }
+
+  protected handleCreate(): void {
+    const query = this.searchQuery().trim();
+    if (!query) return;
+    this.created.emit(query);
+    this.searchQuery.set('');
+    this.close();
   }
 
   private focusNext(): void {
