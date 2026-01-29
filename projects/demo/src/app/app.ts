@@ -36,6 +36,9 @@ import {
   TabComponent,
   ToastService,
   PaginationComponent,
+  AccordionComponent,
+  AccordionItemComponent,
+  AccordionHeaderDirective,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 
@@ -81,6 +84,9 @@ interface User {
     TabsComponent,
     TabComponent,
     PaginationComponent,
+    AccordionComponent,
+    AccordionItemComponent,
+    AccordionHeaderDirective,
   ],
   template: `
     <ui-shell>
@@ -608,6 +614,82 @@ interface User {
         </section>
 
         <section class="section">
+          <h2>Accordion</h2>
+          <div class="accordion-demo-grid">
+            <div>
+              <h3>Default (auto-collapse)</h3>
+              <ui-accordion>
+                <ui-accordion-item header="What is Angular?">
+                  <p>Angular is a platform and framework for building single-page client applications using HTML and TypeScript.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="What are signals?">
+                  <p>Signals are a reactive primitive that provide fine-grained reactivity tracking for Angular applications.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="What is standalone?" [expanded]="true">
+                  <p>Standalone components don't need to be declared in an NgModule and can directly manage their own dependencies.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="Disabled item" [disabled]="true">
+                  <p>This item cannot be toggled.</p>
+                </ui-accordion-item>
+              </ui-accordion>
+            </div>
+            <div>
+              <h3>Multi-open</h3>
+              <ui-accordion [multi]="true">
+                <ui-accordion-item header="Section A" [expanded]="true">
+                  <p>Multiple sections can be open at the same time when multi mode is enabled.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="Section B" [expanded]="true">
+                  <p>This section is also expanded by default.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="Section C">
+                  <p>Click to expand this section without closing others.</p>
+                </ui-accordion-item>
+              </ui-accordion>
+            </div>
+            <div>
+              <h3>Custom header template</h3>
+              <ui-accordion>
+                <ui-accordion-item>
+                  <ng-template uiAccordionHeader>
+                    <strong style="color: var(--ui-primary);">Custom</strong>&nbsp;<em>styled header</em>
+                  </ng-template>
+                  <p>This item uses a custom header template via the uiAccordionHeader directive.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="Regular header">
+                  <p>This item uses a plain string header.</p>
+                </ui-accordion-item>
+              </ui-accordion>
+            </div>
+            <div>
+              <h3>Separated variant</h3>
+              <ui-accordion variant="separated">
+                <ui-accordion-item header="Item 1">
+                  <p>Each item is visually separated with its own border and rounded corners.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="Item 2">
+                  <p>There is a gap between each accordion item.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="Item 3">
+                  <p>This variant works well for loosely related content.</p>
+                </ui-accordion-item>
+              </ui-accordion>
+            </div>
+            <div>
+              <h3>Bordered variant</h3>
+              <ui-accordion variant="bordered">
+                <ui-accordion-item header="Step 1">
+                  <p>The bordered variant adds a subtle background to headers and wraps content in a card-like container.</p>
+                </ui-accordion-item>
+                <ui-accordion-item header="Step 2">
+                  <p>Content areas get their own background for visual distinction.</p>
+                </ui-accordion-item>
+              </ui-accordion>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
           <h2>Pagination</h2>
           <div class="pagination-demo">
             <div>
@@ -846,6 +928,19 @@ interface User {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+    }
+
+    .accordion-demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .accordion-demo-grid h3 {
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ui-text-muted);
     }
 
     .tabs-demo-grid {

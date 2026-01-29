@@ -14,7 +14,7 @@ export type { ToastConfig, ToastVariant, ToastPosition } from './lib/toast/toast
 
 // Dialog
 export { DialogRef } from './lib/dialog/dialog-ref';
-export { ModalComponent } from './lib/dialog/modal.component';
+export { ModalComponent } from './lib/components/modal/modal.component';
 export { DIALOG_DATA, DIALOG_REF } from './lib/dialog/dialog.config';
 export type { DialogConfig, ModalSize } from './lib/dialog/dialog.config';
 
@@ -83,6 +83,11 @@ export { TabsComponent } from './lib/components/tabs/tabs.component';
 export type { TabsVariant, TabsSize } from './lib/components/tabs/tabs.component';
 export { TabComponent } from './lib/components/tabs/tab.component';
 export { TabIconDirective } from './lib/components/tabs/tab-icon.directive';
+
+export { AccordionComponent } from './lib/components/accordion/accordion.component';
+export type { AccordionVariant } from './lib/components/accordion/accordion.component';
+export { AccordionItemComponent } from './lib/components/accordion/accordion-item.component';
+export { AccordionHeaderDirective } from './lib/components/accordion/accordion-header.directive';
 
 export { PaginationComponent } from './lib/components/pagination/pagination.component';
 export type { PaginationSize } from './lib/components/pagination/pagination.component';

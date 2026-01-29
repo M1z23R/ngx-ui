@@ -1,0 +1,39 @@
+<div
+  class="ui-accordion-item"
+  [class.ui-accordion-item--expanded]="isExpanded()"
+  [class.ui-accordion-item--disabled]="disabled()"
+>
+  <button
+    type="button"
+    class="ui-accordion-item__header"
+    [disabled]="disabled()"
+    (click)="toggle()"
+    [attr.aria-expanded]="isExpanded()"
+    [attr.aria-controls]="'accordion-panel-' + _index()"
+  >
+    @if (headerTemplate()) {
+      <span class="ui-accordion-item__title">
+        <ng-container *ngTemplateOutlet="headerTemplate()!" />
+      </span>
+    } @else {
+      <span class="ui-accordion-item__title">{{ header() }}</span>
+    }
+    <span
+      class="ui-accordion-item__icon"
+      [class.ui-accordion-item__icon--rotated]="isExpanded()"
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+  </button>
+  <div
+    class="ui-accordion-item__panel"
+    [attr.id]="'accordion-panel-' + _index()"
+    role="region"
+  >
+    <div class="ui-accordion-item__content">
+      <ng-content />
+    </div>
+  </div>
+</div>

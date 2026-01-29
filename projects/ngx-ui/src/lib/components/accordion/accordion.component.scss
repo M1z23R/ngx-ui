@@ -1,0 +1,58 @@
+:host {
+  display: block;
+}
+
+.ui-accordion {
+  width: 100%;
+}
+
+// Default variant: items share borders (border-bottom between items)
+.ui-accordion--default {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  overflow: hidden;
+
+  ::ng-deep > ui-accordion-item + ui-accordion-item {
+    border-top: 1px solid var(--ui-border);
+  }
+}
+
+// Bordered variant: border around whole group with background
+.ui-accordion--bordered {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background-color: var(--ui-bg-secondary);
+  overflow: hidden;
+
+  ::ng-deep > ui-accordion-item + ui-accordion-item {
+    border-top: 1px solid var(--ui-border);
+  }
+
+  ::ng-deep > ui-accordion-item .ui-accordion-item__header {
+    background-color: var(--ui-bg-secondary);
+  }
+
+  ::ng-deep > ui-accordion-item .ui-accordion-item__header:hover:not(:disabled) {
+    background-color: var(--ui-bg-hover);
+  }
+
+  ::ng-deep > ui-accordion-item .ui-accordion-item__content > :first-child {
+    background-color: var(--ui-bg);
+    border-radius: var(--ui-radius-sm);
+    margin: 0 var(--ui-spacing-sm) var(--ui-spacing-sm);
+    padding: var(--ui-spacing-md);
+  }
+}
+
+// Separated variant: gap between items with individual borders/radius
+.ui-accordion--separated {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-spacing-sm);
+
+  ::ng-deep > ui-accordion-item {
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    overflow: hidden;
+  }
+}
