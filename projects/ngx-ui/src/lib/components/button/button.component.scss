@@ -72,6 +72,20 @@ button:focus-visible {
   background-color: var(--ui-secondary-active);
 }
 
+/* Danger variant */
+.ui-button--danger {
+  background-color: var(--ui-danger);
+  color: var(--ui-danger-text);
+}
+
+.ui-button--danger:hover:not(:disabled) {
+  background-color: var(--ui-danger-hover);
+}
+
+.ui-button--danger:active:not(:disabled) {
+  background-color: var(--ui-danger-active);
+}
+
 /* Outline variant */
 .ui-button--outline {
   background-color: transparent;
