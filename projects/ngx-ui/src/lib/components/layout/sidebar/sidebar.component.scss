@@ -25,6 +25,10 @@
   padding: 0 var(--ui-spacing-md);
   border-bottom: 1px solid var(--ui-border);
   flex-shrink: 0;
+
+  &:not(:has(*)) {
+    display: none;
+  }
 }
 
 .ui-sidebar__nav {
@@ -38,6 +42,10 @@
   padding: var(--ui-spacing-sm);
   border-top: 1px solid var(--ui-border);
   flex-shrink: 0;
+
+  &:not(:has(*)) {
+    display: none;
+  }
 }
 
 /* Collapsed state padding */
