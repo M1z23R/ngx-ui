@@ -1,4 +1,4 @@
-import { Component, input, model, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, model, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 export type SliderSize = 'sm' | 'md' | 'lg';
@@ -21,6 +21,7 @@ export class SliderComponent {
   readonly label = input<string>('');
 
   readonly value = model(0);
+  readonly valueCommit = output<number>();
 
   private static nextId = 0;
   private readonly generatedId = `ui-slider-${++SliderComponent.nextId}`;
