@@ -39,6 +39,9 @@ import {
   AccordionComponent,
   AccordionItemComponent,
   AccordionHeaderDirective,
+  SliderComponent,
+  DatepickerComponent,
+  DateRange,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 
@@ -87,6 +90,8 @@ interface User {
     AccordionComponent,
     AccordionItemComponent,
     AccordionHeaderDirective,
+    SliderComponent,
+    DatepickerComponent,
   ],
   template: `
     <ui-shell>
@@ -769,6 +774,88 @@ interface User {
         </section>
 
         <section class="section">
+          <h2>Slider</h2>
+          <div class="slider-grid">
+            <div>
+              <h3>Default</h3>
+              <ui-slider [(value)]="sliderValue" />
+              <p class="slider-value-text">Value: {{ sliderValue() }}</p>
+            </div>
+            <div>
+              <h3>Sizes</h3>
+              <div class="slider-stack">
+                <ui-slider size="sm" [(value)]="sliderSm" />
+                <ui-slider size="md" [(value)]="sliderMd" />
+                <ui-slider size="lg" [(value)]="sliderLg" />
+              </div>
+            </div>
+            <div>
+              <h3>With Label &amp; Value</h3>
+              <ui-slider label="Volume" [showValue]="true" [(value)]="sliderLabeled" />
+            </div>
+            <div>
+              <h3>Custom Range (0–1000, step 50)</h3>
+              <ui-slider
+                [min]="0"
+                [max]="1000"
+                [step]="50"
+                [showValue]="true"
+                label="Amount"
+                [(value)]="sliderCustom"
+              />
+            </div>
+            <div>
+              <h3>Disabled</h3>
+              <ui-slider [disabled]="true" [value]="40" label="Locked" [showValue]="true" />
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Datepicker</h2>
+          <div class="input-grid">
+            <ui-datepicker
+              label="Date"
+              placeholder="Pick a date"
+              [(value)]="selectedDate"
+              [clearable]="true"
+            />
+            <ui-datepicker
+              label="Date Range"
+              placeholder="Select range"
+              [(value)]="selectedDateRange"
+              [range]="true"
+              [clearable]="true"
+            />
+            <ui-datepicker
+              label="Custom Format (dd/MM/yyyy)"
+              format="dd/MM/yyyy"
+              [(value)]="formattedDate"
+              [clearable]="true"
+            />
+            <ui-datepicker
+              label="Min/Max Constrained"
+              hint="Only dates in the current month"
+              [(value)]="minMaxDate"
+              [minDate]="dateConstraintMin"
+              [maxDate]="dateConstraintMax"
+            />
+            <ui-datepicker
+              label="Disabled"
+              placeholder="Cannot select"
+              [disabled]="true"
+            />
+            <ui-datepicker
+              label="With Error"
+              error="Date is required"
+              [required]="true"
+            />
+          </div>
+          <p>Selected date: {{ selectedDate() ? selectedDate()!.toLocaleDateString() : 'None' }}</p>
+          <p>Date range: {{ formatDateRange() }}</p>
+        </section>
+
+        <section class="section">
           <h2>Table</h2>
           <ui-table [data]="users()" [columns]="columns" />
         </section>
@@ -1019,6 +1106,31 @@ interface User {
       flex-direction: column;
       gap: 1rem;
     }
+
+    .slider-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .slider-grid h3 {
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ui-text-muted);
+    }
+
+    .slider-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .slider-value-text {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--ui-text-muted);
+    }
   `],
 })
 export class App {
@@ -1104,6 +1216,22 @@ export class App {
   protected readonly limitedTextarea = signal('');
   protected readonly errorTextarea = signal('');
 
+  // Slider demo
+  protected readonly sliderValue = signal(50);
+  protected readonly sliderSm = signal(25);
+  protected readonly sliderMd = signal(50);
+  protected readonly sliderLg = signal(75);
+  protected readonly sliderLabeled = signal(60);
+  protected readonly sliderCustom = signal(500);
+
+  // Datepicker demo
+  protected readonly selectedDate = signal<Date | null>(null);
+  protected readonly selectedDateRange = signal<DateRange | null>({ start: null, end: null });
+  protected readonly formattedDate = signal<Date | null>(null);
+  protected readonly minMaxDate = signal<Date | null>(null);
+  protected readonly dateConstraintMin = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  protected readonly dateConstraintMax = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
   // Progress demo
   protected readonly progressValue = signal(35);
 
@@ -1151,6 +1279,14 @@ export class App {
 
   protected decreaseProgress(): void {
     this.progressValue.update(v => Math.max(0, v - 10));
+  }
+
+  protected formatDateRange(): string {
+    const range = this.selectedDateRange() as DateRange | null;
+    if (!range || (!range.start && !range.end)) return 'None';
+    const start = range.start ? range.start.toLocaleDateString() : '...';
+    const end = range.end ? range.end.toLocaleDateString() : '...';
+    return `${start} — ${end}`;
   }
 
   protected onCardClick(): void {

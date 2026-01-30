@@ -1,0 +1,22 @@
+<div class="ui-slider-wrapper" [class]="sliderClasses()" [class.ui-slider-wrapper--disabled]="disabled()">
+  @if (label()) {
+    <label class="ui-slider__label" [attr.for]="inputId()">
+      {{ label() }}
+    </label>
+  }
+  <div class="ui-slider__container" [style.--fill]="fillPercent()">
+    <input
+      class="ui-slider"
+      type="range"
+      [id]="inputId()"
+      [min]="min()"
+      [max]="max()"
+      [step]="step()"
+      [disabled]="disabled()"
+      [(ngModel)]="value"
+    />
+  </div>
+  @if (showValue()) {
+    <span class="ui-slider__value">{{ value() }}</span>
+  }
+</div>

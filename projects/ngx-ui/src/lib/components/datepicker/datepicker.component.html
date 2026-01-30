@@ -1,0 +1,216 @@
+<div
+  class="ui-datepicker-wrapper"
+  [class.ui-datepicker-wrapper--error]="error()"
+  [class.ui-datepicker-wrapper--disabled]="disabled()"
+  [class.ui-datepicker-wrapper--open]="isOpen()"
+>
+  @if (label()) {
+    <label class="ui-datepicker__label" [attr.for]="inputId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="ui-datepicker__required">*</span>
+      }
+    </label>
+  }
+
+  <div
+    #triggerRef
+    class="ui-datepicker__trigger"
+    [class]="triggerClasses()"
+    [attr.role]="'combobox'"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-haspopup]="'dialog'"
+    [attr.aria-disabled]="disabled()"
+    [attr.tabindex]="disabled() ? -1 : 0"
+    (click)="toggle()"
+    (keydown)="handleTriggerKeydown($event)"
+  >
+    <span class="ui-datepicker__value">
+      @if (displayValue()) {
+        {{ displayValue() }}
+      } @else {
+        <span class="ui-datepicker__placeholder">{{ placeholder() }}</span>
+      }
+    </span>
+
+    <div class="ui-datepicker__icons">
+      @if (clearable() && hasValue() && !disabled() && !readonly()) {
+        <button
+          type="button"
+          class="ui-datepicker__clear"
+          (click)="clear($event)"
+          aria-label="Clear date"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      }
+      <svg
+        class="ui-datepicker__calendar-icon"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    </div>
+  </div>
+
+  <div
+    #dropdownRef
+    class="ui-datepicker__dropdown"
+    [class.ui-datepicker__dropdown--open]="isOpen()"
+    [attr.role]="'dialog'"
+    [attr.aria-label]="'Date picker'"
+  >
+    <div class="ui-datepicker__header">
+      <button
+        type="button"
+        class="ui-datepicker__nav-btn"
+        [disabled]="!canNavigatePrev()"
+        (click)="navigatePrev()"
+        aria-label="Previous"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      @if (currentView() === 'day') {
+        <button
+          type="button"
+          class="ui-datepicker__header-label"
+          (click)="switchToMonthView()"
+        >
+          {{ monthYearLabel() }}
+        </button>
+      } @else if (currentView() === 'month') {
+        <button
+          type="button"
+          class="ui-datepicker__header-label"
+          (click)="switchToYearView()"
+        >
+          {{ viewDate().getFullYear() }}
+        </button>
+      } @else {
+        <span class="ui-datepicker__header-label ui-datepicker__header-label--static">
+          {{ decadeLabel() }}
+        </span>
+      }
+
+      <button
+        type="button"
+        class="ui-datepicker__nav-btn"
+        [disabled]="!canNavigateNext()"
+        (click)="navigateNext()"
+        aria-label="Next"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    @if (currentView() === 'day') {
+      <div class="ui-datepicker__calendar" role="grid">
+        <div class="ui-datepicker__weekdays">
+          @for (header of weekdayHeaders(); track header) {
+            <div class="ui-datepicker__weekday">{{ header }}</div>
+          }
+        </div>
+        @for (week of calendarGrid(); track $index) {
+          <div class="ui-datepicker__week" role="row">
+            @for (day of week; track day.date.getTime()) {
+              <button
+                type="button"
+                class="ui-datepicker__day"
+                [class.ui-datepicker__day--outside]="!day.isCurrentMonth"
+                [class.ui-datepicker__day--today]="day.isToday"
+                [class.ui-datepicker__day--selected]="day.isSelected"
+                [class.ui-datepicker__day--in-range]="day.isInRange"
+                [class.ui-datepicker__day--range-start]="day.isRangeStart"
+                [class.ui-datepicker__day--range-end]="day.isRangeEnd"
+                [class.ui-datepicker__day--disabled]="day.isDisabled"
+                [class.ui-datepicker__day--focused]="day.isFocused"
+                [disabled]="day.isDisabled"
+                (click)="selectDay(day)"
+                (mouseenter)="onDayHover(day)"
+                (mouseleave)="onDayHoverLeave()"
+                role="gridcell"
+                [attr.aria-selected]="day.isSelected"
+              >
+                {{ day.day }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    } @else if (currentView() === 'month') {
+      <div class="ui-datepicker__months">
+        @for (row of monthGrid(); track $index) {
+          <div class="ui-datepicker__month-row">
+            @for (month of row; track month.month) {
+              <button
+                type="button"
+                class="ui-datepicker__month"
+                [class.ui-datepicker__month--selected]="month.isSelected"
+                [class.ui-datepicker__month--current]="month.isCurrent"
+                [class.ui-datepicker__month--disabled]="month.isDisabled"
+                [disabled]="month.isDisabled"
+                (click)="selectMonth(month)"
+              >
+                {{ month.label }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="ui-datepicker__years">
+        @for (row of yearGrid(); track $index) {
+          <div class="ui-datepicker__year-row">
+            @for (year of row; track year.year) {
+              <button
+                type="button"
+                class="ui-datepicker__year"
+                [class.ui-datepicker__year--selected]="year.isSelected"
+                [class.ui-datepicker__year--current]="year.isCurrent"
+                [class.ui-datepicker__year--disabled]="year.isDisabled"
+                [class.ui-datepicker__year--outside]="!year.isInRange"
+                [disabled]="year.isDisabled"
+                (click)="selectYear(year)"
+              >
+                {{ year.year }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <div class="ui-datepicker__footer">
+      <button
+        type="button"
+        class="ui-datepicker__today-btn"
+        (click)="goToToday()"
+      >
+        Today
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <span class="ui-datepicker__error">{{ error() }}</span>
+  }
+  @if (hint() && !error()) {
+    <span class="ui-datepicker__hint">{{ hint() }}</span>
+  }
+</div>

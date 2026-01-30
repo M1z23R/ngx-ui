@@ -99,6 +99,12 @@ export type { FileChooserVariant, FileChooserSize } from './lib/components/file-
 export { FileSizePipe } from './lib/components/file-chooser/file-size.pipe';
 export { FilePreviewPipe } from './lib/components/file-chooser/file-preview.pipe';
 
+export { SliderComponent } from './lib/components/slider/slider.component';
+export type { SliderSize } from './lib/components/slider/slider.component';
+
+export { DatepickerComponent } from './lib/components/datepicker/datepicker.component';
+export type { DatepickerView, DatepickerSize, DatepickerVariant, DateRange } from './lib/components/datepicker/datepicker.component';
+
 // Layout Components
 export { ShellComponent } from './lib/components/layout/shell/shell.component';
 export { NavbarComponent } from './lib/components/layout/navbar/navbar.component';
