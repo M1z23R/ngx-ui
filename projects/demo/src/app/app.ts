@@ -100,7 +100,7 @@ interface User {
           <a href="#" class="nav-link">Settings</a>
         </nav>
         <div slot="footer">
-          <ui-button variant="ghost" size="sm" (clicked)="sidebarService.toggle()">
+          <ui-button variant="ghost" color="secondary" size="sm" (clicked)="sidebarService.toggle()">
             {{ sidebarService.collapsed() ? '>' : '<' }} Collapse
           </ui-button>
         </div>
@@ -123,17 +123,43 @@ interface User {
 
         <section class="section">
           <h2>Buttons</h2>
+          <h3>Colors (default variant)</h3>
           <div class="button-row">
-            <ui-button variant="primary">Primary</ui-button>
-            <ui-button variant="secondary">Secondary</ui-button>
-            <ui-button variant="outline">Outline</ui-button>
-            <ui-button variant="ghost">Ghost</ui-button>
+            <ui-button color="primary">Primary</ui-button>
+            <ui-button color="secondary">Secondary</ui-button>
+            <ui-button color="danger">Danger</ui-button>
+            <ui-button color="success">Success</ui-button>
+            <ui-button color="warning">Warning</ui-button>
           </div>
+          <h3>Outline variant</h3>
+          <div class="button-row">
+            <ui-button variant="outline" color="primary">Primary</ui-button>
+            <ui-button variant="outline" color="secondary">Secondary</ui-button>
+            <ui-button variant="outline" color="danger">Danger</ui-button>
+            <ui-button variant="outline" color="success">Success</ui-button>
+            <ui-button variant="outline" color="warning">Warning</ui-button>
+          </div>
+          <h3>Ghost variant</h3>
+          <div class="button-row">
+            <ui-button variant="ghost" color="primary">Primary</ui-button>
+            <ui-button variant="ghost" color="secondary">Secondary</ui-button>
+            <ui-button variant="ghost" color="danger">Danger</ui-button>
+            <ui-button variant="ghost" color="success">Success</ui-button>
+            <ui-button variant="ghost" color="warning">Warning</ui-button>
+          </div>
+          <h3>Elevated variant</h3>
+          <div class="button-row">
+            <ui-button variant="elevated" color="primary">Primary</ui-button>
+            <ui-button variant="elevated" color="secondary">Secondary</ui-button>
+            <ui-button variant="elevated" color="danger">Danger</ui-button>
+          </div>
+          <h3>Sizes</h3>
           <div class="button-row">
             <ui-button size="sm">Small</ui-button>
             <ui-button size="md">Medium</ui-button>
             <ui-button size="lg">Large</ui-button>
           </div>
+          <h3>States</h3>
           <div class="button-row">
             <ui-button [disabled]="true">Disabled</ui-button>
             <ui-button [loading]="isLoading()">
@@ -259,7 +285,7 @@ interface User {
           <div class="button-row">
             <ui-button uiTooltip="This is a tooltip on top" tooltipPosition="top">Hover me (top)</ui-button>
             <ui-button uiTooltip="Tooltip on the bottom" tooltipPosition="bottom" variant="outline">Bottom</ui-button>
-            <ui-button uiTooltip="Left side tooltip" tooltipPosition="left" variant="secondary">Left</ui-button>
+            <ui-button uiTooltip="Left side tooltip" tooltipPosition="left" color="secondary">Left</ui-button>
             <ui-button uiTooltip="Right side tooltip" tooltipPosition="right" variant="ghost">Right</ui-button>
           </div>
           <div class="button-row" style="margin-top: 1rem;">
@@ -396,7 +422,7 @@ interface User {
           <h2>Dropdown Menu</h2>
           <div class="button-row">
             <ui-dropdown>
-              <button uiDropdownTrigger ui-button variant="outline">Actions</button>
+              <ui-button uiDropdownTrigger variant="outline">Actions</ui-button>
               <ui-dropdown-item (clicked)="handleAction('edit')">Edit</ui-dropdown-item>
               <ui-dropdown-item (clicked)="handleAction('duplicate')">Duplicate</ui-dropdown-item>
               <ui-dropdown-divider />
@@ -404,7 +430,7 @@ interface User {
             </ui-dropdown>
 
             <ui-dropdown position="bottom-end">
-              <button uiDropdownTrigger ui-button>More Options</button>
+              <ui-button uiDropdownTrigger>More Options</ui-button>
               <ui-dropdown-item (clicked)="handleAction('share')">Share</ui-dropdown-item>
               <ui-dropdown-item (clicked)="handleAction('export')">Export</ui-dropdown-item>
               <ui-dropdown-item [disabled]="true">Archive (disabled)</ui-dropdown-item>
@@ -769,23 +795,23 @@ interface User {
             Show toast notifications with the ToastService.
           </p>
           <div class="button-row">
-            <ui-button variant="primary" (clicked)="showSuccessToast()">Success</ui-button>
-            <ui-button variant="outline" (clicked)="showErrorToast()">Error</ui-button>
-            <ui-button variant="outline" (clicked)="showWarningToast()">Warning</ui-button>
+            <ui-button color="success" (clicked)="showSuccessToast()">Success</ui-button>
+            <ui-button variant="outline" color="danger" (clicked)="showErrorToast()">Error</ui-button>
+            <ui-button variant="outline" color="warning" (clicked)="showWarningToast()">Warning</ui-button>
             <ui-button variant="outline" (clicked)="showInfoToast()">Info</ui-button>
           </div>
           <div class="button-row">
-            <ui-button variant="ghost" size="sm" (clicked)="showToastPosition('top-left')">Top Left</ui-button>
-            <ui-button variant="ghost" size="sm" (clicked)="showToastPosition('top-center')">Top Center</ui-button>
-            <ui-button variant="ghost" size="sm" (clicked)="showToastPosition('top-right')">Top Right</ui-button>
+            <ui-button variant="ghost" color="secondary" size="sm" (clicked)="showToastPosition('top-left')">Top Left</ui-button>
+            <ui-button variant="ghost" color="secondary" size="sm" (clicked)="showToastPosition('top-center')">Top Center</ui-button>
+            <ui-button variant="ghost" color="secondary" size="sm" (clicked)="showToastPosition('top-right')">Top Right</ui-button>
           </div>
           <div class="button-row">
-            <ui-button variant="ghost" size="sm" (clicked)="showToastPosition('bottom-left')">Bottom Left</ui-button>
-            <ui-button variant="ghost" size="sm" (clicked)="showToastPosition('bottom-center')">Bottom Center</ui-button>
-            <ui-button variant="ghost" size="sm" (clicked)="showToastPosition('bottom-right')">Bottom Right</ui-button>
+            <ui-button variant="ghost" color="secondary" size="sm" (clicked)="showToastPosition('bottom-left')">Bottom Left</ui-button>
+            <ui-button variant="ghost" color="secondary" size="sm" (clicked)="showToastPosition('bottom-center')">Bottom Center</ui-button>
+            <ui-button variant="ghost" color="secondary" size="sm" (clicked)="showToastPosition('bottom-right')">Bottom Right</ui-button>
           </div>
           <div class="button-row" style="margin-top: 0.5rem;">
-            <ui-button variant="secondary" size="sm" (clicked)="toastService.dismissAll()">Dismiss All</ui-button>
+            <ui-button color="secondary" size="sm" (clicked)="toastService.dismissAll()">Dismiss All</ui-button>
           </div>
         </section>
       </ui-content>

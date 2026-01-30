@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { TabComponent } from './tab.component';
+import { TabActivePipe } from './tab-active.pipe';
 
 export type TabsVariant = 'default' | 'pills' | 'underline';
 export type TabsSize = 'sm' | 'md' | 'lg';
@@ -21,7 +22,7 @@ export type TabsSize = 'sm' | 'md' | 'lg';
 @Component({
   selector: 'ui-tabs',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, TabActivePipe],
   templateUrl: './tabs.component.html',
   styleUrl: './tabs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,15 +65,6 @@ export class TabsComponent implements AfterContentInit {
     tabList.forEach((tab, index) => {
       tab._setTabsParent(this, index);
     });
-  }
-
-  protected isActive(tab: TabComponent, index: number): boolean {
-    const active = this.activeTab();
-    const tabId = tab.id();
-    if (tabId !== '' && tabId !== undefined) {
-      return active === tabId;
-    }
-    return active === index;
   }
 
   protected selectTab(tab: TabComponent, index: number): void {
@@ -162,6 +154,11 @@ export class TabsComponent implements AfterContentInit {
 
   /** @internal */
   _isTabActive(tab: TabComponent, index: number): boolean {
-    return this.isActive(tab, index);
+    const active = this.activeTab();
+    const tabId = tab.id();
+    if (tabId !== '' && tabId !== undefined) {
+      return active === tabId;
+    }
+    return active === index;
   }
 }

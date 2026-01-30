@@ -9,6 +9,7 @@ import {
   Directive,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { CellValuePipe } from './cell-value.pipe';
 
 export interface TableColumn<T = unknown> {
   key: keyof T | string;
@@ -37,7 +38,7 @@ export class CellTemplateDirective {
 @Component({
   selector: 'ui-table',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, CellValuePipe],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,6 +51,14 @@ export class TableComponent<T extends object> {
   readonly cellTemplates = contentChildren(CellTemplateDirective);
 
   readonly sortState = signal<SortState>({ column: null, direction: null });
+
+  protected readonly cellTemplateMap = computed(() => {
+    const map = new Map<string, TemplateRef<unknown>>();
+    for (const directive of this.cellTemplates()) {
+      map.set(directive.column(), directive.templateRef);
+    }
+    return map;
+  });
 
   readonly sortedData = computed(() => {
     const items = this.data();
@@ -81,12 +90,8 @@ export class TableComponent<T extends object> {
 
   protected handleHeaderClick(col: TableColumn<T>): void {
     if (col.sortable) {
-      this.toggleSort(this.getKeyAsString(col.key));
+      this.toggleSort(String(col.key));
     }
-  }
-
-  protected getKeyAsString(key: keyof T | string): string {
-    return String(key);
   }
 
   toggleSort(column: string): void {
@@ -101,7 +106,7 @@ export class TableComponent<T extends object> {
     });
   }
 
-  protected getValueInternal(row: T, key: string): unknown {
+  private getValueInternal(row: T, key: string): unknown {
     const keys = key.split('.');
     let value: unknown = row;
     for (const k of keys) {
@@ -111,9 +116,4 @@ export class TableComponent<T extends object> {
     return value;
   }
 
-  protected getCellTemplate(column: string): TemplateRef<unknown> | null {
-    const templates = this.cellTemplates();
-    const directive = templates.find(t => t.column() === column);
-    return directive?.templateRef ?? null;
-  }
 }

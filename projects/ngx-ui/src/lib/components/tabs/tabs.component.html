@@ -6,16 +6,17 @@
     [attr.aria-label]="ariaLabel()"
   >
     @for (tab of tabs(); track tab.id() || $index; let i = $index) {
+      @let active = tab | tabActive:i:activeTab();
       <button
         #tabButton
         type="button"
         class="ui-tabs__tab"
         role="tab"
-        [class.ui-tabs__tab--active]="isActive(tab, i)"
+        [class.ui-tabs__tab--active]="active"
         [class.ui-tabs__tab--disabled]="tab.disabled()"
-        [attr.aria-selected]="isActive(tab, i)"
+        [attr.aria-selected]="active"
         [attr.aria-controls]="'panel-' + (tab.id() || i)"
-        [attr.tabindex]="isActive(tab, i) ? 0 : -1"
+        [attr.tabindex]="active ? 0 : -1"
         [disabled]="tab.disabled()"
         (click)="selectTab(tab, i)"
         (keydown)="handleKeyDown($event, i)"

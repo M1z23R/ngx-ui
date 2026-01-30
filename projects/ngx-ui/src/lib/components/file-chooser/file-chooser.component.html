@@ -59,7 +59,7 @@
   <ul class="ui-file-chooser__list" role="list">
     @for (file of value(); track fileKey(file)) {
       <li class="ui-file-chooser__file">
-        @if (showPreviews() && getPreview(file); as preview) {
+        @if (showPreviews() && (file | filePreview); as preview) {
           <img [src]="preview" alt="" class="ui-file-chooser__preview" />
         } @else {
           <div class="ui-file-chooser__file-icon">
@@ -71,7 +71,7 @@
         }
         <div class="ui-file-chooser__file-info">
           <span class="ui-file-chooser__file-name">{{ file.name }}</span>
-          <span class="ui-file-chooser__file-size">{{ formatFileSize(file.size) }}</span>
+          <span class="ui-file-chooser__file-size">{{ file.size | fileSize }}</span>
         </div>
         <button
           type="button"

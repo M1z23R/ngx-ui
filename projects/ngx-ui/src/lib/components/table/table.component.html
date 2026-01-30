@@ -38,11 +38,12 @@
       @for (row of sortedData(); track trackByFn()(row); let i = $index) {
         <tr>
           @for (col of columns(); track col.key) {
+            @let colKey = $any(col.key);
             <td>
-              @if (getCellTemplate(getKeyAsString(col.key)); as template) {
-                <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, index: i, value: getValueInternal(row, getKeyAsString(col.key)) }" />
+              @if (cellTemplateMap().get(colKey); as template) {
+                <ng-container *ngTemplateOutlet="template; context: { $implicit: row, row: row, index: i, value: row | cellValue:colKey }" />
               } @else {
-                {{ getValueInternal(row, getKeyAsString(col.key)) }}
+                {{ row | cellValue:colKey }}
               }
             </td>
           }

@@ -25,13 +25,14 @@ export { LOADABLE } from './lib/loading/loadable';
 
 // Components
 export { ButtonComponent } from './lib/components/button/button.component';
-export type { ButtonVariant, ButtonSize } from './lib/components/button/button.component';
+export type { ButtonVariant, ButtonColor, ButtonSize } from './lib/components/button/button.component';
 
 export { InputComponent } from './lib/components/input/input.component';
 export type { InputType } from './lib/components/input/input.component';
 
 export { TableComponent, CellTemplateDirective } from './lib/components/table/table.component';
 export type { TableColumn, SortDirection, SortState } from './lib/components/table/table.component';
+export { CellValuePipe } from './lib/components/table/cell-value.pipe';
 
 export { SelectComponent } from './lib/components/select/select.component';
 export type { SelectVariant, SelectSize } from './lib/components/select/select.component';
@@ -83,6 +84,7 @@ export { TabsComponent } from './lib/components/tabs/tabs.component';
 export type { TabsVariant, TabsSize } from './lib/components/tabs/tabs.component';
 export { TabComponent } from './lib/components/tabs/tab.component';
 export { TabIconDirective } from './lib/components/tabs/tab-icon.directive';
+export { TabActivePipe } from './lib/components/tabs/tab-active.pipe';
 
 export { AccordionComponent } from './lib/components/accordion/accordion.component';
 export type { AccordionVariant } from './lib/components/accordion/accordion.component';
@@ -94,6 +96,8 @@ export type { PaginationSize } from './lib/components/pagination/pagination.comp
 
 export { FileChooserComponent } from './lib/components/file-chooser/file-chooser.component';
 export type { FileChooserVariant, FileChooserSize } from './lib/components/file-chooser/file-chooser.component';
+export { FileSizePipe } from './lib/components/file-chooser/file-size.pipe';
+export { FilePreviewPipe } from './lib/components/file-chooser/file-preview.pipe';
 
 // Layout Components
 export { ShellComponent } from './lib/components/layout/shell/shell.component';

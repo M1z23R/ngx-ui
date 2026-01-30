@@ -16,10 +16,10 @@ export interface ConfirmDialogData {
       <p>{{ data.message }}</p>
 
       <ng-container footer>
-        <ui-button variant="outline" (clicked)="dialogRef.close(false)">
+        <ui-button variant="outline" color="secondary" (clicked)="dialogRef.close(false)">
           {{ data.cancelText || 'Cancel' }}
         </ui-button>
-        <ui-button variant="primary" (clicked)="dialogRef.close(true)">
+        <ui-button (clicked)="dialogRef.close(true)">
           {{ data.confirmText || 'Confirm' }}
         </ui-button>
       </ng-container>

@@ -7,8 +7,9 @@ import {
   ChangeDetectionStrategy,
   ElementRef,
   viewChild,
-  OnDestroy,
 } from '@angular/core';
+import { FileSizePipe } from './file-size.pipe';
+import { FilePreviewPipe } from './file-preview.pipe';
 
 export type FileChooserVariant = 'default' | 'compact' | 'minimal';
 export type FileChooserSize = 'sm' | 'md' | 'lg';
@@ -16,11 +17,12 @@ export type FileChooserSize = 'sm' | 'md' | 'lg';
 @Component({
   selector: 'ui-file-chooser',
   standalone: true,
+  imports: [FileSizePipe, FilePreviewPipe],
   templateUrl: './file-chooser.component.html',
   styleUrl: './file-chooser.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FileChooserComponent implements OnDestroy {
+export class FileChooserComponent {
   readonly variant = input<FileChooserVariant>('default');
   readonly size = input<FileChooserSize>('md');
   readonly accept = input<string>('');
@@ -44,7 +46,6 @@ export class FileChooserComponent implements OnDestroy {
   readonly filesRejected = output<{ file: File; reason: string }[]>();
 
   protected dragOver = false;
-  private readonly previews = new Map<File, string>();
   private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
 
   protected readonly containerClasses = computed(() => {
@@ -56,24 +57,8 @@ export class FileChooserComponent implements OnDestroy {
     return this.accept() ? `${base} (${this.accept()})` : base;
   });
 
-  ngOnDestroy(): void {
-    this.previews.forEach(url => URL.revokeObjectURL(url));
-    this.previews.clear();
-  }
-
   protected fileKey(file: File): string {
     return `${file.name}-${file.size}-${file.lastModified}`;
-  }
-
-  protected getPreview(file: File): string | null {
-    if (!file.type.startsWith('image/')) {
-      return null;
-    }
-
-    if (!this.previews.has(file)) {
-      this.previews.set(file, URL.createObjectURL(file));
-    }
-    return this.previews.get(file)!;
   }
 
   protected onDragOver(event: DragEvent): void {
@@ -118,17 +103,11 @@ export class FileChooserComponent implements OnDestroy {
   }
 
   protected removeFile(file: File): void {
-    const preview = this.previews.get(file);
-    if (preview) {
-      URL.revokeObjectURL(preview);
-      this.previews.delete(file);
-    }
-
     this.value.update(files => files.filter(f => f !== file));
     this.fileRemoved.emit(file);
   }
 
-  protected formatFileSize(bytes: number): string {
+  private formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 B';
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
@@ -168,13 +147,6 @@ export class FileChooserComponent implements OnDestroy {
       if (this.multiple()) {
         this.value.update(files => [...files, ...accepted]);
       } else {
-        this.value().forEach(f => {
-          const preview = this.previews.get(f);
-          if (preview) {
-            URL.revokeObjectURL(preview);
-            this.previews.delete(f);
-          }
-        });
         this.value.set([accepted[0]]);
       }
     }

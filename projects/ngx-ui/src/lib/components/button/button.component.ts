@@ -1,7 +1,8 @@
 import { Component, input, output, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Loadable, LOADABLE } from '../../loading/loadable';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'outline' | 'ghost';
+export type ButtonVariant = 'default' | 'outline' | 'ghost' | 'elevated';
+export type ButtonColor = 'primary' | 'secondary' | 'danger' | 'success' | 'warning';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 @Component({
@@ -13,7 +14,8 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ButtonComponent implements Loadable {
-  readonly variant = input<ButtonVariant>('primary');
+  readonly variant = input<ButtonVariant>('default');
+  readonly color = input<ButtonColor>('primary');
   readonly size = input<ButtonSize>('md');
   readonly type = input<'button' | 'submit' | 'reset'>('button');
   readonly disabled = input(false);
@@ -27,9 +29,9 @@ export class ButtonComponent implements Loadable {
   /** Combined loading state - true if either input or directive loading is true */
   protected readonly isLoading = computed(() => this.loading() || this.directiveLoading());
 
-  protected buttonClasses(): string {
-    return `ui-button--${this.variant()} ui-button--${this.size()}`;
-  }
+  protected readonly buttonClasses = computed(() => {
+    return `ui-button--${this.variant()} ui-button--${this.color()} ui-button--${this.size()}`;
+  });
 
   protected handleClick(event: MouseEvent): void {
     if (!this.disabled() && !this.isLoading()) {
