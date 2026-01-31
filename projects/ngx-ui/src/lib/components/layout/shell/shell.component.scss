@@ -20,6 +20,13 @@
   grid-template-columns: var(--ui-sidebar-collapsed-width) 1fr;
 }
 
+.ui-shell--header {
+  grid-template-areas:
+    "navbar  navbar"
+    "sidebar content"
+    "footer  footer";
+}
+
 /* Mobile layout - sidebar is removed from grid flow */
 .ui-shell--mobile {
   grid-template-areas:

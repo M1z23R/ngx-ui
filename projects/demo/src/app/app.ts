@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   ButtonComponent,
@@ -42,6 +42,7 @@ import {
   SliderComponent,
   DatepickerComponent,
   DateRange,
+  ShellVariant,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 
@@ -94,7 +95,7 @@ interface User {
     DatepickerComponent,
   ],
   template: `
-    <ui-shell>
+    <ui-shell [variant]="shellVariant()">
       <ui-sidebar>
         <div slot="header">
           <strong>ngx-ui Demo</strong>
@@ -118,7 +119,8 @@ interface User {
         <div slot="center">
           <span class="navbar-title">Dashboard</span>
         </div>
-        <div slot="end">
+        <div slot="end" style="display: flex; align-items: center; gap: 0.75rem;">
+          <ui-switch [(checked)]="headerVariant" size="sm">Header layout</ui-switch>
           <ui-button variant="outline" size="sm">Profile</ui-button>
         </div>
       </ui-navbar>
@@ -1137,6 +1139,9 @@ export class App {
   protected readonly sidebarService = inject(SidebarService);
   protected readonly dialogService = inject(DialogService);
   protected readonly toastService = inject(ToastService);
+
+  protected readonly headerVariant = signal(false);
+  protected readonly shellVariant = computed<ShellVariant>(() => this.headerVariant() ? 'header' : 'default');
 
   protected readonly isLoading = signal(false);
   protected readonly dialogResult = signal<boolean | null>(null);

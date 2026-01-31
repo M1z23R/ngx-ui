@@ -107,6 +107,7 @@ export type { DatepickerView, DatepickerSize, DatepickerVariant, DateRange } fro
 
 // Layout Components
 export { ShellComponent } from './lib/components/layout/shell/shell.component';
+export type { ShellVariant } from './lib/components/layout/shell/shell.component';
 export { NavbarComponent } from './lib/components/layout/navbar/navbar.component';
 export { SidebarComponent } from './lib/components/layout/sidebar/sidebar.component';
 export { ContentComponent } from './lib/components/layout/content/content.component';

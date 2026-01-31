@@ -1,5 +1,7 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { SidebarService } from '../../../services/sidebar.service';
+
+export type ShellVariant = 'default' | 'header';
 
 @Component({
   selector: 'ui-shell',
@@ -9,5 +11,6 @@ import { SidebarService } from '../../../services/sidebar.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShellComponent {
+  readonly variant = input<ShellVariant>('default');
   protected readonly sidebarService = inject(SidebarService);
 }

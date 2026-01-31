@@ -1,6 +1,10 @@
 :host {
   display: block;
   grid-area: footer;
+
+  &:not(:has(*)) {
+    display: none;
+  }
 }
 
 .ui-footer {
