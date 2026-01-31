@@ -158,8 +158,15 @@ button:focus-visible {
   animation: spin 0.75s linear infinite;
 }
 
-.ui-button__content--hidden {
-  visibility: hidden;
+.ui-button__content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+
+  &--hidden {
+    visibility: hidden;
+  }
 }
 
 @keyframes spin {
