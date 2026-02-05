@@ -11,7 +11,7 @@ import { TabIconDirective } from './tab-icon.directive';
 import type { TabsComponent } from './tabs.component';
 
 @Component({
-  selector: 'ui-tab',
+  selector: 'ui-tab, [ui-tab]',
   standalone: true,
   templateUrl: './tab.component.html',
   styleUrl: './tab.component.scss',

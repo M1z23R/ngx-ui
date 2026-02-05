@@ -643,6 +643,20 @@ interface User {
               </ui-tabs>
             </div>
             <div>
+              <h3>Attribute directive</h3>
+              <ui-tabs [(activeTab)]="activeTab4" variant="pills">
+                <div ui-tab label="Users">
+                  <p>User management panel using attribute directive.</p>
+                </div>
+                <div ui-tab label="Roles">
+                  <p>Role configuration using attribute directive.</p>
+                </div>
+                <div ui-tab label="Permissions" [disabled]="true">
+                  <p>Permissions panel (disabled).</p>
+                </div>
+              </ui-tabs>
+            </div>
+            <div>
               <h3>Sizes</h3>
               <div class="tabs-sizes">
                 <ui-tabs variant="pills" size="sm">
@@ -656,7 +670,7 @@ interface User {
               </div>
             </div>
           </div>
-          <p>Active tabs: {{ activeTab1() }}, {{ activeTab2() }}, {{ activeTab3() }}</p>
+          <p>Active tabs: {{ activeTab1() }}, {{ activeTab2() }}, {{ activeTab3() }}, {{ activeTab4() }}</p>
         </section>
 
         <section class="section">
@@ -1206,6 +1220,7 @@ export class App {
   protected readonly activeTab1 = signal<string | number>(0);
   protected readonly activeTab2 = signal<string | number>(0);
   protected readonly activeTab3 = signal<string | number>(0);
+  protected readonly activeTab4 = signal<string | number>(0);
 
   // Pagination demo
   protected readonly currentPage = signal(1);
