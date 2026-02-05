@@ -2,12 +2,10 @@ import {
   Component,
   input,
   model,
-  output,
   computed,
   contentChildren,
   signal,
   effect,
-  AfterContentInit,
   ElementRef,
   viewChild,
   ChangeDetectionStrategy,
@@ -27,7 +25,7 @@ export type TabsSize = 'sm' | 'md' | 'lg';
   styleUrl: './tabs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TabsComponent implements AfterContentInit {
+export class TabsComponent {
   readonly variant = input<TabsVariant>('default');
   readonly size = input<TabsSize>('md');
   readonly ariaLabel = input<string>('');
@@ -46,24 +44,13 @@ export class TabsComponent implements AfterContentInit {
   });
 
   constructor() {
-    // Update indicator position when active tab changes
     effect(() => {
+      const tabList = this.tabs();
+      tabList.forEach((tab, index) => {
+        tab._setTabsParent(this, index);
+      });
       const _ = this.activeTab();
-      // Use setTimeout to ensure DOM is updated
-      setTimeout(() => this.updateIndicator(), 0);
-    });
-  }
-
-  ngAfterContentInit(): void {
-    this._setupTabs();
-    // Initial indicator position
-    setTimeout(() => this.updateIndicator(), 0);
-  }
-
-  private _setupTabs(): void {
-    const tabList = this.tabs();
-    tabList.forEach((tab, index) => {
-      tab._setTabsParent(this, index);
+      this.updateIndicator();
     });
   }
 
