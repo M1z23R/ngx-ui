@@ -28,6 +28,7 @@ export type DropdownAlign = 'start' | 'end';
 export class DropdownComponent implements OnDestroy {
   readonly position = input<DropdownPosition>('bottom-start');
   readonly closeOnSelect = input(true);
+  readonly matchTriggerWidth = input(false);
 
   readonly isOpen = signal(false);
   readonly focusedIndex = signal(-1);
@@ -241,6 +242,10 @@ export class DropdownComponent implements OnDestroy {
     } else {
       menu.style.left = `${triggerRect.left}px`;
       menu.style.right = 'auto';
+    }
+
+    if (this.matchTriggerWidth()) {
+      menu.style.width = `${triggerRect.width}px`;
     }
   }
 
