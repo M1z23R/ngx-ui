@@ -42,6 +42,8 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly searchable = input(false);
   readonly clearable = input(false);
   readonly creatable = input(false);
+  readonly deletable = input(false);
+  readonly selectable = input(true);
 
   // Two-way binding
   readonly value = model<T | T[] | null>(null);
@@ -50,6 +52,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly opened = output<void>();
   readonly closed = output<void>();
   readonly created = output<string>();
+  readonly deleted = output<T>();
 
   // Content children
   readonly options = contentChildren(OptionComponent);
@@ -66,6 +69,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
 
   private readonly elementRef = inject(ElementRef);
   private positionCleanup: (() => void) | null = null;
+  private readonly initializedOptions = new WeakSet<OptionComponent<T>>();
 
   constructor() {
     // Sync selected state to options
@@ -73,9 +77,11 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
       const currentValue = this.value();
       const opts = this.options();
       const isMultiple = this.multiple();
+      const isDeletable = this.deletable();
 
       opts.forEach((opt) => {
         opt.multiple.set(isMultiple);
+        opt.deletable.set(isDeletable);
         if (isMultiple && Array.isArray(currentValue)) {
           opt.selected.set(currentValue.includes(opt.value()));
         } else {
@@ -104,13 +110,29 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
         }
       });
     });
+
+    // Set up handlers when options change (for dynamically added options)
+    effect(() => {
+      this.options(); // track changes
+      this.setupOptionHandlers();
+    });
   }
 
   ngAfterContentInit(): void {
-    // Set up click handlers on options
+    // Initial setup handled by effect
+  }
+
+  private setupOptionHandlers(): void {
+    // Set up click handlers on new options
     this.options().forEach((opt) => {
+      if (this.initializedOptions.has(opt)) return;
+      this.initializedOptions.add(opt);
+
       opt.elementRef.nativeElement.addEventListener('click', (event: MouseEvent) => {
         this.selectOption(opt, event);
+      });
+      opt.deleteClicked.subscribe((value: T) => {
+        this.deleteOption(value);
       });
     });
   }
@@ -151,6 +173,17 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     if (val === null || val === undefined) return '';
     const opt = opts.find((o) => o.value() === val);
     return opt?.getLabel() || String(val);
+  });
+
+  protected readonly inputPlaceholder = computed(() => {
+    if (!this.selectable()) {
+      const opts = this.options();
+      const labels = opts.map((o) => o.getLabel());
+      if (labels.length > 0) {
+        return `${labels.join(', ')}, (${this.placeholder()})`;
+      }
+    }
+    return this.displayValue() || this.placeholder();
   });
 
   protected readonly visibleOptions = computed(() => {
@@ -211,7 +244,10 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
         const input = this.searchInputRef?.nativeElement;
         if (input) {
           input.focus();
-          input.select();
+          // Only select if there's text to select, avoids racing with user input
+          if (input.value) {
+            input.select();
+          }
         }
       });
     }
@@ -230,6 +266,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     event?.stopPropagation();
 
     if (option.disabled()) return;
+    if (!this.selectable()) return;
 
     const optionValue = option.value();
     if (optionValue === null) return;
@@ -265,6 +302,19 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     } else {
       this.value.set(null);
     }
+  }
+
+  deleteOption(optionValue: T): void {
+    // Remove from selection if selected
+    if (this.multiple()) {
+      const currentValue = (this.value() as T[]) || [];
+      if (currentValue.includes(optionValue)) {
+        this.value.set(currentValue.filter((v) => v !== optionValue));
+      }
+    } else if (this.value() === optionValue) {
+      this.value.set(null);
+    }
+    this.deleted.emit(optionValue);
   }
 
   protected handleTriggerKeydown(event: KeyboardEvent): void {
@@ -356,7 +406,11 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     const visible = this.visibleOptions();
     this.focusedIndex.set(visible.length === 1 ? 0 : -1);
     if (!this.isOpen()) {
-      this.open();
+      // Open without focus/select since user is already typing
+      this.isOpen.set(true);
+      this.focusedIndex.set(-1);
+      this.opened.emit();
+      this.portalDropdown();
     }
   }
 

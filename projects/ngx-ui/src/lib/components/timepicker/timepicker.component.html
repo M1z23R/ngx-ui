@@ -1,0 +1,172 @@
+<div
+  class="ui-timepicker-wrapper"
+  [class.ui-timepicker-wrapper--error]="error()"
+  [class.ui-timepicker-wrapper--disabled]="disabled()"
+  [class.ui-timepicker-wrapper--open]="isOpen()"
+>
+  @if (label()) {
+    <label class="ui-timepicker__label" [attr.for]="inputId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="ui-timepicker__required">*</span>
+      }
+    </label>
+  }
+
+  <div
+    #triggerRef
+    class="ui-timepicker__trigger"
+    [class]="triggerClasses()"
+    [attr.role]="'combobox'"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-haspopup]="'dialog'"
+    [attr.aria-disabled]="disabled()"
+    [attr.tabindex]="disabled() ? -1 : 0"
+    (click)="toggle()"
+    (keydown)="handleTriggerKeydown($event)"
+  >
+    <span class="ui-timepicker__value">
+      @if (displayValue()) {
+        {{ displayValue() }}
+      } @else {
+        <span class="ui-timepicker__placeholder">{{ placeholder() }}</span>
+      }
+    </span>
+
+    <div class="ui-timepicker__icons">
+      @if (clearable() && hasValue() && !disabled() && !readonly()) {
+        <button
+          type="button"
+          class="ui-timepicker__clear"
+          (click)="clear($event)"
+          aria-label="Clear time"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      }
+      <svg
+        class="ui-timepicker__clock-icon"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+    </div>
+  </div>
+
+  <div
+    #dropdownRef
+    class="ui-timepicker__dropdown"
+    [class.ui-timepicker__dropdown--open]="isOpen()"
+    [attr.role]="'dialog'"
+    [attr.aria-label]="'Time picker'"
+  >
+    <div class="ui-timepicker__columns">
+      <!-- Hours -->
+      <div class="ui-timepicker__column">
+        <div class="ui-timepicker__column-header">Hr</div>
+        <div class="ui-timepicker__column-list">
+          @for (hour of hoursList(); track hour) {
+            <button
+              type="button"
+              class="ui-timepicker__option"
+              [class.ui-timepicker__option--selected]="hour === selectedHour()"
+              [disabled]="isHourDisabled(hour)"
+              (click)="selectHour(hour)"
+            >
+              {{ formatNumber(hour) }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Minutes -->
+      <div class="ui-timepicker__column">
+        <div class="ui-timepicker__column-header">Min</div>
+        <div class="ui-timepicker__column-list">
+          @for (minute of minutesList(); track minute) {
+            <button
+              type="button"
+              class="ui-timepicker__option"
+              [class.ui-timepicker__option--selected]="minute === selectedMinute()"
+              [disabled]="isMinuteDisabled(minute)"
+              (click)="selectMinute(minute)"
+            >
+              {{ formatNumber(minute) }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Seconds (optional) -->
+      @if (showSeconds()) {
+        <div class="ui-timepicker__column">
+          <div class="ui-timepicker__column-header">Sec</div>
+          <div class="ui-timepicker__column-list">
+            @for (second of secondsList(); track second) {
+              <button
+                type="button"
+                class="ui-timepicker__option"
+                [class.ui-timepicker__option--selected]="second === selectedSecond()"
+                [disabled]="isSecondDisabled(second)"
+                (click)="selectSecond(second)"
+              >
+                {{ formatNumber(second) }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- AM/PM (12h format) -->
+      @if (format() === '12h') {
+        <div class="ui-timepicker__column ui-timepicker__column--period">
+          <div class="ui-timepicker__column-header">&nbsp;</div>
+          <div class="ui-timepicker__column-list">
+            <button
+              type="button"
+              class="ui-timepicker__option"
+              [class.ui-timepicker__option--selected]="selectedPeriod() === 'AM'"
+              (click)="selectPeriod('AM')"
+            >
+              AM
+            </button>
+            <button
+              type="button"
+              class="ui-timepicker__option"
+              [class.ui-timepicker__option--selected]="selectedPeriod() === 'PM'"
+              (click)="selectPeriod('PM')"
+            >
+              PM
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="ui-timepicker__footer">
+      <button
+        type="button"
+        class="ui-timepicker__now-btn"
+        (click)="setNow()"
+      >
+        Now
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <span class="ui-timepicker__error">{{ error() }}</span>
+  }
+  @if (hint() && !error()) {
+    <span class="ui-timepicker__hint">{{ hint() }}</span>
+  }
+</div>

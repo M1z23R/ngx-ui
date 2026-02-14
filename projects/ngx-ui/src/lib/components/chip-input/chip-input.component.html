@@ -1,0 +1,55 @@
+<div class="ui-chip-input-wrapper">
+  @if (label()) {
+    <label class="ui-chip-input__label">{{ label() }}</label>
+  }
+
+  <div
+    class="ui-chip-input"
+    [class]="containerClasses()"
+    (click)="onContainerClick()"
+  >
+    @for (chip of value(); track chip) {
+      @if (chipTemplate()) {
+        <ng-container
+          [ngTemplateOutlet]="chipTemplate()!"
+          [ngTemplateOutletContext]="getChipContext(chip)"
+        />
+      } @else {
+        <span class="ui-chip-input__chip">
+          <span class="ui-chip-input__chip-text">{{ getChipDisplay(chip) }}</span>
+          @if (!disabled()) {
+            <button
+              type="button"
+              class="ui-chip-input__chip-remove"
+              (click)="removeChip(chip); $event.stopPropagation()"
+              aria-label="Remove"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          }
+        </span>
+      }
+    }
+    <input
+      #inputRef
+      type="text"
+      class="ui-chip-input__input"
+      [placeholder]="value().length === 0 ? placeholder() : ''"
+      [disabled]="disabled()"
+      [(ngModel)]="inputValue"
+      (keydown)="onInputKeydown($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+    />
+  </div>
+
+  @if (error()) {
+    <span class="ui-chip-input__error">{{ error() }}</span>
+  }
+  @if (hint() && !error()) {
+    <span class="ui-chip-input__hint">{{ hint() }}</span>
+  }
+</div>

@@ -44,3 +44,35 @@
   flex: 1;
   min-width: 0;
 }
+
+.ui-option__delete {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  color: var(--ui-text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--ui-transition-fast), background-color var(--ui-transition-fast), color var(--ui-transition-fast);
+}
+
+.ui-option:hover .ui-option__delete,
+.ui-option--focused .ui-option__delete {
+  opacity: 1;
+}
+
+.ui-option__delete:hover {
+  background-color: var(--ui-danger);
+  color: white;
+}
+
+.ui-option__delete:focus {
+  outline: none;
+  opacity: 1;
+}

@@ -27,8 +27,8 @@
         #searchInput
         type="text"
         class="ui-select__input"
-        [placeholder]="displayValue() || placeholder()"
-        [value]="isOpen() ? searchQuery() : displayValue()"
+        [placeholder]="inputPlaceholder()"
+        [value]="isOpen() ? searchQuery() : (selectable() ? displayValue() : '')"
         [disabled]="disabled()"
         (input)="onSearchInput($any($event.target).value)"
         (keydown)="handleSearchInputKeydown($event)"

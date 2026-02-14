@@ -2,6 +2,7 @@ import {
   Component,
   input,
   signal,
+  output,
   ChangeDetectionStrategy,
   ElementRef,
   inject,
@@ -22,11 +23,23 @@ export class OptionComponent<T = unknown> {
   readonly selected = signal(false);
   readonly focused = signal(false);
   readonly multiple = signal(false);
+  readonly deletable = signal(false);
+
+  /** Emitted when delete button is clicked */
+  readonly deleteClicked = output<T>();
 
   readonly elementRef = inject(ElementRef);
 
   /** Get the text content for display and search */
   getLabel(): string {
     return this.elementRef.nativeElement.textContent?.trim() || '';
+  }
+
+  onDelete(event: MouseEvent): void {
+    event.stopPropagation();
+    const val = this.value();
+    if (val !== null) {
+      this.deleteClicked.emit(val as T);
+    }
   }
 }

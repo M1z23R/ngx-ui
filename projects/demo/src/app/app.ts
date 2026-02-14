@@ -42,7 +42,12 @@ import {
   SliderComponent,
   DatepickerComponent,
   DateRange,
+  TimepickerComponent,
+  TimeValue,
+  DatetimepickerComponent,
   ShellVariant,
+  ChipInputComponent,
+  ChipTemplateDirective,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 
@@ -93,6 +98,10 @@ interface User {
     AccordionHeaderDirective,
     SliderComponent,
     DatepickerComponent,
+    TimepickerComponent,
+    DatetimepickerComponent,
+    ChipInputComponent,
+    ChipTemplateDirective,
   ],
   template: `
     <ui-shell [variant]="shellVariant()">
@@ -420,9 +429,82 @@ interface User {
                 <ui-option [value]="city">{{ city.name }}</ui-option>
               }
             </ui-select>
+            <ui-select
+              placeholder="add new"
+              label="Creatable + Deletable (Array Creator)"
+              [searchable]="true"
+              [creatable]="true"
+              [deletable]="true"
+              [selectable]="false"
+              (created)="onTagCreated($event)"
+              (deleted)="onTagDeleted($event)">
+              @for (tag of tags(); track tag) {
+                <ui-option [value]="tag">{{ tag }}</ui-option>
+              }
+            </ui-select>
           </div>
           <p>Selected city: {{ selectedCity()?.name || 'None' }}</p>
           <p>Creatable city: {{ creatableCity()?.name || 'None' }}</p>
+          <p>Tags: {{ tags().join(', ') || 'None' }}</p>
+        </section>
+
+        <section class="section">
+          <h2>Chip Input</h2>
+          <div class="input-grid">
+            <ui-chip-input
+              label="Tags"
+              placeholder="Add a tag..."
+              [(value)]="chipTags"
+              hint="Press Enter to add"
+            />
+            <ui-chip-input
+              label="Skills (filled)"
+              placeholder="Add skill..."
+              variant="filled"
+              [(value)]="chipSkills"
+            />
+            <ui-chip-input
+              label="With Error"
+              error="At least one item required"
+              [(value)]="chipError"
+            />
+            <ui-chip-input
+              label="Disabled"
+              [value]="['Fixed', 'Values']"
+              [disabled]="true"
+            />
+          </div>
+          <p>Tags: {{ chipTags().join(', ') || 'None' }}</p>
+          <p>Skills: {{ chipSkills().join(', ') || 'None' }}</p>
+
+          <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Custom Template (Include/Exclude Filters)</h3>
+          <div class="input-grid">
+            <ui-chip-input
+              label="Search Filters"
+              placeholder="Add filter..."
+              [(value)]="searchFilters"
+              [autoAdd]="false"
+              (added)="onFilterAdded($event)"
+            >
+              <ng-template uiChipTemplate let-filter let-remove="remove">
+                <span
+                  class="filter-chip"
+                  [class.filter-chip--included]="filter.included"
+                  [class.filter-chip--excluded]="!filter.included"
+                  (click)="toggleFilterInclude(filter); $event.stopPropagation()"
+                >
+                  <span class="filter-chip__icon">{{ filter.included ? '+' : '−' }}</span>
+                  <span class="filter-chip__label">{{ filter.label }}</span>
+                  <button
+                    type="button"
+                    class="filter-chip__remove"
+                    (click)="remove(); $event.stopPropagation()"
+                  >×</button>
+                </span>
+              </ng-template>
+            </ui-chip-input>
+          </div>
+          <p>Filters: {{ formatFilters() }}</p>
         </section>
 
         <section class="section">
@@ -872,6 +954,93 @@ interface User {
         </section>
 
         <section class="section">
+          <h2>Timepicker</h2>
+          <div class="input-grid">
+            <ui-timepicker
+              label="Time"
+              placeholder="Pick a time"
+              [(value)]="selectedTime"
+              [clearable]="true"
+            />
+            <ui-timepicker
+              label="12-Hour Format"
+              placeholder="Select time"
+              [(value)]="selectedTime12h"
+              format="12h"
+              [clearable]="true"
+            />
+            <ui-timepicker
+              label="With Seconds"
+              placeholder="HH:MM:SS"
+              [(value)]="selectedTimeWithSeconds"
+              [showSeconds]="true"
+              [clearable]="true"
+            />
+            <ui-timepicker
+              label="15-Minute Intervals"
+              hint="Minutes in 15-minute steps"
+              [(value)]="selectedTimeStep"
+              [minuteStep]="15"
+              [clearable]="true"
+            />
+            <ui-timepicker
+              label="Disabled"
+              placeholder="Cannot select"
+              [disabled]="true"
+            />
+            <ui-timepicker
+              label="With Error"
+              error="Time is required"
+              [required]="true"
+            />
+          </div>
+          <p>Selected time: {{ formatTime(selectedTime()) }}</p>
+        </section>
+
+        <section class="section">
+          <h2>Datetime Picker</h2>
+          <div class="input-grid">
+            <ui-datetimepicker
+              label="Date & Time"
+              placeholder="Pick date and time"
+              [(value)]="selectedDatetime"
+              [clearable]="true"
+            />
+            <ui-datetimepicker
+              label="12-Hour Format"
+              placeholder="Select datetime"
+              [(value)]="selectedDatetime12h"
+              timeFormat="12h"
+              [clearable]="true"
+            />
+            <ui-datetimepicker
+              label="With Seconds"
+              placeholder="Full precision"
+              [(value)]="selectedDatetimeSeconds"
+              [showSeconds]="true"
+              [clearable]="true"
+            />
+            <ui-datetimepicker
+              label="Custom Date Format"
+              dateFormat="dd/MM/yyyy"
+              [(value)]="selectedDatetimeCustom"
+              [clearable]="true"
+            />
+            <ui-datetimepicker
+              label="Disabled"
+              placeholder="Cannot select"
+              [disabled]="true"
+            />
+            <ui-datetimepicker
+              label="With Error"
+              error="Datetime is required"
+              [required]="true"
+            />
+          </div>
+          <p>Selected datetime: {{ selectedDatetime() ? selectedDatetime()!.toLocaleString() : 'None' }}</p>
+        </section>
+
+        <section class="section">
           <h2>Table</h2>
           <ui-table [data]="users()" [columns]="columns" />
         </section>
@@ -1147,6 +1316,70 @@ interface User {
       font-size: 0.875rem;
       color: var(--ui-text-muted);
     }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--ui-radius-sm);
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: background-color var(--ui-transition-fast);
+      user-select: none;
+    }
+
+    .filter-chip--included {
+      background: color-mix(in srgb, var(--ui-success) 20%, transparent);
+      color: var(--ui-success);
+    }
+
+    .filter-chip--included:hover {
+      background: color-mix(in srgb, var(--ui-success) 30%, transparent);
+    }
+
+    .filter-chip--excluded {
+      background: color-mix(in srgb, var(--ui-danger) 20%, transparent);
+      color: var(--ui-danger);
+    }
+
+    .filter-chip--excluded:hover {
+      background: color-mix(in srgb, var(--ui-danger) 30%, transparent);
+    }
+
+    .filter-chip__icon {
+      font-weight: 600;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .filter-chip__label {
+      line-height: 1.4;
+    }
+
+    .filter-chip__remove {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      margin-left: 0.125rem;
+      padding: 0;
+      border: none;
+      border-radius: var(--ui-radius-sm);
+      background: transparent;
+      color: inherit;
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity var(--ui-transition-fast), background-color var(--ui-transition-fast);
+    }
+
+    .filter-chip__remove:hover {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.1);
+    }
   `],
 })
 export class App {
@@ -1191,6 +1424,21 @@ export class App {
     { id: 5, name: 'Phoenix' },
   ]);
   private nextCityId = 6;
+
+  // Tags (creatable + deletable) demo
+  protected readonly tags = signal<string[]>(['Angular', 'TypeScript', 'Signals']);
+
+  // Chip input demo
+  protected readonly chipTags = signal<string[]>(['Angular', 'TypeScript']);
+  protected readonly chipSkills = signal<string[]>(['JavaScript', 'CSS']);
+  protected readonly chipError = signal<string[]>([]);
+
+  // Custom chip template demo (include/exclude filters)
+  protected readonly searchFilters = signal<{ label: string; included: boolean }[]>([
+    { label: 'CEO', included: true },
+    { label: 'Manager', included: true },
+    { label: 'Intern', included: false },
+  ]);
 
   // Dropdown demo
   protected readonly lastAction = signal<string>('');
@@ -1252,6 +1500,18 @@ export class App {
   protected readonly dateConstraintMin = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   protected readonly dateConstraintMax = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
+  // Timepicker demo
+  protected readonly selectedTime = signal<TimeValue | null>(null);
+  protected readonly selectedTime12h = signal<TimeValue | null>(null);
+  protected readonly selectedTimeWithSeconds = signal<TimeValue | null>(null);
+  protected readonly selectedTimeStep = signal<TimeValue | null>(null);
+
+  // Datetimepicker demo
+  protected readonly selectedDatetime = signal<Date | null>(null);
+  protected readonly selectedDatetime12h = signal<Date | null>(null);
+  protected readonly selectedDatetimeSeconds = signal<Date | null>(null);
+  protected readonly selectedDatetimeCustom = signal<Date | null>(null);
+
   // Progress demo
   protected readonly progressValue = signal(35);
 
@@ -1289,6 +1549,33 @@ export class App {
     setTimeout(() => this.creatableCity.set(newCity));
   }
 
+  protected onTagCreated(name: string): void {
+    if (!this.tags().includes(name)) {
+      this.tags.update((tags) => [...tags, name]);
+    }
+  }
+
+  protected onTagDeleted(tag: string): void {
+    this.tags.update((tags) => tags.filter((t) => t !== tag));
+  }
+
+  protected onFilterAdded(label: string): void {
+    // When adding via input, create as included by default
+    this.searchFilters.update((filters) => [...filters, { label, included: true }]);
+  }
+
+  protected toggleFilterInclude(filter: { label: string; included: boolean }): void {
+    filter.included = !filter.included;
+    // Trigger signal update
+    this.searchFilters.update((filters) => [...filters]);
+  }
+
+  protected formatFilters(): string {
+    const filters = this.searchFilters();
+    if (filters.length === 0) return 'None';
+    return filters.map((f) => `${f.included ? '+' : '-'}${f.label}`).join(', ');
+  }
+
   protected onBadgeRemoved(): void {
     console.log('Badge removed!');
   }
@@ -1307,6 +1594,17 @@ export class App {
     const start = range.start ? range.start.toLocaleDateString() : '...';
     const end = range.end ? range.end.toLocaleDateString() : '...';
     return `${start} — ${end}`;
+  }
+
+  protected formatTime(time: TimeValue | null): string {
+    if (!time) return 'None';
+    const h = time.hours.toString().padStart(2, '0');
+    const m = time.minutes.toString().padStart(2, '0');
+    if (time.seconds !== undefined) {
+      const s = time.seconds.toString().padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+    return `${h}:${m}`;
   }
 
   protected onCardClick(): void {

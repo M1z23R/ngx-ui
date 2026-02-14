@@ -3,6 +3,7 @@
   [class.ui-option--selected]="selected()"
   [class.ui-option--disabled]="disabled()"
   [class.ui-option--focused]="focused()"
+  [class.ui-option--deletable]="deletable()"
   [attr.role]="'option'"
   [attr.aria-selected]="selected()"
   [attr.aria-disabled]="disabled()"
@@ -15,4 +16,17 @@
   <span class="ui-option__content">
     <ng-content />
   </span>
+  @if (deletable()) {
+    <button
+      type="button"
+      class="ui-option__delete"
+      (click)="onDelete($event)"
+      aria-label="Delete option"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  }
 </div>

@@ -1,0 +1,310 @@
+<div
+  class="ui-datetimepicker-wrapper"
+  [class.ui-datetimepicker-wrapper--error]="error()"
+  [class.ui-datetimepicker-wrapper--disabled]="disabled()"
+  [class.ui-datetimepicker-wrapper--open]="isOpen()"
+>
+  @if (label()) {
+    <label class="ui-datetimepicker__label" [attr.for]="inputId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="ui-datetimepicker__required">*</span>
+      }
+    </label>
+  }
+
+  <div
+    #triggerRef
+    class="ui-datetimepicker__trigger"
+    [class]="triggerClasses()"
+    [attr.role]="'combobox'"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-haspopup]="'dialog'"
+    [attr.aria-disabled]="disabled()"
+    [attr.tabindex]="disabled() ? -1 : 0"
+    (click)="toggle()"
+    (keydown)="handleTriggerKeydown($event)"
+  >
+    <span class="ui-datetimepicker__value">
+      @if (displayValue()) {
+        {{ displayValue() }}
+      } @else {
+        <span class="ui-datetimepicker__placeholder">{{ placeholder() }}</span>
+      }
+    </span>
+
+    <div class="ui-datetimepicker__icons">
+      @if (clearable() && hasValue() && !disabled() && !readonly()) {
+        <button
+          type="button"
+          class="ui-datetimepicker__clear"
+          (click)="clear($event)"
+          aria-label="Clear datetime"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      }
+      <svg
+        class="ui-datetimepicker__calendar-icon"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    </div>
+  </div>
+
+  <div
+    #dropdownRef
+    class="ui-datetimepicker__dropdown"
+    [class.ui-datetimepicker__dropdown--open]="isOpen()"
+    [attr.role]="'dialog'"
+    [attr.aria-label]="'Date and time picker'"
+  >
+    <div class="ui-datetimepicker__content">
+      <!-- Calendar section -->
+      <div class="ui-datetimepicker__calendar-section">
+        <div class="ui-datetimepicker__header">
+          <button
+            type="button"
+            class="ui-datetimepicker__nav-btn"
+            [disabled]="!canNavigatePrev()"
+            (click)="navigatePrev()"
+            aria-label="Previous"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          @if (currentView() === 'day') {
+            <button
+              type="button"
+              class="ui-datetimepicker__header-label"
+              (click)="switchToMonthView()"
+            >
+              {{ monthYearLabel() }}
+            </button>
+          } @else if (currentView() === 'month') {
+            <button
+              type="button"
+              class="ui-datetimepicker__header-label"
+              (click)="switchToYearView()"
+            >
+              {{ viewDate().getFullYear() }}
+            </button>
+          } @else {
+            <span class="ui-datetimepicker__header-label ui-datetimepicker__header-label--static">
+              {{ decadeLabel() }}
+            </span>
+          }
+
+          <button
+            type="button"
+            class="ui-datetimepicker__nav-btn"
+            [disabled]="!canNavigateNext()"
+            (click)="navigateNext()"
+            aria-label="Next"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        @if (currentView() === 'day') {
+          <div class="ui-datetimepicker__calendar" role="grid">
+            <div class="ui-datetimepicker__weekdays">
+              @for (header of weekdayHeaders(); track header) {
+                <div class="ui-datetimepicker__weekday">{{ header }}</div>
+              }
+            </div>
+            @for (week of calendarGrid(); track $index) {
+              <div class="ui-datetimepicker__week" role="row">
+                @for (day of week; track day.date.getTime()) {
+                  <button
+                    type="button"
+                    class="ui-datetimepicker__day"
+                    [class.ui-datetimepicker__day--outside]="!day.isCurrentMonth"
+                    [class.ui-datetimepicker__day--today]="day.isToday"
+                    [class.ui-datetimepicker__day--selected]="day.isSelected"
+                    [class.ui-datetimepicker__day--disabled]="day.isDisabled"
+                    [class.ui-datetimepicker__day--focused]="day.isFocused"
+                    [disabled]="day.isDisabled"
+                    (click)="selectDay(day)"
+                    role="gridcell"
+                    [attr.aria-selected]="day.isSelected"
+                  >
+                    {{ day.day }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        } @else if (currentView() === 'month') {
+          <div class="ui-datetimepicker__months">
+            @for (row of monthGrid(); track $index) {
+              <div class="ui-datetimepicker__month-row">
+                @for (month of row; track month.month) {
+                  <button
+                    type="button"
+                    class="ui-datetimepicker__month"
+                    [class.ui-datetimepicker__month--selected]="month.isSelected"
+                    [class.ui-datetimepicker__month--current]="month.isCurrent"
+                    [class.ui-datetimepicker__month--disabled]="month.isDisabled"
+                    [disabled]="month.isDisabled"
+                    (click)="selectMonth(month)"
+                  >
+                    {{ month.label }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="ui-datetimepicker__years">
+            @for (row of yearGrid(); track $index) {
+              <div class="ui-datetimepicker__year-row">
+                @for (year of row; track year.year) {
+                  <button
+                    type="button"
+                    class="ui-datetimepicker__year"
+                    [class.ui-datetimepicker__year--selected]="year.isSelected"
+                    [class.ui-datetimepicker__year--current]="year.isCurrent"
+                    [class.ui-datetimepicker__year--disabled]="year.isDisabled"
+                    [class.ui-datetimepicker__year--outside]="!year.isInRange"
+                    [disabled]="year.isDisabled"
+                    (click)="selectYear(year)"
+                  >
+                    {{ year.year }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Time section -->
+      <div class="ui-datetimepicker__time-section">
+        <div class="ui-datetimepicker__time-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Time</span>
+        </div>
+
+        <div class="ui-datetimepicker__time-columns">
+          <!-- Hours -->
+          <div class="ui-datetimepicker__time-column">
+            <div class="ui-datetimepicker__time-column-header">Hr</div>
+            <div class="ui-datetimepicker__time-column-list">
+              @for (hour of hoursList(); track hour) {
+                <button
+                  type="button"
+                  class="ui-datetimepicker__time-option"
+                  [class.ui-datetimepicker__time-option--selected]="hour === selectedHour()"
+                  [disabled]="isHourDisabled(hour)"
+                  (click)="selectHour(hour)"
+                >
+                  {{ formatNumber(hour) }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Minutes -->
+          <div class="ui-datetimepicker__time-column">
+            <div class="ui-datetimepicker__time-column-header">Min</div>
+            <div class="ui-datetimepicker__time-column-list">
+              @for (minute of minutesList(); track minute) {
+                <button
+                  type="button"
+                  class="ui-datetimepicker__time-option"
+                  [class.ui-datetimepicker__time-option--selected]="minute === selectedMinute()"
+                  [disabled]="isMinuteDisabled(minute)"
+                  (click)="selectMinute(minute)"
+                >
+                  {{ formatNumber(minute) }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Seconds (optional) -->
+          @if (showSeconds()) {
+            <div class="ui-datetimepicker__time-column">
+              <div class="ui-datetimepicker__time-column-header">Sec</div>
+              <div class="ui-datetimepicker__time-column-list">
+                @for (second of secondsList(); track second) {
+                  <button
+                    type="button"
+                    class="ui-datetimepicker__time-option"
+                    [class.ui-datetimepicker__time-option--selected]="second === selectedSecond()"
+                    [disabled]="isSecondDisabled(second)"
+                    (click)="selectSecond(second)"
+                  >
+                    {{ formatNumber(second) }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- AM/PM (12h format) -->
+          @if (timeFormat() === '12h') {
+            <div class="ui-datetimepicker__time-column ui-datetimepicker__time-column--period">
+              <div class="ui-datetimepicker__time-column-header">&nbsp;</div>
+              <div class="ui-datetimepicker__time-column-list">
+                <button
+                  type="button"
+                  class="ui-datetimepicker__time-option"
+                  [class.ui-datetimepicker__time-option--selected]="selectedPeriod() === 'AM'"
+                  (click)="selectPeriod('AM')"
+                >
+                  AM
+                </button>
+                <button
+                  type="button"
+                  class="ui-datetimepicker__time-option"
+                  [class.ui-datetimepicker__time-option--selected]="selectedPeriod() === 'PM'"
+                  (click)="selectPeriod('PM')"
+                >
+                  PM
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-datetimepicker__footer">
+      <button
+        type="button"
+        class="ui-datetimepicker__now-btn"
+        (click)="goToNow()"
+      >
+        Now
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <span class="ui-datetimepicker__error">{{ error() }}</span>
+  }
+  @if (hint() && !error()) {
+    <span class="ui-datetimepicker__hint">{{ hint() }}</span>
+  }
+</div>

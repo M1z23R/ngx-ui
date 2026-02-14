@@ -102,8 +102,17 @@ export { FilePreviewPipe } from './lib/components/file-chooser/file-preview.pipe
 export { SliderComponent } from './lib/components/slider/slider.component';
 export type { SliderSize } from './lib/components/slider/slider.component';
 
+export { ChipInputComponent, ChipTemplateDirective } from './lib/components/chip-input/chip-input.component';
+export type { ChipInputVariant, ChipInputSize, ChipTemplateContext } from './lib/components/chip-input/chip-input.component';
+
 export { DatepickerComponent } from './lib/components/datepicker/datepicker.component';
 export type { DatepickerView, DatepickerSize, DatepickerVariant, DateRange } from './lib/components/datepicker/datepicker.component';
+
+export { TimepickerComponent } from './lib/components/timepicker/timepicker.component';
+export type { TimepickerSize, TimepickerVariant, TimeFormat, TimeValue } from './lib/components/timepicker/timepicker.component';
+
+export { DatetimepickerComponent } from './lib/components/datetimepicker/datetimepicker.component';
+export type { DatetimepickerSize, DatetimepickerVariant, DatetimepickerView } from './lib/components/datetimepicker/datetimepicker.component';
 
 // Layout Components
 export { ShellComponent } from './lib/components/layout/shell/shell.component';
