@@ -152,9 +152,11 @@ export class SplitComponent {
         return;
     }
 
-    const newLeftSize = Math.max(leftPane.minSize(), Math.min(leftPane.maxSize(), sizes[gutterIndex] + delta));
-    const actualDelta = newLeftSize - sizes[gutterIndex];
-    const newRightSize = Math.max(rightPane.minSize(), Math.min(rightPane.maxSize(), sizes[gutterIndex + 1] - actualDelta));
+    const originalTotal = sizes[gutterIndex] + sizes[gutterIndex + 1];
+    let newLeftSize = Math.max(leftPane.minSize(), Math.min(leftPane.maxSize(), sizes[gutterIndex] + delta));
+    let newRightSize = Math.max(rightPane.minSize(), Math.min(rightPane.maxSize(), originalTotal - newLeftSize));
+    // Recalculate left after right is clamped to preserve total
+    newLeftSize = Math.max(leftPane.minSize(), Math.min(leftPane.maxSize(), originalTotal - newRightSize));
 
     sizes[gutterIndex] = newLeftSize;
     sizes[gutterIndex + 1] = newRightSize;
@@ -180,33 +182,19 @@ export class SplitComponent {
     const leftPane = paneList[this.dragGutterIndex];
     const rightPane = paneList[this.dragGutterIndex + 1];
 
+    const originalTotal = this.dragStartSizes[this.dragGutterIndex] + this.dragStartSizes[this.dragGutterIndex + 1];
+
+    // Apply delta and clamp left pane
     let newLeftSize = this.dragStartSizes[this.dragGutterIndex] + deltaPercent;
-    let newRightSize = this.dragStartSizes[this.dragGutterIndex + 1] - deltaPercent;
-
-    // Apply min/max constraints
-    if (newLeftSize < leftPane.minSize()) {
-      const diff = leftPane.minSize() - newLeftSize;
-      newLeftSize = leftPane.minSize();
-      newRightSize += diff;
-    } else if (newLeftSize > leftPane.maxSize()) {
-      const diff = newLeftSize - leftPane.maxSize();
-      newLeftSize = leftPane.maxSize();
-      newRightSize += diff;
-    }
-
-    if (newRightSize < rightPane.minSize()) {
-      const diff = rightPane.minSize() - newRightSize;
-      newRightSize = rightPane.minSize();
-      newLeftSize -= diff;
-    } else if (newRightSize > rightPane.maxSize()) {
-      const diff = newRightSize - rightPane.maxSize();
-      newRightSize = rightPane.maxSize();
-      newLeftSize -= diff;
-    }
-
-    // Final clamp
     newLeftSize = Math.max(leftPane.minSize(), Math.min(leftPane.maxSize(), newLeftSize));
+
+    // Calculate right pane from remainder, then clamp
+    let newRightSize = originalTotal - newLeftSize;
     newRightSize = Math.max(rightPane.minSize(), Math.min(rightPane.maxSize(), newRightSize));
+
+    // Recalculate left from clamped right to preserve total
+    newLeftSize = originalTotal - newRightSize;
+    newLeftSize = Math.max(leftPane.minSize(), Math.min(leftPane.maxSize(), newLeftSize));
 
     const sizes = [...this.paneSizes()];
     sizes[this.dragGutterIndex] = newLeftSize;

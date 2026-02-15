@@ -1194,18 +1194,42 @@ interface User {
           <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Nested (IDE-like layout)</h3>
           <div class="split-container-large">
             <ui-split>
-              <ui-split-pane [size]="20" [minSize]="15" [maxSize]="40">
-                <div class="pane-content pane-sidebar">Sidebar</div>
+              <ui-split-pane [size]="18" [minSize]="12" [maxSize]="30">
+                <ui-split orientation="vertical">
+                  <ui-split-pane [size]="50">
+                    <div class="pane-content pane-sidebar">Explorer</div>
+                  </ui-split-pane>
+                  <ui-split-pane [size]="50">
+                    <div class="pane-content pane-outline">Outline</div>
+                  </ui-split-pane>
+                </ui-split>
               </ui-split-pane>
-              <ui-split-pane [size]="80">
+              <ui-split-pane [size]="62">
                 <ui-split orientation="vertical">
                   <ui-split-pane [size]="70" [minSize]="30">
-                    <div class="pane-content pane-editor">Editor</div>
+                    <ui-split>
+                      <ui-split-pane [size]="50">
+                        <div class="pane-content pane-editor">Editor 1</div>
+                      </ui-split-pane>
+                      <ui-split-pane [size]="50">
+                        <ui-split orientation="vertical">
+                          <ui-split-pane [size]="50">
+                            <div class="pane-content pane-editor">Editor 2</div>
+                          </ui-split-pane>
+                          <ui-split-pane [size]="50">
+                            <div class="pane-content pane-editor">Editor 3</div>
+                          </ui-split-pane>
+                        </ui-split>
+                      </ui-split-pane>
+                    </ui-split>
                   </ui-split-pane>
                   <ui-split-pane [size]="30" [minSize]="15">
                     <div class="pane-content pane-terminal">Terminal</div>
                   </ui-split-pane>
                 </ui-split>
+              </ui-split-pane>
+              <ui-split-pane [size]="20" [minSize]="10" [maxSize]="30">
+                <div class="pane-content pane-sidebar">Properties</div>
               </ui-split-pane>
             </ui-split>
           </div>
@@ -1617,6 +1641,10 @@ interface User {
 
     .pane-terminal {
       background: color-mix(in srgb, var(--ui-secondary) 10%, var(--ui-bg));
+    }
+
+    .pane-outline {
+      background: color-mix(in srgb, var(--ui-success) 8%, var(--ui-bg));
     }
 
     .tree-demo-grid {

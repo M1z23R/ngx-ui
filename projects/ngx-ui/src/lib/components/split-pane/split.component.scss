@@ -73,13 +73,14 @@
   height: 12px;
 }
 
-// Cursors
+// Cursors and cross-axis sizing
 :host(.ui-split--horizontal) .ui-split__gutter {
   cursor: col-resize;
 }
 
 :host(.ui-split--vertical) .ui-split__gutter {
   cursor: row-resize;
+  width: 100%;
 }
 
 :host(.ui-split--dragging.ui-split--horizontal) {
