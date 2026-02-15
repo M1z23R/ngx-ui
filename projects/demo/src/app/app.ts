@@ -19,6 +19,7 @@ import {
   DropdownItemComponent,
   DropdownDividerComponent,
   DropdownTriggerDirective,
+  ContextMenuDirective,
   CheckboxComponent,
   SwitchComponent,
   FileChooserComponent,
@@ -48,6 +49,10 @@ import {
   ShellVariant,
   ChipInputComponent,
   ChipTemplateDirective,
+  SplitComponent,
+  SplitPaneComponent,
+  TreeComponent,
+  TreeNode,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 
@@ -77,6 +82,7 @@ interface User {
     DropdownItemComponent,
     DropdownDividerComponent,
     DropdownTriggerDirective,
+    ContextMenuDirective,
     CheckboxComponent,
     SwitchComponent,
     FileChooserComponent,
@@ -102,6 +108,9 @@ interface User {
     DatetimepickerComponent,
     ChipInputComponent,
     ChipTemplateDirective,
+    SplitComponent,
+    SplitPaneComponent,
+    TreeComponent,
   ],
   template: `
     <ui-shell [variant]="shellVariant()">
@@ -525,6 +534,19 @@ interface User {
               <ui-dropdown-item [disabled]="true">Archive (disabled)</ui-dropdown-item>
             </ui-dropdown>
           </div>
+
+          <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Context Menu</h3>
+          <div class="context-menu-demo" [uiContextMenu]="contextMenu">
+            <p>Right-click anywhere in this box to open context menu</p>
+          </div>
+          <ui-dropdown #contextMenu>
+            <ui-dropdown-item (clicked)="handleAction('cut')">Cut</ui-dropdown-item>
+            <ui-dropdown-item (clicked)="handleAction('copy')">Copy</ui-dropdown-item>
+            <ui-dropdown-item (clicked)="handleAction('paste')">Paste</ui-dropdown-item>
+            <ui-dropdown-divider />
+            <ui-dropdown-item (clicked)="handleAction('select-all')">Select All</ui-dropdown-item>
+          </ui-dropdown>
+
           @if (lastAction()) {
             <p class="result-text">Last action: <strong>{{ lastAction() }}</strong></p>
           }
@@ -1046,6 +1068,128 @@ interface User {
         </section>
 
         <section class="section">
+          <h2>Tree View</h2>
+          <p class="section-description">
+            Display hierarchical data with expand/collapse functionality.
+          </p>
+          <div class="tree-demo-grid">
+            <div>
+              <h3>API Collection (Bruno/Postman style)</h3>
+              <div class="tree-container">
+                <ui-tree
+                  [nodes]="apiTreeNodes"
+                  (nodeClick)="onTreeNodeClick($event)"
+                  (nodeExpand)="onTreeNodeExpand($event)"
+                  (nodeCollapse)="onTreeNodeCollapse($event)"
+                />
+              </div>
+            </div>
+            <div>
+              <h3>File Explorer</h3>
+              <div class="tree-container">
+                <ui-tree
+                  [nodes]="fileTreeNodes"
+                  [indent]="20"
+                  (nodeClick)="onTreeNodeClick($event)"
+                />
+              </div>
+            </div>
+          </div>
+          @if (lastTreeAction()) {
+            <p class="result-text">{{ lastTreeAction() }}</p>
+          }
+        </section>
+
+        <section class="section">
+          <h2>Split Panes</h2>
+          <div class="split-demo-grid">
+            <div>
+              <h3>Horizontal (default)</h3>
+              <div class="split-container">
+                <ui-split>
+                  <ui-split-pane [size]="30" [minSize]="15">
+                    <div class="pane-content">Left (30%)</div>
+                  </ui-split-pane>
+                  <ui-split-pane [size]="70">
+                    <div class="pane-content">Right (70%)</div>
+                  </ui-split-pane>
+                </ui-split>
+              </div>
+            </div>
+            <div>
+              <h3>Vertical</h3>
+              <div class="split-container">
+                <ui-split orientation="vertical">
+                  <ui-split-pane [size]="40" [minSize]="20">
+                    <div class="pane-content">Top (40%)</div>
+                  </ui-split-pane>
+                  <ui-split-pane [size]="60">
+                    <div class="pane-content">Bottom (60%)</div>
+                  </ui-split-pane>
+                </ui-split>
+              </div>
+            </div>
+            <div>
+              <h3>Three Panes</h3>
+              <div class="split-container">
+                <ui-split>
+                  <ui-split-pane [size]="25" [minSize]="15">
+                    <div class="pane-content">Left</div>
+                  </ui-split-pane>
+                  <ui-split-pane [size]="50" [minSize]="20">
+                    <div class="pane-content">Center</div>
+                  </ui-split-pane>
+                  <ui-split-pane [size]="25" [minSize]="15">
+                    <div class="pane-content">Right</div>
+                  </ui-split-pane>
+                </ui-split>
+              </div>
+            </div>
+            <div>
+              <h3>Gutter Sizes</h3>
+              <div class="gutter-sizes">
+                <div class="split-container-sm">
+                  <ui-split gutterSize="sm">
+                    <ui-split-pane [size]="50"><div class="pane-content">sm</div></ui-split-pane>
+                    <ui-split-pane [size]="50"><div class="pane-content">sm</div></ui-split-pane>
+                  </ui-split>
+                </div>
+                <div class="split-container-sm">
+                  <ui-split gutterSize="md">
+                    <ui-split-pane [size]="50"><div class="pane-content">md</div></ui-split-pane>
+                    <ui-split-pane [size]="50"><div class="pane-content">md</div></ui-split-pane>
+                  </ui-split>
+                </div>
+                <div class="split-container-sm">
+                  <ui-split gutterSize="lg">
+                    <ui-split-pane [size]="50"><div class="pane-content">lg</div></ui-split-pane>
+                    <ui-split-pane [size]="50"><div class="pane-content">lg</div></ui-split-pane>
+                  </ui-split>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Nested (IDE-like layout)</h3>
+          <div class="split-container-large">
+            <ui-split>
+              <ui-split-pane [size]="20" [minSize]="15" [maxSize]="40">
+                <div class="pane-content pane-sidebar">Sidebar</div>
+              </ui-split-pane>
+              <ui-split-pane [size]="80">
+                <ui-split orientation="vertical">
+                  <ui-split-pane [size]="70" [minSize]="30">
+                    <div class="pane-content pane-editor">Editor</div>
+                  </ui-split-pane>
+                  <ui-split-pane [size]="30" [minSize]="15">
+                    <div class="pane-content pane-terminal">Terminal</div>
+                  </ui-split-pane>
+                </ui-split>
+              </ui-split-pane>
+            </ui-split>
+          </div>
+        </section>
+
+        <section class="section">
           <h2>Dialog</h2>
           <p class="section-description">
             Open modal dialogs programmatically with the DialogService.
@@ -1380,6 +1524,107 @@ interface User {
       opacity: 1;
       background: rgba(0, 0, 0, 0.1);
     }
+
+    .split-demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .split-demo-grid h3 {
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ui-text-muted);
+    }
+
+    .split-container {
+      height: 150px;
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-md);
+      overflow: hidden;
+    }
+
+    .split-container-sm {
+      height: 60px;
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-md);
+      overflow: hidden;
+    }
+
+    .split-container-large {
+      height: 300px;
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-md);
+      overflow: hidden;
+    }
+
+    .gutter-sizes {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .pane-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 0.5rem;
+      background: var(--ui-bg-secondary);
+      color: var(--ui-text-muted);
+      font-size: 0.875rem;
+    }
+
+    .pane-sidebar {
+      background: color-mix(in srgb, var(--ui-primary) 10%, var(--ui-bg));
+    }
+
+    .pane-editor {
+      background: var(--ui-bg);
+    }
+
+    .pane-terminal {
+      background: color-mix(in srgb, var(--ui-secondary) 10%, var(--ui-bg));
+    }
+
+    .tree-demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tree-demo-grid h3 {
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ui-text-muted);
+    }
+
+    .tree-container {
+      padding: 0.5rem;
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-md);
+      background: var(--ui-bg-secondary);
+      max-height: 300px;
+      overflow: auto;
+    }
+
+    .context-menu-demo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      border: 2px dashed var(--ui-border);
+      border-radius: var(--ui-radius-md);
+      background: var(--ui-bg-secondary);
+      color: var(--ui-text-muted);
+      cursor: context-menu;
+    }
+
+    .context-menu-demo:hover {
+      border-color: var(--ui-border-hover);
+    }
   `],
 })
 export class App {
@@ -1515,6 +1760,71 @@ export class App {
   // Progress demo
   protected readonly progressValue = signal(35);
 
+  // Tree demo
+  protected readonly lastTreeAction = signal<string>('');
+  protected readonly apiTreeNodes: TreeNode[] = [
+    {
+      label: 'Users API',
+      icon: '\uD83D\uDCC1',
+      expanded: true,
+      children: [
+        { label: 'GET /users', icon: '\uD83D\uDFE2', data: { method: 'GET' } },
+        { label: 'POST /users', icon: '\uD83D\uDFE1', data: { method: 'POST' } },
+        { label: 'GET /users/:id', icon: '\uD83D\uDFE2', data: { method: 'GET' } },
+        {
+          label: 'Auth',
+          icon: '\uD83D\uDCC1',
+          children: [
+            { label: 'POST /login', icon: '\uD83D\uDFE1', data: { method: 'POST' } },
+            { label: 'POST /logout', icon: '\uD83D\uDFE1', data: { method: 'POST' } },
+            { label: 'POST /refresh', icon: '\uD83D\uDFE1', data: { method: 'POST' } },
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Products API',
+      icon: '\uD83D\uDCC1',
+      children: [
+        { label: 'GET /products', icon: '\uD83D\uDFE2', data: { method: 'GET' } },
+        { label: 'POST /products', icon: '\uD83D\uDFE1', data: { method: 'POST' } },
+        { label: 'DELETE /products/:id', icon: '\uD83D\uDD34', data: { method: 'DELETE' } },
+      ],
+    },
+  ];
+
+  protected readonly fileTreeNodes: TreeNode[] = [
+    {
+      label: 'src',
+      icon: '\uD83D\uDCC2',
+      expanded: true,
+      children: [
+        {
+          label: 'app',
+          icon: '\uD83D\uDCC2',
+          expanded: true,
+          children: [
+            { label: 'app.component.ts', icon: '\uD83D\uDCDD' },
+            { label: 'app.component.html', icon: '\uD83C\uDF10' },
+            { label: 'app.component.scss', icon: '\uD83C\uDFA8' },
+          ],
+        },
+        {
+          label: 'assets',
+          icon: '\uD83D\uDCC2',
+          children: [
+            { label: 'logo.png', icon: '\uD83D\uDDBC\uFE0F' },
+            { label: 'styles.css', icon: '\uD83C\uDFA8' },
+          ],
+        },
+        { label: 'main.ts', icon: '\uD83D\uDCDD' },
+        { label: 'index.html', icon: '\uD83C\uDF10' },
+      ],
+    },
+    { label: 'package.json', icon: '\uD83D\uDCE6' },
+    { label: 'tsconfig.json', icon: '\u2699\uFE0F' },
+  ];
+
   protected readonly columns: TableColumn<User>[] = [
     { key: 'id', header: 'ID', width: '60px', sortable: true },
     { key: 'name', header: 'Name', sortable: true },
@@ -1609,6 +1919,18 @@ export class App {
 
   protected onCardClick(): void {
     console.log('Card clicked!');
+  }
+
+  protected onTreeNodeClick(node: TreeNode): void {
+    this.lastTreeAction.set(`Clicked: ${node.label}`);
+  }
+
+  protected onTreeNodeExpand(node: TreeNode): void {
+    this.lastTreeAction.set(`Expanded: ${node.label}`);
+  }
+
+  protected onTreeNodeCollapse(node: TreeNode): void {
+    this.lastTreeAction.set(`Collapsed: ${node.label}`);
   }
 
   protected async openConfirmDialog(): Promise<void> {

@@ -1,0 +1,18 @@
+<ng-content />
+@for (gutterIndex of gutterIndices(); track gutterIndex) {
+  <div
+    class="ui-split__gutter"
+    [class]="gutterSizeClass()"
+    [style.order]="gutterIndex * 2 + 1"
+    role="separator"
+    tabindex="0"
+    [attr.aria-orientation]="orientation() === 'horizontal' ? 'vertical' : 'horizontal'"
+    [attr.aria-valuenow]="paneSizes()[gutterIndex] | number:'1.0-1'"
+    [attr.aria-valuemin]="panes()[gutterIndex]?.minSize()"
+    [attr.aria-valuemax]="panes()[gutterIndex]?.maxSize()"
+    (mousedown)="onGutterMouseDown($event, gutterIndex)"
+    (keydown)="onGutterKeyDown($event, gutterIndex)"
+  >
+    <div class="ui-split__gutter-handle"></div>
+  </div>
+}

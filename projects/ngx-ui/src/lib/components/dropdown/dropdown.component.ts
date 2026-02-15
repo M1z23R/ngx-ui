@@ -38,6 +38,7 @@ export class DropdownComponent implements OnDestroy {
 
   private readonly elementRef = inject(ElementRef);
   private positionCleanup: (() => void) | null = null;
+  private contextMenuPosition: { x: number; y: number } | null = null;
 
   readonly trigger = contentChild(DropdownTriggerDirective);
   readonly items = contentChildren(DropdownItemComponent);
@@ -134,6 +135,18 @@ export class DropdownComponent implements OnDestroy {
 
   open(): void {
     if (this.isOpen()) return;
+    this.contextMenuPosition = null;
+    this.isOpen.set(true);
+    this.focusedIndex.set(-1);
+    this.portalMenu();
+  }
+
+  /** Opens the dropdown at specific coordinates (for context menus) */
+  openAt(x: number, y: number): void {
+    if (this.isOpen()) {
+      this.close();
+    }
+    this.contextMenuPosition = { x, y };
     this.isOpen.set(true);
     this.focusedIndex.set(-1);
     this.portalMenu();
@@ -144,6 +157,7 @@ export class DropdownComponent implements OnDestroy {
     this.unportalMenu();
     this.isOpen.set(false);
     this.focusedIndex.set(-1);
+    this.contextMenuPosition = null;
   }
 
   private focusNext(): void {
@@ -209,9 +223,33 @@ export class DropdownComponent implements OnDestroy {
   }
 
   private updateMenuPosition(): void {
-    const trigger = this.triggerRef?.nativeElement;
     const menu = this.menuRef?.nativeElement;
-    if (!trigger || !menu) return;
+    if (!menu) return;
+
+    menu.style.position = 'fixed';
+    menu.style.zIndex = '99999';
+    menu.style.margin = '0';
+
+    // Context menu mode: position at cursor
+    if (this.contextMenuPosition) {
+      const { x, y } = this.contextMenuPosition;
+      const menuWidth = menu.scrollWidth;
+      const menuHeight = menu.scrollHeight;
+
+      // Adjust if menu would go off-screen
+      const adjustedX = x + menuWidth > window.innerWidth ? window.innerWidth - menuWidth - 4 : x;
+      const adjustedY = y + menuHeight > window.innerHeight ? window.innerHeight - menuHeight - 4 : y;
+
+      menu.style.left = `${Math.max(4, adjustedX)}px`;
+      menu.style.top = `${Math.max(4, adjustedY)}px`;
+      menu.style.right = 'auto';
+      menu.style.bottom = 'auto';
+      return;
+    }
+
+    // Standard dropdown mode: position relative to trigger
+    const trigger = this.triggerRef?.nativeElement;
+    if (!trigger) return;
 
     const triggerRect = trigger.getBoundingClientRect();
     const menuHeight = menu.scrollHeight;
@@ -223,10 +261,6 @@ export class DropdownComponent implements OnDestroy {
       ? spaceAbove >= menuHeight + gap || spaceAbove > spaceBelow
       : spaceBelow < menuHeight + gap && spaceAbove > spaceBelow;
     const alignEnd = this.position().endsWith('end');
-
-    menu.style.position = 'fixed';
-    menu.style.zIndex = '99999';
-    menu.style.margin = '0';
 
     if (openAbove) {
       menu.style.top = 'auto';

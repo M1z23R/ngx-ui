@@ -1,0 +1,108 @@
+:host {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  &.ui-split--horizontal {
+    flex-direction: row;
+  }
+
+  &.ui-split--vertical {
+    flex-direction: column;
+  }
+
+  &.ui-split--disabled {
+    .ui-split__gutter {
+      cursor: default;
+      pointer-events: none;
+    }
+  }
+
+  &.ui-split--dragging {
+    user-select: none;
+  }
+}
+
+.ui-split__gutter {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ui-bg-secondary);
+  transition: background-color var(--ui-transition-fast);
+
+  &:hover,
+  &:focus {
+    background-color: var(--ui-bg-tertiary);
+
+    .ui-split__gutter-handle {
+      background-color: var(--ui-primary);
+    }
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ui-primary);
+  }
+}
+
+// Gutter sizes - horizontal
+:host(.ui-split--horizontal) .ui-split__gutter--sm {
+  width: 4px;
+}
+
+:host(.ui-split--horizontal) .ui-split__gutter--md {
+  width: 8px;
+}
+
+:host(.ui-split--horizontal) .ui-split__gutter--lg {
+  width: 12px;
+}
+
+// Gutter sizes - vertical
+:host(.ui-split--vertical) .ui-split__gutter--sm {
+  height: 4px;
+}
+
+:host(.ui-split--vertical) .ui-split__gutter--md {
+  height: 8px;
+}
+
+:host(.ui-split--vertical) .ui-split__gutter--lg {
+  height: 12px;
+}
+
+// Cursors
+:host(.ui-split--horizontal) .ui-split__gutter {
+  cursor: col-resize;
+}
+
+:host(.ui-split--vertical) .ui-split__gutter {
+  cursor: row-resize;
+}
+
+:host(.ui-split--dragging.ui-split--horizontal) {
+  cursor: col-resize;
+}
+
+:host(.ui-split--dragging.ui-split--vertical) {
+  cursor: row-resize;
+}
+
+// Gutter handle
+.ui-split__gutter-handle {
+  background-color: var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  transition: background-color var(--ui-transition-fast);
+}
+
+:host(.ui-split--horizontal) .ui-split__gutter-handle {
+  width: 2px;
+  height: 24px;
+}
+
+:host(.ui-split--vertical) .ui-split__gutter-handle {
+  width: 24px;
+  height: 2px;
+}

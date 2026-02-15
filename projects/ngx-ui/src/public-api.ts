@@ -45,6 +45,7 @@ export type { DropdownPosition, DropdownAlign } from './lib/components/dropdown/
 export { DropdownItemComponent } from './lib/components/dropdown/dropdown-item.component';
 export { DropdownDividerComponent } from './lib/components/dropdown/dropdown-divider.component';
 export { DropdownTriggerDirective } from './lib/components/dropdown/dropdown-trigger.directive';
+export { ContextMenuDirective } from './lib/components/dropdown/context-menu.directive';
 
 export { CheckboxComponent } from './lib/components/checkbox/checkbox.component';
 export type { CheckboxSize } from './lib/components/checkbox/checkbox.component';
@@ -122,3 +123,13 @@ export { SidebarComponent } from './lib/components/layout/sidebar/sidebar.compon
 export { ContentComponent } from './lib/components/layout/content/content.component';
 export { FooterComponent } from './lib/components/layout/footer/footer.component';
 export { SidebarToggleComponent } from './lib/components/layout/sidebar-toggle/sidebar-toggle.component';
+
+// Split Pane
+export { SplitComponent } from './lib/components/split-pane/split.component';
+export type { SplitOrientation, SplitGutterSize, SplitSizeChange } from './lib/components/split-pane/split.component';
+export { SplitPaneComponent } from './lib/components/split-pane/split-pane.component';
+
+// Tree
+export { TreeComponent } from './lib/components/tree/tree.component';
+export type { TreeNode } from './lib/components/tree/tree.component';
+export { TreeNodeComponent } from './lib/components/tree/tree-node.component';

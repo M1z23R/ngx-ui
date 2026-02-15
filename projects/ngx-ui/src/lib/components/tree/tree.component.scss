@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+.ui-tree {
+  font-size: var(--ui-font-sm);
+  color: var(--ui-text);
+  user-select: none;
+}

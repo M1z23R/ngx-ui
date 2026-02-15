@@ -1,0 +1,12 @@
+<div class="ui-tree">
+  @for (node of nodes(); track node) {
+    <ui-tree-node
+      [node]="node"
+      [level]="0"
+      [indent]="indent()"
+      (nodeClick)="_onNodeClick($event)"
+      (nodeExpand)="_onNodeExpand($event)"
+      (nodeCollapse)="_onNodeCollapse($event)"
+    />
+  }
+</div>
