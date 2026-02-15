@@ -8,32 +8,33 @@
     (click)="onClick($event)"
     (dblclick)="onDoubleClick($event)"
   >
-    <button
-      type="button"
-      class="ui-tree-node__toggle"
-      [class.ui-tree-node__toggle--hidden]="!hasChildren()"
-      [class.ui-tree-node__toggle--expanded]="isExpanded()"
-      (click)="toggle($event)"
-      [attr.aria-expanded]="hasChildren() ? isExpanded() : null"
-      [attr.aria-label]="isExpanded() ? 'Collapse' : 'Expand'"
-    >
-      <svg
-        class="ui-tree-node__chevron"
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+    @if (hasChildren()) {
+      <button
+        type="button"
+        class="ui-tree-node__toggle"
+        [class.ui-tree-node__toggle--expanded]="isExpanded()"
+        (click)="toggle($event)"
+        [attr.aria-expanded]="isExpanded()"
+        [attr.aria-label]="isExpanded() ? 'Collapse' : 'Expand'"
       >
-        <path
-          d="M6 4L10 8L6 12"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
-    </button>
+        <svg
+          class="ui-tree-node__chevron"
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M6 4L10 8L6 12"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    }
     @if (node().icon) {
       <span class="ui-tree-node__icon">{{ node().icon }}</span>
     }
