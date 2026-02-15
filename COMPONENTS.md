@@ -10,8 +10,10 @@ A comprehensive guide to all components in the library.
 - [Form Controls](#form-controls)
 - [Display Components](#display-components)
 - [Navigation Components](#navigation-components)
+  - [Context Menu](#context-menu)
 - [Layout Components](#layout-components)
 - [Data Components](#data-components)
+  - [Tree](#tree)
 - [Split Pane](#split-pane)
 
 ---
