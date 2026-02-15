@@ -35,6 +35,8 @@ import {
   RadioComponent,
   TabsComponent,
   TabComponent,
+  DynamicTabsComponent,
+  TabsService,
   ToastService,
   PaginationComponent,
   AccordionComponent,
@@ -55,6 +57,7 @@ import {
   TreeNode,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
+import { SampleTabComponent, SampleTabData } from './sample-tab';
 
 interface User {
   id: number;
@@ -98,6 +101,7 @@ interface User {
     RadioComponent,
     TabsComponent,
     TabComponent,
+    DynamicTabsComponent,
     PaginationComponent,
     AccordionComponent,
     AccordionItemComponent,
@@ -778,6 +782,24 @@ interface User {
         </section>
 
         <section class="section">
+          <h2>Dynamic Tabs</h2>
+          <p class="section-description">
+            Create and close tabs programmatically using TabsService, similar to how dialogs work.
+          </p>
+          <div class="button-row">
+            <ui-button (clicked)="addDynamicTab()">Add Tab</ui-button>
+            <ui-button variant="outline" (clicked)="addMultipleTabs()">Add 3 Tabs</ui-button>
+            <ui-button variant="ghost" color="danger" (clicked)="closeAllTabs()">Close All</ui-button>
+          </div>
+          <div class="dynamic-tabs-container">
+            <ui-dynamic-tabs variant="default" />
+          </div>
+          @if (lastTabResult()) {
+            <p class="result-text">Last closed tab result: <strong>{{ lastTabResult() }}</strong></p>
+          }
+        </section>
+
+        <section class="section">
           <h2>Accordion</h2>
           <div class="accordion-demo-grid">
             <div>
@@ -1417,6 +1439,15 @@ interface User {
       gap: 1rem;
     }
 
+    .dynamic-tabs-container {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-md);
+      background: var(--ui-bg-secondary);
+      min-height: 150px;
+    }
+
     .pagination-demo {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1631,6 +1662,7 @@ export class App {
   protected readonly sidebarService = inject(SidebarService);
   protected readonly dialogService = inject(DialogService);
   protected readonly toastService = inject(ToastService);
+  protected readonly tabsService = inject(TabsService);
 
   protected readonly headerVariant = signal(false);
   protected readonly shellVariant = computed<ShellVariant>(() => this.headerVariant() ? 'header' : 'default');
@@ -1714,6 +1746,10 @@ export class App {
   protected readonly activeTab2 = signal<string | number>(0);
   protected readonly activeTab3 = signal<string | number>(0);
   protected readonly activeTab4 = signal<string | number>(0);
+
+  // Dynamic tabs demo
+  private dynamicTabCounter = 0;
+  protected readonly lastTabResult = signal<string>('');
 
   // Pagination demo
   protected readonly currentPage = signal(1);
@@ -1959,6 +1995,38 @@ export class App {
 
     const result = await dialogRef.afterClosed();
     this.dialogResult.set(result ?? false);
+  }
+
+  protected addDynamicTab(): void {
+    this.dynamicTabCounter++;
+    const tabRef = this.tabsService.open<SampleTabComponent, SampleTabData, string>(
+      SampleTabComponent,
+      {
+        label: `Tab ${this.dynamicTabCounter}`,
+        data: {
+          title: `Tab ${this.dynamicTabCounter}`,
+          content: `This is the content for dynamically created tab #${this.dynamicTabCounter}. You can edit the title and save it.`,
+        },
+        closable: true,
+      }
+    );
+
+    tabRef.afterClosed().then((result) => {
+      if (result) {
+        this.lastTabResult.set(result);
+      }
+    });
+  }
+
+  protected addMultipleTabs(): void {
+    for (let i = 0; i < 3; i++) {
+      this.addDynamicTab();
+    }
+  }
+
+  protected closeAllTabs(): void {
+    this.tabsService.closeAll();
+    this.lastTabResult.set('');
   }
 
   protected showSuccessToast(): void {

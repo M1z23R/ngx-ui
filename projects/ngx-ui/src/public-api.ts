@@ -7,6 +7,7 @@ export { SidebarService } from './lib/services/sidebar.service';
 export { LoadingService } from './lib/loading/loading.service';
 export { DialogService } from './lib/dialog/dialog.service';
 export { ToastService } from './lib/toast/toast.service';
+export { TabsService } from './lib/components/tabs/tabs.service';
 
 // Toast
 export { ToastRef } from './lib/toast/toast-ref';
@@ -86,6 +87,11 @@ export type { TabsVariant, TabsSize } from './lib/components/tabs/tabs.component
 export { TabComponent } from './lib/components/tabs/tab.component';
 export { TabIconDirective } from './lib/components/tabs/tab-icon.directive';
 export { TabActivePipe } from './lib/components/tabs/tab-active.pipe';
+export { DynamicTabsComponent } from './lib/components/tabs/dynamic-tabs.component';
+export type { DynamicTabsVariant, DynamicTabsSize } from './lib/components/tabs/dynamic-tabs.component';
+export { TabRef } from './lib/components/tabs/tab-ref';
+export { TAB_DATA, TAB_REF } from './lib/components/tabs/tab.config';
+export type { DynamicTabConfig } from './lib/components/tabs/tab.config';
 
 export { AccordionComponent } from './lib/components/accordion/accordion.component';
 export type { AccordionVariant } from './lib/components/accordion/accordion.component';
