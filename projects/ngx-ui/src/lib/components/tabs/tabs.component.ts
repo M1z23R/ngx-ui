@@ -6,6 +6,7 @@ import {
   contentChildren,
   signal,
   effect,
+  afterRenderEffect,
   ElementRef,
   viewChild,
   ChangeDetectionStrategy,
@@ -49,7 +50,11 @@ export class TabsComponent {
       tabList.forEach((tab, index) => {
         tab._setTabsParent(this, index);
       });
-      const _ = this.activeTab();
+    });
+
+    afterRenderEffect(() => {
+      this.tabs();
+      this.activeTab();
       this.updateIndicator();
     });
   }
