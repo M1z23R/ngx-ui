@@ -1,8 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   ButtonComponent,
   InputComponent,
+  Validators,
+  ValidatorFn,
   TableComponent,
   ShellComponent,
   NavbarComponent,
@@ -382,6 +384,58 @@ interface User {
             />
           </div>
           <p>Bound username: {{ username() }}</p>
+        </section>
+
+        <section class="section">
+          <h2>Input Validation</h2>
+          <p class="section-description">
+            Built-in validators and custom validation functions with automatic error display.
+          </p>
+          <div class="input-grid">
+            <ui-input
+              #emailInput
+              label="Email (required + email)"
+              placeholder="Enter email"
+              [(value)]="validatedEmail"
+              [validators]="emailValidators"
+            />
+            <ui-input
+              label="Username (min 3, max 20 chars)"
+              placeholder="Choose a username"
+              [(value)]="validatedUsername"
+              [validators]="usernameValidators"
+            />
+            <ui-input
+              type="number"
+              label="Age (18-120)"
+              placeholder="Enter age"
+              [(value)]="validatedAge"
+              [validators]="ageValidators"
+            />
+            <ui-input
+              label="Custom Validator (no spaces)"
+              placeholder="Enter value without spaces"
+              [(value)]="validatedCustom"
+              [validatorFn]="noSpacesValidator"
+            />
+            <ui-input
+              type="url"
+              label="Website URL"
+              placeholder="https://example.com"
+              [(value)]="validatedUrl"
+              [validators]="urlValidators"
+            />
+            <ui-input
+              label="Show Errors Always"
+              placeholder="Errors shown immediately"
+              [(value)]="validatedAlways"
+              [validators]="alwaysValidators"
+              showErrorsOn="always"
+            />
+          </div>
+          <div class="validation-status">
+            <p>Email valid: {{ emailInput?.isValid() }}, touched: {{ emailInput?.touched() }}, dirty: {{ emailInput?.dirty() }}</p>
+          </div>
         </section>
 
         <section class="section">
@@ -1684,6 +1738,15 @@ interface User {
     .context-menu-demo:hover {
       border-color: var(--ui-border-hover);
     }
+
+    .validation-status {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: var(--ui-bg-secondary);
+      border-radius: var(--ui-radius-md);
+      font-size: 0.875rem;
+      color: var(--ui-text-muted);
+    }
   `],
 })
 export class App {
@@ -1701,6 +1764,28 @@ export class App {
   protected readonly errorValue = signal('');
   protected readonly disabledValue = signal('Cannot edit');
   protected readonly readonlyValue = signal('Read only content');
+
+  // Validation demo
+  protected readonly emailInput = viewChild<InputComponent>('emailInput');
+  protected readonly validatedEmail = signal('');
+  protected readonly validatedUsername = signal('');
+  protected readonly validatedAge = signal<string | number>('');
+  protected readonly validatedCustom = signal('');
+  protected readonly validatedUrl = signal('');
+  protected readonly validatedAlways = signal('');
+
+  protected readonly emailValidators = [Validators.required, Validators.email];
+  protected readonly usernameValidators = [Validators.required, Validators.minLength(3), Validators.maxLength(20)];
+  protected readonly ageValidators = [Validators.required, Validators.min(18), Validators.max(120)];
+  protected readonly urlValidators = [Validators.url];
+  protected readonly alwaysValidators = [Validators.required, Validators.minLength(5)];
+
+  protected readonly noSpacesValidator: ValidatorFn = (value) => {
+    if (typeof value === 'string' && value.includes(' ')) {
+      return { key: 'noSpaces', message: 'Spaces are not allowed' };
+    }
+    return null;
+  };
 
   protected readonly users = signal<User[]>([
     { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },

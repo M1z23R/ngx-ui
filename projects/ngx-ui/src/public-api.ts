@@ -2,6 +2,10 @@
  * Public API Surface of @m1z23r/ngx-ui
  */
 
+// Validators
+export { Validators } from './lib/validators/validators';
+export type { ValidationError, ValidatorFn } from './lib/validators/validators';
+
 // Services
 export { SidebarService } from './lib/services/sidebar.service';
 export { LoadingService } from './lib/loading/loading.service';
@@ -29,7 +33,7 @@ export { ButtonComponent } from './lib/components/button/button.component';
 export type { ButtonVariant, ButtonColor, ButtonSize } from './lib/components/button/button.component';
 
 export { InputComponent } from './lib/components/input/input.component';
-export type { InputType } from './lib/components/input/input.component';
+export type { InputType, ValidationState } from './lib/components/input/input.component';
 
 export { TableComponent, CellTemplateDirective } from './lib/components/table/table.component';
 export type { TableColumn, SortDirection, SortState } from './lib/components/table/table.component';

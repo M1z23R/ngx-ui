@@ -1,4 +1,8 @@
-<div class="ui-input-wrapper" [class.ui-input-wrapper--error]="error()" [class.ui-input-wrapper--disabled]="disabled()">
+<div
+  class="ui-input-wrapper"
+  [class.ui-input-wrapper--error]="displayError()"
+  [class.ui-input-wrapper--disabled]="disabled()"
+>
   @if (label()) {
     <label class="ui-input__label" [attr.for]="inputId()">
       {{ label() }}
@@ -17,12 +21,14 @@
       [readonly]="readonly()"
       [required]="required()"
       [(ngModel)]="value"
+      (blur)="onBlur()"
+      (input)="onInput()"
     />
   </div>
-  @if (error()) {
-    <span class="ui-input__error">{{ error() }}</span>
+  @if (displayError()) {
+    <span class="ui-input__error">{{ displayError() }}</span>
   }
-  @if (hint() && !error()) {
+  @if (hint() && !displayError()) {
     <span class="ui-input__hint">{{ hint() }}</span>
   }
 </div>

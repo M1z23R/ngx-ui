@@ -2,6 +2,14 @@
   display: block;
 }
 
+// Validation state classes applied to host for external styling
+// :host(.ui-input--touched) { }
+// :host(.ui-input--untouched) { }
+// :host(.ui-input--dirty) { }
+// :host(.ui-input--pristine) { }
+// :host(.ui-input--valid) { }
+// :host(.ui-input--invalid) { }
+
 .ui-input-wrapper {
   display: flex;
   flex-direction: column;
