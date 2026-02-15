@@ -10,6 +10,8 @@ A comprehensive guide to all components in the library.
 - [Form Controls](#form-controls)
 - [Display Components](#display-components)
 - [Navigation Components](#navigation-components)
+  - [Tabs (Declarative)](#tabs-declarative)
+  - [Dynamic Tabs (Service-based)](#dynamic-tabs-service-based)
   - [Context Menu](#context-menu)
 - [Layout Components](#layout-components)
 - [Data Components](#data-components)
@@ -595,7 +597,7 @@ import { ContextMenuDirective, DropdownComponent } from '@m1z23r/ngx-ui';
 })
 ```
 
-### Tabs
+### Tabs (Declarative)
 
 ```html
 <ui-tabs [(activeTab)]="activeTab" [variant]="'underline'">
@@ -609,6 +611,183 @@ import { ContextMenuDirective, DropdownComponent } from '@m1z23r/ngx-ui';
     <p>This tab is disabled.</p>
   </ui-tab>
 </ui-tabs>
+```
+
+| Input | Type | Default | Description |
+|-------|------|---------|-------------|
+| `variant` | `'default' \| 'pills' \| 'underline'` | `'default'` | Visual style |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size |
+| `activeTab` | `string \| number` | `0` | Active tab id or index (two-way) |
+| `ariaLabel` | `string` | `''` | ARIA label for tab list |
+
+### Dynamic Tabs (Service-based)
+
+Create and manage tabs programmatically using `TabsService`, similar to how dialogs work. Each tab can render a component with injected data and return results when closed.
+
+#### TabsService
+
+```typescript
+import { TabsService, TabRef, TAB_DATA, TAB_REF, DynamicTabsComponent } from '@m1z23r/ngx-ui';
+
+@Component({
+  imports: [DynamicTabsComponent],
+  template: `
+    <ui-button (clicked)="addTab()">Add Tab</ui-button>
+    <ui-dynamic-tabs variant="default" />
+  `,
+})
+export class MyComponent {
+  private tabsService = inject(TabsService);
+
+  async addTab() {
+    const tabRef = this.tabsService.open<MyTabContent, MyData, MyResult>(MyTabContent, {
+      label: 'New Tab',
+      data: { title: 'Hello', message: 'World' },
+      closable: true,           // Show close button (default: true)
+      activate: true,           // Activate immediately (default: true)
+      id: 'unique-id',          // Optional custom ID
+      icon: iconTemplateRef,    // Optional icon template
+    });
+
+    // Wait for tab to close and get result
+    const result = await tabRef.afterClosed();
+    console.log('Tab returned:', result);
+  }
+}
+```
+
+#### Creating a Tab Content Component
+
+```typescript
+import { Component, inject, signal } from '@angular/core';
+import { TAB_DATA, TAB_REF, TabRef, ButtonComponent, InputComponent } from '@m1z23r/ngx-ui';
+
+interface EditorTabData {
+  filename: string;
+  content: string;
+}
+
+@Component({
+  selector: 'app-editor-tab',
+  standalone: true,
+  imports: [ButtonComponent, InputComponent],
+  template: `
+    <div class="editor-tab">
+      <h3>Editing: {{ data.filename }}</h3>
+      <ui-textarea [(value)]="content" />
+      <div class="actions">
+        <ui-button (clicked)="save()">Save</ui-button>
+        <ui-button variant="ghost" (clicked)="close()">Discard</ui-button>
+      </div>
+    </div>
+  `,
+})
+export class EditorTabComponent {
+  readonly data = inject(TAB_DATA) as EditorTabData;
+  private readonly tabRef = inject(TAB_REF) as TabRef<string>;
+
+  content = signal(this.data.content);
+
+  save() {
+    this.tabRef.close(this.content());  // Close with result
+  }
+
+  close() {
+    this.tabRef.close();  // Close without result
+  }
+}
+```
+
+#### DynamicTabsComponent
+
+The container component that renders all dynamic tabs:
+
+```html
+<ui-dynamic-tabs
+  [variant]="'default'"         <!-- 'default' | 'pills' | 'underline' -->
+  [size]="'md'"                 <!-- 'sm' | 'md' | 'lg' -->
+  [ariaLabel]="'Editor tabs'"
+/>
+```
+
+#### TabsService Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `open(component, config)` | `TabRef<TResult>` | Open a new tab with the component |
+| `close(tabRef)` | `void` | Close a tab by its TabRef |
+| `closeById(id)` | `void` | Close a tab by its ID |
+| `closeAll()` | `void` | Close all tabs |
+| `activate(tabRef)` | `void` | Activate a tab by its TabRef |
+| `activateById(id)` | `void` | Activate a tab by its ID |
+| `getTab(id)` | `DynamicTab \| undefined` | Get a tab by ID |
+| `updateLabel(id, label)` | `void` | Update a tab's label |
+
+#### TabsService Signals
+
+| Signal | Type | Description |
+|--------|------|-------------|
+| `tabs` | `Signal<DynamicTab[]>` | All currently open tabs |
+| `activeTabId` | `Signal<string \| null>` | ID of the active tab |
+| `activeTab` | `Signal<DynamicTab \| null>` | The currently active tab |
+
+#### TabRef Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `close(result?)` | `void` | Close the tab with optional result |
+| `activate()` | `void` | Activate this tab |
+| `afterClosed()` | `Promise<TResult \| undefined>` | Promise that resolves when tab closes |
+| `isActive` | `Signal<boolean>` | Whether this tab is currently active |
+
+#### DynamicTabConfig Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `label` | `string` | (required) | Tab label text |
+| `data` | `TData` | `undefined` | Data to inject via TAB_DATA |
+| `closable` | `boolean` | `true` | Show close button |
+| `activate` | `boolean` | `true` | Activate tab on creation |
+| `id` | `string` | auto-generated | Custom tab ID |
+| `icon` | `TemplateRef` | `undefined` | Icon template |
+
+#### Keyboard Navigation
+
+- **Arrow Left/Right**: Navigate between tabs
+- **Home/End**: Jump to first/last tab
+- **Delete**: Close the focused tab (if closable)
+
+#### Example: IDE-style Tabs
+
+```typescript
+@Component({
+  template: `
+    <div class="ide-layout">
+      <ui-tree [nodes]="files" (nodeClick)="openFile($event)" />
+      <ui-dynamic-tabs variant="underline" />
+    </div>
+  `,
+})
+export class IdeComponent {
+  private tabsService = inject(TabsService);
+
+  openFile(node: TreeNode) {
+    // Check if already open
+    const existing = this.tabsService.getTab(node.data.path);
+    if (existing) {
+      this.tabsService.activateById(node.data.path);
+      return;
+    }
+
+    // Open new tab
+    this.tabsService.open(EditorTabComponent, {
+      id: node.data.path,
+      label: node.label,
+      data: { filename: node.label, content: node.data.content },
+      closable: true,
+    });
+  }
+}
 ```
 
 ### Accordion
