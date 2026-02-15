@@ -1,10 +1,13 @@
-<div
-  class="ui-tree-node"
-  [style.padding-left.px]="paddingLeft()"
->
+<div class="ui-tree-node">
+  <div class="ui-tree-node__guides">
+    @for (guide of indentGuides(); track guide) {
+      <span class="ui-tree-node__guide" [style.width.px]="indent()"></span>
+    }
+  </div>
   <div
     class="ui-tree-node__content"
     [class.ui-tree-node__content--selected]="false"
+    [style.padding-left.px]="level() * indent() + 8"
     (click)="onClick($event)"
     (dblclick)="onDoubleClick($event)"
   >

@@ -32,7 +32,10 @@ export class TreeNodeComponent {
     return children && children.length > 0;
   });
 
-  readonly paddingLeft = computed(() => this.level() * this.indent());
+  readonly indentGuides = computed(() => {
+    const lvl = this.level();
+    return lvl > 0 ? Array.from({ length: lvl }, (_, i) => i) : [];
+  });
 
   toggle(event: MouseEvent): void {
     event.stopPropagation();
