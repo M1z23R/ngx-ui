@@ -13,7 +13,7 @@
   }
 
   &.ui-split--disabled {
-    .ui-split__gutter {
+    > .ui-split__gutter {
       cursor: default;
       pointer-events: none;
     }
@@ -47,38 +47,38 @@
   }
 }
 
-// Gutter sizes - horizontal
-:host(.ui-split--horizontal) .ui-split__gutter--sm {
+// Gutter sizes - horizontal (use > to prevent affecting nested splits)
+:host(.ui-split--horizontal) > .ui-split__gutter--sm {
   width: 4px;
 }
 
-:host(.ui-split--horizontal) .ui-split__gutter--md {
+:host(.ui-split--horizontal) > .ui-split__gutter--md {
   width: 8px;
 }
 
-:host(.ui-split--horizontal) .ui-split__gutter--lg {
+:host(.ui-split--horizontal) > .ui-split__gutter--lg {
   width: 12px;
 }
 
 // Gutter sizes - vertical
-:host(.ui-split--vertical) .ui-split__gutter--sm {
+:host(.ui-split--vertical) > .ui-split__gutter--sm {
   height: 4px;
 }
 
-:host(.ui-split--vertical) .ui-split__gutter--md {
+:host(.ui-split--vertical) > .ui-split__gutter--md {
   height: 8px;
 }
 
-:host(.ui-split--vertical) .ui-split__gutter--lg {
+:host(.ui-split--vertical) > .ui-split__gutter--lg {
   height: 12px;
 }
 
 // Cursors and cross-axis sizing
-:host(.ui-split--horizontal) .ui-split__gutter {
+:host(.ui-split--horizontal) > .ui-split__gutter {
   cursor: col-resize;
 }
 
-:host(.ui-split--vertical) .ui-split__gutter {
+:host(.ui-split--vertical) > .ui-split__gutter {
   cursor: row-resize;
   width: 100%;
 }
@@ -98,12 +98,12 @@
   transition: background-color var(--ui-transition-fast);
 }
 
-:host(.ui-split--horizontal) .ui-split__gutter-handle {
+:host(.ui-split--horizontal) > .ui-split__gutter .ui-split__gutter-handle {
   width: 2px;
   height: 24px;
 }
 
-:host(.ui-split--vertical) .ui-split__gutter-handle {
+:host(.ui-split--vertical) > .ui-split__gutter .ui-split__gutter-handle {
   width: 24px;
   height: 2px;
 }
