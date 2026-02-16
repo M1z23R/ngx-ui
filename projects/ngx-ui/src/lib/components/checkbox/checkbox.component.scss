@@ -37,6 +37,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-sizing: border-box;
   background-color: var(--ui-bg);
   border: 2px solid var(--ui-border);
   border-radius: var(--ui-radius-sm);
@@ -45,18 +46,18 @@
 
 /* Sizes */
 .ui-checkbox--sm .ui-checkbox__box {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
 }
 
 .ui-checkbox--md .ui-checkbox__box {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .ui-checkbox--lg .ui-checkbox__box {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 .ui-checkbox--sm .ui-checkbox__label {

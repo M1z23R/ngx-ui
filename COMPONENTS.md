@@ -7,6 +7,7 @@ A comprehensive guide to all components in the library.
 - [Dialog/Modal System](#dialogmodal-system)
 - [Toast System](#toast-system)
 - [Loading System](#loading-system)
+- [Validators](#validators)
 - [Form Controls](#form-controls)
 - [Display Components](#display-components)
 - [Navigation Components](#navigation-components)
@@ -254,6 +255,169 @@ The button automatically shows a spinner when `fetch-users` is loading.
 
 ---
 
+## Validators
+
+Lightweight validation system for form inputs with built-in validators and custom validation support.
+
+### Basic Usage
+
+```typescript
+import { Validators, ValidatorFn } from '@m1z23r/ngx-ui';
+
+@Component({
+  template: `
+    <ui-input
+      label="Email"
+      [(value)]="email"
+      [validators]="emailValidators"
+    />
+    <ui-input
+      label="Username"
+      [(value)]="username"
+      [validators]="usernameValidators"
+      [validatorFn]="noSpacesValidator"
+    />
+  `,
+})
+export class MyComponent {
+  email = signal('');
+  username = signal('');
+
+  // Array of built-in validators
+  emailValidators = [Validators.required, Validators.email];
+  usernameValidators = [Validators.required, Validators.minLength(3), Validators.maxLength(20)];
+
+  // Custom validator function
+  noSpacesValidator: ValidatorFn = (value) => {
+    if (typeof value === 'string' && value.includes(' ')) {
+      return { key: 'noSpaces', message: 'Spaces are not allowed' };
+    }
+    return null;
+  };
+}
+```
+
+### Built-in Validators
+
+| Validator | Description | Example |
+|-----------|-------------|---------|
+| `Validators.required` | Value must not be empty | `[Validators.required]` |
+| `Validators.email` | Valid email format | `[Validators.email]` |
+| `Validators.minLength(n)` | Minimum string length | `[Validators.minLength(3)]` |
+| `Validators.maxLength(n)` | Maximum string length | `[Validators.maxLength(50)]` |
+| `Validators.min(n)` | Minimum numeric value | `[Validators.min(0)]` |
+| `Validators.max(n)` | Maximum numeric value | `[Validators.max(100)]` |
+| `Validators.pattern(regex, msg?)` | Match regex pattern | `[Validators.pattern(/^[A-Z]/, 'Must start with uppercase')]` |
+| `Validators.url` | Valid URL with protocol | `[Validators.url]` |
+| `Validators.numeric` | Only numeric characters | `[Validators.numeric]` |
+| `Validators.alphanumeric` | Only letters and numbers | `[Validators.alphanumeric]` |
+
+### Input Validation Properties
+
+When using validators, the input component exposes these signals and methods:
+
+```typescript
+@ViewChild('myInput') myInput!: InputComponent;
+
+// Signals (reactive)
+myInput.touched()      // boolean - has been blurred
+myInput.dirty()        // boolean - value has changed
+myInput.isValid()      // boolean - all validators pass
+myInput.isInvalid()    // boolean - has validation errors
+myInput.errors()       // ValidationError[] - all current errors
+myInput.errorMessage() // string | null - first error message
+
+// Full validation state object
+myInput.validationState()
+// Returns: {
+//   touched: boolean,
+//   dirty: boolean,
+//   valid: boolean,
+//   invalid: boolean,
+//   errors: ValidationError[],
+//   errorMessage: string | null,
+//   classes: { touched, untouched, dirty, pristine, valid, invalid }
+// }
+
+// Methods
+myInput.reset()           // Reset to initial state
+myInput.markAsTouched()   // Mark as touched programmatically
+myInput.markAsDirty()     // Mark as dirty programmatically
+myInput.hasError('email') // Check if specific error exists
+myInput.getError('email') // Get specific error object
+```
+
+### Controlling Error Display
+
+Use `showErrorsOn` to control when validation errors appear:
+
+```html
+<!-- Show errors after blur (default) -->
+<ui-input [validators]="validators" showErrorsOn="touched" />
+
+<!-- Show errors after value changes -->
+<ui-input [validators]="validators" showErrorsOn="dirty" />
+
+<!-- Show errors immediately -->
+<ui-input [validators]="validators" showErrorsOn="always" />
+```
+
+### Host CSS Classes
+
+The input component applies validation state classes to its host element for external styling:
+
+```scss
+// Style invalid inputs that have been touched
+ui-input.ui-input--touched.ui-input--invalid {
+  // Custom styles
+}
+
+// Available classes:
+// .ui-input--touched / .ui-input--untouched
+// .ui-input--dirty / .ui-input--pristine
+// .ui-input--valid / .ui-input--invalid
+```
+
+### Custom Validators
+
+Create custom validators by implementing the `ValidatorFn` type:
+
+```typescript
+import { ValidatorFn, ValidationError } from '@m1z23r/ngx-ui';
+
+// Simple validator
+const noWhitespace: ValidatorFn = (value) => {
+  if (typeof value === 'string' && /\s/.test(value)) {
+    return { key: 'noWhitespace', message: 'Whitespace is not allowed' };
+  }
+  return null;
+};
+
+// Validator with parameters (factory function)
+const exactLength = (length: number): ValidatorFn => {
+  return (value) => {
+    if (typeof value === 'string' && value.length !== length) {
+      return { key: 'exactLength', message: `Must be exactly ${length} characters` };
+    }
+    return null;
+  };
+};
+
+// Usage
+validators = [Validators.required, noWhitespace, exactLength(6)];
+```
+
+### ValidationError Interface
+
+```typescript
+interface ValidationError {
+  key: string;      // Unique identifier (e.g., 'required', 'email')
+  message: string;  // Human-readable error message
+}
+```
+
+---
+
 ## Form Controls
 
 ### Button
@@ -280,10 +444,13 @@ The button automatically shows a spinner when `fetch-users` is loading.
   [label]="'Username'"
   [placeholder]="'Enter username'"
   [hint]="'Min 3 characters'"
-  [error]="errorMessage()"
+  [error]="errorMessage()"        <!-- Manual error (overrides validators) -->
   [disabled]="false"
   [readonly]="false"
   [required]="true"
+  [validators]="myValidators"     <!-- Array of ValidatorFn -->
+  [validatorFn]="customValidator" <!-- Single custom ValidatorFn -->
+  [showErrorsOn]="'touched'"      <!-- 'touched' | 'dirty' | 'always' -->
 />
 ```
 
