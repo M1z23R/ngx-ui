@@ -24,9 +24,11 @@ export interface ToastConfig {
   dismissible?: boolean;
   /** Show progress bar for auto-dismiss */
   showProgress?: boolean;
+  /** Max visible toasts (0 = unlimited, oldest dismissed when exceeded) */
+  maxVisible?: number;
 }
 
-export interface ToastData extends Required<Omit<ToastConfig, 'title'>> {
+export interface ToastData extends Required<Omit<ToastConfig, 'title' | 'maxVisible'>> {
   id: string;
   title?: string;
 }
@@ -37,6 +39,7 @@ export const DEFAULT_TOAST_CONFIG: Omit<Required<ToastConfig>, 'message' | 'titl
   position: 'top-right',
   dismissible: true,
   showProgress: true,
+  maxVisible: 3,
 };
 
 export const TOAST_DATA = new InjectionToken<ToastData>('TOAST_DATA');

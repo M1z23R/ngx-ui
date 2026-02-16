@@ -64,12 +64,25 @@ export class ToastService {
   show(config: ToastConfig): ToastRef {
     const id = `toast-${++this.idCounter}`;
     const position = config.position ?? DEFAULT_TOAST_CONFIG.position;
+    const maxVisible = config.maxVisible ?? DEFAULT_TOAST_CONFIG.maxVisible;
 
     // If position changed, dismiss all existing toasts
     if (this.toasts().length > 0 && position !== this.currentPosition) {
       this.dismissAll();
     }
     this.currentPosition = position;
+
+    // Enforce max visible limit - dismiss oldest toasts to make room
+    if (maxVisible > 0) {
+      const currentToasts = this.toasts();
+      const toRemoveCount = currentToasts.length - maxVisible + 1;
+      if (toRemoveCount > 0) {
+        const toastsToRemove = currentToasts.slice(0, toRemoveCount);
+        for (const toast of toastsToRemove) {
+          this.dismiss(toast.id);
+        }
+      }
+    }
 
     const toastData: ToastData = {
       id,
