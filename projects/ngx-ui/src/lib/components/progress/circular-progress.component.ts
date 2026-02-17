@@ -1,7 +1,7 @@
 import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
 
 export type CircularProgressVariant = 'primary' | 'success' | 'warning' | 'danger';
-export type CircularProgressSize = 'sm' | 'md' | 'lg' | 'xl';
+export type CircularProgressSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 @Component({
   selector: 'ui-circular-progress',
@@ -21,7 +21,7 @@ export class CircularProgressComponent {
   protected readonly clampedValue = computed(() => Math.min(100, Math.max(0, this.value())));
 
   protected readonly sizeValue = computed(() => {
-    const sizes: Record<CircularProgressSize, number> = { sm: 32, md: 48, lg: 64, xl: 96 };
+    const sizes: Record<CircularProgressSize, number> = { xs: 16, sm: 32, md: 48, lg: 64, xl: 96 };
     return sizes[this.size()];
   });
 
