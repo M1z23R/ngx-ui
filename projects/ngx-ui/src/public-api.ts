@@ -140,6 +140,6 @@ export type { SplitOrientation, SplitGutterSize, SplitSizeChange } from './lib/c
 export { SplitPaneComponent } from './lib/components/split-pane/split-pane.component';
 
 // Tree
-export { TreeComponent } from './lib/components/tree/tree.component';
-export type { TreeNode } from './lib/components/tree/tree.component';
+export { TreeComponent, TREE_HOST } from './lib/components/tree/tree.component';
+export type { TreeNode, TreeDropPosition, TreeNodeDropEvent } from './lib/components/tree/tree.component';
 export { TreeNodeComponent } from './lib/components/tree/tree-node.component';

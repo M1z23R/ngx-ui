@@ -1,4 +1,13 @@
-<div class="ui-tree-node">
+<div
+  class="ui-tree-node"
+  [class.ui-tree-node--dragging]="isDragging()"
+  [attr.draggable]="isDraggable()"
+  (dragstart)="onDragStart($event)"
+  (dragend)="onDragEnd()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
   <div class="ui-tree-node__guides">
     @for (guide of indentGuides(); track guide) {
       <span class="ui-tree-node__guide" [style.width.px]="indent()"></span>
@@ -7,6 +16,9 @@
   <div
     class="ui-tree-node__content"
     [class.ui-tree-node__content--selected]="false"
+    [class.ui-tree-node__content--drop-before]="dropPosition() === 'before'"
+    [class.ui-tree-node__content--drop-after]="dropPosition() === 'after'"
+    [class.ui-tree-node__content--drop-inside]="dropPosition() === 'inside'"
     [style.padding-left.px]="level() * indent() + 8"
     (click)="onClick($event)"
     (dblclick)="onDoubleClick($event)"

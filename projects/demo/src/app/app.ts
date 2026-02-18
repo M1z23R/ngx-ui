@@ -57,6 +57,7 @@ import {
   SplitPaneComponent,
   TreeComponent,
   TreeNode,
+  TreeNodeDropEvent,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 import { SampleTabComponent, SampleTabData } from './sample-tab';
@@ -1150,13 +1151,15 @@ interface User {
           </p>
           <div class="tree-demo-grid">
             <div>
-              <h3>API Collection (Bruno/Postman style)</h3>
+              <h3>API Collection (Bruno/Postman style) — Draggable</h3>
               <div class="tree-container">
                 <ui-tree
                   [nodes]="apiTreeNodes"
+                  [draggable]="true"
                   (nodeClick)="onTreeNodeClick($event)"
                   (nodeExpand)="onTreeNodeExpand($event)"
                   (nodeCollapse)="onTreeNodeCollapse($event)"
+                  (nodeDrop)="onTreeNodeDrop($event)"
                 />
               </div>
             </div>
@@ -1911,7 +1914,7 @@ export class App {
 
   // Tree demo
   protected readonly lastTreeAction = signal<string>('');
-  protected readonly apiTreeNodes: TreeNode[] = [
+  protected apiTreeNodes: TreeNode[] = [
     {
       label: 'Users API',
       icon: '\uD83D\uDCC1',
@@ -2080,6 +2083,54 @@ export class App {
 
   protected onTreeNodeCollapse(node: TreeNode): void {
     this.lastTreeAction.set(`Collapsed: ${node.label}`);
+  }
+
+  protected onTreeNodeDrop(event: TreeNodeDropEvent): void {
+    this.lastTreeAction.set(
+      `Dropped "${event.node.label}" ${event.position} "${event.target.label}"`
+    );
+
+    // Helper: remove a node from a tree array (returns true if found & removed)
+    const removeNode = (nodes: TreeNode[], target: TreeNode): boolean => {
+      const idx = nodes.indexOf(target);
+      if (idx !== -1) { nodes.splice(idx, 1); return true; }
+      for (const n of nodes) {
+        if (n.children && removeNode(n.children, target)) return true;
+      }
+      return false;
+    };
+
+    // Helper: find the parent array and index of a node
+    const findContainer = (nodes: TreeNode[], target: TreeNode): { arr: TreeNode[]; idx: number } | null => {
+      const idx = nodes.indexOf(target);
+      if (idx !== -1) return { arr: nodes, idx };
+      for (const n of nodes) {
+        if (n.children) {
+          const result = findContainer(n.children, target);
+          if (result) return result;
+        }
+      }
+      return null;
+    };
+
+    // Clone top-level array reference so Angular picks up the change
+    const roots = [...this.apiTreeNodes];
+
+    // Remove dragged node from its current position
+    removeNode(roots, event.node);
+
+    if (event.position === 'inside') {
+      if (!event.target.children) event.target.children = [];
+      event.target.children.push(event.node);
+    } else {
+      const container = findContainer(roots, event.target);
+      if (container) {
+        const insertIdx = event.position === 'before' ? container.idx : container.idx + 1;
+        container.arr.splice(insertIdx, 0, event.node);
+      }
+    }
+
+    this.apiTreeNodes = roots;
   }
 
   protected async openConfirmDialog(): Promise<void> {
