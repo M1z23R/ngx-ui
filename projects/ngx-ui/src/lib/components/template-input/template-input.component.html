@@ -1,0 +1,65 @@
+<div
+  class="ui-template-input-wrapper"
+  [class.ui-template-input-wrapper--error]="error()"
+  [class.ui-template-input-wrapper--disabled]="disabled()"
+>
+  @if (label()) {
+    <label class="ui-template-input__label" [attr.for]="inputId()">
+      {{ label() }}
+      @if (required()) {
+        <span class="ui-template-input__required">*</span>
+      }
+    </label>
+  }
+  <div
+    class="ui-template-input__container"
+    (mousemove)="onMouseMove($event)"
+    (mouseleave)="onContainerMouseLeave()"
+  >
+    <div
+      class="ui-template-input__mirror"
+      #mirror
+      [innerHTML]="highlightedHtml()"
+    ></div>
+    <input
+      class="ui-template-input__input"
+      #inputEl
+      [id]="inputId()"
+      type="text"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [readonly]="readonly()"
+      [required]="required()"
+      [(ngModel)]="value"
+      (input)="onInput()"
+      (scroll)="syncScroll()"
+      (click)="syncScroll()"
+      (keydown)="onKeyDown()"
+    />
+  </div>
+  @if (error()) {
+    <span class="ui-template-input__error">{{ error() }}</span>
+  }
+  @if (hint() && !error()) {
+    <span class="ui-template-input__hint">{{ hint() }}</span>
+  }
+</div>
+
+@if (popoverVisible()) {
+  <div
+    class="ui-tmpl-popover"
+    [style.top.px]="popoverTop()"
+    [style.left.px]="popoverLeft()"
+    (mouseenter)="onPopoverMouseEnter()"
+    (mouseleave)="onPopoverMouseLeave()"
+  >
+    @if (popoverTemplate()) {
+      <ng-container
+        [ngTemplateOutlet]="popoverTemplate()!"
+        [ngTemplateOutletContext]="popoverContext()"
+      />
+    } @else {
+      <span class="ui-tmpl-popover__text">{{ popoverText() }}</span>
+    }
+  </div>
+}

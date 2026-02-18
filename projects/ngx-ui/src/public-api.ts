@@ -143,3 +143,7 @@ export { SplitPaneComponent } from './lib/components/split-pane/split-pane.compo
 export { TreeComponent, TREE_HOST } from './lib/components/tree/tree.component';
 export type { TreeNode, TreeDropPosition, TreeNodeDropEvent } from './lib/components/tree/tree.component';
 export { TreeNodeComponent } from './lib/components/tree/tree-node.component';
+
+// Template Input
+export { TemplateInputComponent, VariablePopoverDirective } from './lib/components/template-input/template-input.component';
+export type { TemplateVariable, VariablePopoverContext, VariableState } from './lib/components/template-input/template-input.component';

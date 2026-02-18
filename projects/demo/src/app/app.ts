@@ -58,6 +58,9 @@ import {
   TreeComponent,
   TreeNode,
   TreeNodeDropEvent,
+  TemplateInputComponent,
+  TemplateVariable,
+  VariablePopoverDirective,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 import { SampleTabComponent, SampleTabData } from './sample-tab';
@@ -118,6 +121,8 @@ interface User {
     SplitComponent,
     SplitPaneComponent,
     TreeComponent,
+    TemplateInputComponent,
+    VariablePopoverDirective,
   ],
   template: `
     <ui-shell [variant]="shellVariant()">
@@ -465,6 +470,75 @@ interface User {
             />
           </div>
           <p>Textarea value length: {{ textareaValue().length }}</p>
+        </section>
+
+        <section class="section">
+          <h2>Template Input</h2>
+          <p class="section-description">
+            Single-line input with highlighted {{'{{variable}}'}} tokens and hover tooltips.
+          </p>
+          <div class="input-grid">
+            <ui-template-input
+              label="API Endpoint (3 states)"
+              [placeholder]="'/api/\u007B\u007Bresource\u007D\u007D/\u007B\u007Bid\u007D\u007D'"
+              [(value)]="templateEndpoint"
+              [(variables)]="endpointVariables"
+              [hint]="'Green = resolved, Amber = unset, Red = unknown'"
+            />
+            <ui-template-input
+              label="Email Template"
+              [placeholder]="'Type a template with \u007B\u007Bvariables\u007D\u007D...'"
+              [(value)]="templateValue"
+              [(variables)]="templateVariables"
+            />
+            <ui-template-input
+              label="With Error"
+              error="Template contains unknown variables"
+              [(value)]="templateError"
+              [(variables)]="templateErrorVars"
+            />
+            <ui-template-input
+              label="Disabled"
+              [disabled]="true"
+              [(value)]="templateDisabled"
+              [(variables)]="templateDisabledVars"
+            />
+          </div>
+
+          <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Interactive Popover (Postman-style)</h3>
+          <div class="input-grid">
+            <ui-template-input
+              label="Editable Variables"
+              [(value)]="templatePopover"
+              [(variables)]="popoverVariables"
+            >
+              <ng-template uiVariablePopover let-key let-val="value" let-state="state" let-close="close">
+                <div class="var-popover">
+                  <div class="var-popover__header">
+                    <span class="var-popover__name">{{ key }}</span>
+                    @if (state !== 'unknown') {
+                      <span class="var-popover__state" [class]="'var-popover__state--' + state">{{ state }}</span>
+                    } @else {
+                      <span class="var-popover__state var-popover__state--unknown">undefined</span>
+                    }
+                  </div>
+                  <div class="var-popover__body">
+                    <input
+                      class="var-popover__input"
+                      [value]="getPopoverVarValue(key)"
+                      (input)="setPopoverVarEdit(key, $any($event.target).value)"
+                      placeholder="Override value..."
+                    />
+                    <button class="var-popover__save" (click)="savePopoverVar(key); close()">Save</button>
+                  </div>
+                </div>
+              </ng-template>
+            </ui-template-input>
+          </div>
+          @if (hasPopoverValues()) {
+            <p class="result-text">Variables: {{ formatPopoverVars() }}</p>
+          }
+          <p>Template value: {{ templateValue() }}</p>
         </section>
 
         <section class="section">
@@ -1750,6 +1824,84 @@ interface User {
       font-size: 0.875rem;
       color: var(--ui-text-muted);
     }
+
+    .var-popover {
+      padding: 0.5rem;
+      min-width: 200px;
+    }
+
+    .var-popover__header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .var-popover__name {
+      font-weight: 600;
+      font-size: 0.8125rem;
+      color: var(--ui-primary);
+    }
+
+    .var-popover__desc {
+      font-size: 0.75rem;
+      color: var(--ui-text-muted);
+    }
+
+    .var-popover__body {
+      display: flex;
+      gap: 0.375rem;
+    }
+
+    .var-popover__input {
+      flex: 1;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8125rem;
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-sm);
+      background: var(--ui-bg);
+      color: var(--ui-text);
+      outline: none;
+    }
+
+    .var-popover__input:focus {
+      border-color: var(--ui-border-focus);
+    }
+
+    .var-popover__save {
+      padding: 0.25rem 0.625rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--ui-primary-text);
+      background: var(--ui-primary);
+      border: none;
+      border-radius: var(--ui-radius-sm);
+      cursor: pointer;
+      transition: background var(--ui-transition-fast);
+    }
+
+    .var-popover__save:hover {
+      background: var(--ui-primary-hover);
+    }
+
+    .var-popover__state {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .var-popover__state--resolved {
+      color: var(--ui-success);
+    }
+
+    .var-popover__state--unset {
+      color: var(--ui-warning);
+    }
+
+    .var-popover__state--unknown {
+      color: var(--ui-danger);
+    }
   `],
 })
 export class App {
@@ -1875,6 +2027,70 @@ export class App {
   protected readonly files = signal<File[]>([]);
   protected readonly singleFile = signal<File[]>([]);
   protected readonly rejectedFiles = signal<string[]>([]);
+
+  // Template input demo
+  // Template with all 3 states: resolved (resource), unset (id), unknown (version)
+  protected readonly templateEndpoint = signal('/api/{{resource}}/{{id}}/{{version}}');
+  protected readonly endpointVariables = signal<TemplateVariable[]>([
+    { key: 'resource', value: 'users' },   // resolved (has value)
+    { key: 'id', value: '' },               // unset (no value)
+    // version is not listed → unknown
+  ]);
+
+  protected readonly templateValue = signal('Hello {{firstName}}, welcome to {{company}}!');
+  protected readonly templateVariables = signal<TemplateVariable[]>([
+    { key: 'firstName', value: 'John' },
+    { key: 'company', value: 'Acme Corp' },
+  ]);
+
+  protected readonly templateError = signal('Dear {{name}}, your {{unknownVar}} is ready');
+  protected readonly templateErrorVars = signal<TemplateVariable[]>([]);
+
+  protected readonly templateDisabled = signal('Hello {{user}}, this is read-only');
+  protected readonly templateDisabledVars = signal<TemplateVariable[]>([
+    { key: 'user', value: '' },
+  ]);
+
+  // Popover demo — username is set, role is unset, unknownField is unknown
+  protected readonly templatePopover = signal('Hello {{username}}, role={{role}}, flag={{unknownField}}');
+  protected readonly popoverVariables = signal<TemplateVariable[]>([
+    { key: 'username', value: 'admin' },
+    { key: 'role', value: '' },
+  ]);
+  private popoverEdits = new Map<string, string>();
+
+  protected readonly hasPopoverValues = computed(() =>
+    this.popoverVariables().some(v => v.value),
+  );
+
+  protected getPopoverVarValue(key: string): string {
+    return this.popoverEdits.get(key)
+      ?? this.popoverVariables().find(v => v.key === key)?.value
+      ?? '';
+  }
+
+  protected setPopoverVarEdit(key: string, value: string): void {
+    this.popoverEdits.set(key, value);
+  }
+
+  protected savePopoverVar(key: string): void {
+    const value = this.popoverEdits.get(key) ?? '';
+    this.popoverVariables.update(vars => {
+      const exists = vars.some(v => v.key === key);
+      if (exists) {
+        return vars.map(v => v.key === key ? { ...v, value } : v);
+      }
+      return [...vars, { key, value }];
+    });
+    this.popoverEdits.delete(key);
+  }
+
+  protected formatPopoverVars(): string {
+    return this.popoverVariables()
+      .filter(v => v.value)
+      .map(v => `${v.key}="${v.value}"`)
+      .join(', ');
+  }
 
   // Textarea demo
   protected readonly textareaValue = signal('');
