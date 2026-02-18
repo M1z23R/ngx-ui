@@ -95,7 +95,7 @@ export { DynamicTabsComponent } from './lib/components/tabs/dynamic-tabs.compone
 export type { DynamicTabsVariant, DynamicTabsSize } from './lib/components/tabs/dynamic-tabs.component';
 export { TabRef } from './lib/components/tabs/tab-ref';
 export { TAB_DATA, TAB_REF } from './lib/components/tabs/tab.config';
-export type { DynamicTabConfig } from './lib/components/tabs/tab.config';
+export type { DynamicTabConfig, TabRenderMode } from './lib/components/tabs/tab.config';
 
 export { AccordionComponent } from './lib/components/accordion/accordion.component';
 export type { AccordionVariant } from './lib/components/accordion/accordion.component';

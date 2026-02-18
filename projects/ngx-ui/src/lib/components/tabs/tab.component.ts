@@ -8,6 +8,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { TabIconDirective } from './tab-icon.directive';
+import type { TabRenderMode } from './tab.config';
 import type { TabsComponent } from './tabs.component';
 
 @Component({
@@ -26,6 +27,8 @@ export class TabComponent {
 
   /** @internal */
   readonly _index = signal(0);
+  /** @internal */
+  readonly _renderMode = signal<TabRenderMode>('conditional');
 
   private _parent: TabsComponent | null = null;
 

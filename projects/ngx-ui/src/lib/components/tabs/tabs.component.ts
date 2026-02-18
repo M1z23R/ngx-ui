@@ -14,6 +14,7 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { TabComponent } from './tab.component';
 import { TabActivePipe } from './tab-active.pipe';
+import type { TabRenderMode } from './tab.config';
 
 export type TabsVariant = 'default' | 'pills' | 'underline';
 export type TabsSize = 'sm' | 'md' | 'lg';
@@ -30,6 +31,7 @@ export class TabsComponent {
   readonly variant = input<TabsVariant>('default');
   readonly size = input<TabsSize>('md');
   readonly ariaLabel = input<string>('');
+  readonly renderMode = input<TabRenderMode>('conditional');
 
   readonly activeTab = model<string | number>(0);
 
@@ -47,8 +49,10 @@ export class TabsComponent {
   constructor() {
     effect(() => {
       const tabList = this.tabs();
+      const renderMode = this.renderMode();
       tabList.forEach((tab, index) => {
         tab._setTabsParent(this, index);
+        tab._renderMode.set(renderMode);
       });
     });
 

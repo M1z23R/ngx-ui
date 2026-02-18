@@ -43,6 +43,10 @@
   animation: fadeIn var(--ui-transition-fast);
 }
 
+.ui-tab-panel--hidden {
+  display: none;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

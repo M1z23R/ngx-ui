@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import { TabsService } from './tabs.service';
-import { DynamicTab } from './tab.config';
+import { DynamicTab, TabRenderMode } from './tab.config';
 
 export type DynamicTabsVariant = 'default' | 'pills' | 'underline';
 export type DynamicTabsSize = 'sm' | 'md' | 'lg';
@@ -83,9 +83,10 @@ export type DynamicTabsSize = 'sm' | 'md' | 'lg';
       </div>
       <div class="ui-tabs__panels">
         @for (tab of tabs(); track tab.id) {
-          @if (tab.id === activeTabId()) {
+          @if (renderMode() === 'persistent' || tab.id === activeTabId()) {
             <div
               class="ui-tab-panel"
+              [class.ui-tab-panel--hidden]="renderMode() === 'persistent' && tab.id !== activeTabId()"
               role="tabpanel"
               [attr.id]="'panel-' + tab.id"
             >
@@ -108,6 +109,7 @@ export class DynamicTabsComponent {
   readonly variant = input<DynamicTabsVariant>('default');
   readonly size = input<DynamicTabsSize>('md');
   readonly ariaLabel = input<string>('');
+  readonly renderMode = input<TabRenderMode>('conditional');
 
   private readonly tabList = viewChild<ElementRef<HTMLElement>>('tabList');
 

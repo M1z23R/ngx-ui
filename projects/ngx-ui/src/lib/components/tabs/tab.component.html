@@ -1,6 +1,7 @@
-@if (isActive()) {
+@if (_renderMode() === 'persistent' || isActive()) {
   <div
     class="ui-tab-panel"
+    [class.ui-tab-panel--hidden]="_renderMode() === 'persistent' && !isActive()"
     role="tabpanel"
     [attr.id]="'panel-' + (id() || _index())"
     [attr.aria-labelledby]="'tab-' + (id() || _index())"

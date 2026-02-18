@@ -44,6 +44,14 @@ export interface DynamicTab<TData = unknown, TResult = unknown> {
 }
 
 /**
+ * Controls how inactive tab panels are handled.
+ * - `'conditional'` (default): Inactive panels are removed from the DOM (destroyed/recreated on switch).
+ * - `'persistent'`: All panels stay in the DOM, inactive ones are hidden via CSS `display: none`.
+ *   Use this to preserve component state across tab switches.
+ */
+export type TabRenderMode = 'conditional' | 'persistent';
+
+/**
  * Default configuration for dynamic tabs.
  */
 export const DEFAULT_TAB_CONFIG: Required<Omit<DynamicTabConfig, 'label' | 'data' | 'icon' | 'id'>> = {
