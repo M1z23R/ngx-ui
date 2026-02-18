@@ -41,7 +41,6 @@
   padding: var(--ui-spacing-sm) var(--ui-spacing-md);
   font-family: inherit;
   font-size: var(--ui-font-md);
-  line-height: 1.5;
   color: var(--ui-text);
   white-space: pre;
   overflow: hidden;
@@ -57,7 +56,6 @@
   padding: var(--ui-spacing-sm) var(--ui-spacing-md);
   font-family: inherit;
   font-size: var(--ui-font-md);
-  line-height: 1.5;
   color: transparent;
   caret-color: var(--ui-text);
   background: transparent;
@@ -103,16 +101,36 @@
   color: var(--ui-text-muted);
 }
 
-// Popover (fixed position, escapes overflow)
+// Popover (portaled to body, positioned imperatively)
 .ui-tmpl-popover {
-  position: fixed;
-  z-index: 10000;
-  transform: translate(-50%, -100%) translateY(-6px);
+  display: none;
+  line-height: 1.5;
   background: var(--ui-bg);
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius-md);
   box-shadow: var(--ui-shadow-lg);
-  animation: ui-tmpl-popover-in 150ms ease;
+  opacity: 0;
+  transition: opacity var(--ui-transition-fast), transform var(--ui-transition-fast);
+
+  &--open {
+    opacity: 1;
+  }
+
+  &--above {
+    transform: translateY(4px);
+
+    &.ui-tmpl-popover--open {
+      transform: translateY(0);
+    }
+  }
+
+  &--below {
+    transform: translateY(-4px);
+
+    &.ui-tmpl-popover--open {
+      transform: translateY(0);
+    }
+  }
 }
 
 .ui-tmpl-popover__text {
@@ -121,15 +139,4 @@
   font-size: var(--ui-font-sm);
   color: var(--ui-text);
   white-space: nowrap;
-}
-
-@keyframes ui-tmpl-popover-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -100%) translateY(-2px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -100%) translateY(-6px);
-  }
 }

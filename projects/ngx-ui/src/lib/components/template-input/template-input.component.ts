@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   computed,
   contentChild,
+  inject,
   input,
   model,
   output,
@@ -13,6 +14,7 @@ import {
   Renderer2,
   OnDestroy,
   TemplateRef,
+  ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgTemplateOutlet } from '@angular/common';
@@ -89,11 +91,16 @@ export class TemplateInputComponent implements OnDestroy {
 
   protected readonly mirrorRef = viewChild<ElementRef<HTMLDivElement>>('mirror');
   protected readonly inputRef = viewChild<ElementRef<HTMLInputElement>>('inputEl');
+  @ViewChild('popoverRef', { static: true }) popoverRef!: ElementRef<HTMLElement>;
+
+  private readonly hostRef = inject(ElementRef);
+  private positionCleanup: (() => void) | null = null;
+  private currentSpanRect: DOMRect | null = null;
+  private isPortaled = false;
 
   // Popover state
   protected readonly popoverVisible = signal(false);
-  protected readonly popoverTop = signal(0);
-  protected readonly popoverLeft = signal(0);
+  protected readonly openAbove = signal(true);
   protected readonly popoverText = signal('');
   protected readonly popoverVarKey = signal('');
 
@@ -207,14 +214,20 @@ export class TemplateInputComponent implements OnDestroy {
     const entry = vars.find(v => v.key === varKey);
     this.popoverVarKey.set(varKey);
     this.popoverText.set(entry ? (entry.value || varKey) : varKey);
-    this.popoverTop.set(spanRect.top);
-    this.popoverLeft.set(spanRect.left + spanRect.width / 2);
+    this.currentSpanRect = spanRect;
     this.popoverVisible.set(true);
+
+    if (!this.isPortaled) {
+      this.portalPopover();
+    } else {
+      this.updatePopoverPosition();
+    }
   }
 
   private closePopover(): void {
     this.cancelHide();
     this.popoverVisible.set(false);
+    this.unportalPopover();
     if (this.hoveredVar !== null) {
       this.hoveredVar = null;
       this.variableHover.emit(null);
@@ -278,8 +291,112 @@ export class TemplateInputComponent implements OnDestroy {
     this.renderer.appendChild(document.head, style);
   }
 
+  private portalPopover(): void {
+    const el = this.popoverRef.nativeElement;
+    document.body.appendChild(el);
+    el.style.display = 'block';
+    this.isPortaled = true;
+    requestAnimationFrame(() => this.updatePopoverPosition());
+    this.addPositionListeners();
+  }
+
+  private unportalPopover(): void {
+    if (!this.isPortaled) return;
+    const el = this.popoverRef.nativeElement;
+    el.style.display = '';
+    el.style.position = '';
+    el.style.top = '';
+    el.style.bottom = '';
+    el.style.left = '';
+    el.style.zIndex = '';
+    this.hostRef.nativeElement.appendChild(el);
+    this.isPortaled = false;
+    this.currentSpanRect = null;
+    this.removePositionListeners();
+  }
+
+  private updatePopoverPosition(): void {
+    const el = this.popoverRef.nativeElement;
+    const spanRect = this.getCurrentSpanRect() ?? this.currentSpanRect;
+    if (!spanRect) return;
+
+    this.currentSpanRect = spanRect;
+
+    const gap = 6;
+    const edgePadding = 8;
+    const spaceAbove = spanRect.top;
+    const spaceBelow = window.innerHeight - spanRect.bottom;
+    const popoverHeight = el.offsetHeight;
+
+    const above = spaceAbove >= popoverHeight + gap || spaceAbove >= spaceBelow;
+    this.openAbove.set(above);
+
+    el.style.position = 'fixed';
+    el.style.zIndex = '10000';
+
+    if (above) {
+      el.style.top = '';
+      el.style.bottom = `${window.innerHeight - spanRect.top + gap}px`;
+    } else {
+      el.style.top = `${spanRect.bottom + gap}px`;
+      el.style.bottom = '';
+    }
+
+    // Horizontal: center on span, clamp to viewport
+    const centerX = spanRect.left + spanRect.width / 2;
+    const popoverWidth = el.offsetWidth;
+    let left = centerX - popoverWidth / 2;
+    left = Math.max(edgePadding, Math.min(left, window.innerWidth - popoverWidth - edgePadding));
+    el.style.left = `${left}px`;
+  }
+
+  private getCurrentSpanRect(): DOMRect | null {
+    const mirrorEl = this.mirrorRef()?.nativeElement;
+    if (!mirrorEl) return null;
+
+    const varKey = this.popoverVarKey();
+    if (!varKey) return null;
+
+    const spans = mirrorEl.querySelectorAll('.ui-tmpl__var') as NodeListOf<HTMLElement>;
+    for (const span of spans) {
+      const text = (span.textContent || '').replace(/^\{\{|\}\}$/g, '');
+      if (text === varKey) {
+        return span.getBoundingClientRect();
+      }
+    }
+    return null;
+  }
+
+  private readonly onPositionUpdate = (): void => {
+    if (this.isPortaled && this.popoverVisible()) {
+      this.updatePopoverPosition();
+    }
+  };
+
+  private addPositionListeners(): void {
+    window.addEventListener('scroll', this.onPositionUpdate, true);
+    window.addEventListener('resize', this.onPositionUpdate);
+    this.positionCleanup = () => {
+      window.removeEventListener('scroll', this.onPositionUpdate, true);
+      window.removeEventListener('resize', this.onPositionUpdate);
+    };
+  }
+
+  private removePositionListeners(): void {
+    if (this.positionCleanup) {
+      this.positionCleanup();
+      this.positionCleanup = null;
+    }
+  }
+
   ngOnDestroy(): void {
     this.cancelHide();
-    this.closePopover();
+    // Remove from body if still portaled
+    if (this.isPortaled) {
+      const el = this.popoverRef.nativeElement;
+      el.remove();
+      this.removePositionListeners();
+      this.isPortaled = false;
+    }
   }
 }

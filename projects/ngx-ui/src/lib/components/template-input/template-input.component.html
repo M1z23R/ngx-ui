@@ -45,14 +45,16 @@
   }
 </div>
 
-@if (popoverVisible()) {
-  <div
-    class="ui-tmpl-popover"
-    [style.top.px]="popoverTop()"
-    [style.left.px]="popoverLeft()"
-    (mouseenter)="onPopoverMouseEnter()"
-    (mouseleave)="onPopoverMouseLeave()"
-  >
+<div
+  #popoverRef
+  class="ui-tmpl-popover"
+  [class.ui-tmpl-popover--open]="popoverVisible()"
+  [class.ui-tmpl-popover--above]="openAbove()"
+  [class.ui-tmpl-popover--below]="!openAbove()"
+  (mouseenter)="onPopoverMouseEnter()"
+  (mouseleave)="onPopoverMouseLeave()"
+>
+  @if (popoverVisible()) {
     @if (popoverTemplate()) {
       <ng-container
         [ngTemplateOutlet]="popoverTemplate()!"
@@ -61,5 +63,5 @@
     } @else {
       <span class="ui-tmpl-popover__text">{{ popoverText() }}</span>
     }
-  </div>
-}
+  }
+</div>
