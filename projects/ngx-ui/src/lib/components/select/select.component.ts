@@ -486,6 +486,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     dropdown.style.left = '';
     dropdown.style.bottom = '';
     dropdown.style.width = '';
+    dropdown.style.minWidth = '';
     dropdown.style.zIndex = '';
     dropdown.style.margin = '';
 
@@ -505,7 +506,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     const openAbove = spaceBelow < dropdownHeight + gap && spaceAbove > spaceBelow;
 
     dropdown.style.position = 'fixed';
-    dropdown.style.width = `${triggerRect.width}px`;
+    dropdown.style.minWidth = `${triggerRect.width}px`;
     dropdown.style.left = `${triggerRect.left}px`;
     dropdown.style.zIndex = '99999';
     dropdown.style.margin = '0';
