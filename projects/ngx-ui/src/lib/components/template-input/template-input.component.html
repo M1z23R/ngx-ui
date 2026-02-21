@@ -13,13 +13,13 @@
   }
   <div
     class="ui-template-input__container"
+    [style.--ui-tmpl-suffix-width]="suffixPadding() + 'px'"
     (mousemove)="onMouseMove($event)"
     (mouseleave)="onContainerMouseLeave()"
   >
     <div
       class="ui-template-input__mirror"
       #mirror
-      [style.padding-right.px]="suffixPadding() || null"
       [innerHTML]="highlightedHtml()"
     ></div>
     <input
@@ -27,7 +27,6 @@
       #inputEl
       [id]="inputId()"
       type="text"
-      [style.padding-right.px]="suffixPadding() || null"
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       [readonly]="readonly()"

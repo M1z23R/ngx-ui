@@ -38,6 +38,7 @@
 }
 
 .ui-template-input__mirror {
+  width: calc(100% - var(--ui-tmpl-suffix-width, 0px));
   padding: var(--ui-spacing-sm) var(--ui-spacing-md);
   font-family: inherit;
   font-size: var(--ui-font-md);
@@ -58,7 +59,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: calc(100% - var(--ui-tmpl-suffix-width, 0px));
   height: 100%;
   padding: var(--ui-spacing-sm) var(--ui-spacing-md);
   font-family: inherit;
@@ -88,10 +89,6 @@
   gap: var(--ui-spacing-xs);
   padding-right: var(--ui-spacing-sm);
   pointer-events: auto;
-
-  &:empty {
-    display: none;
-  }
 }
 
 .ui-template-input-wrapper--disabled .ui-template-input__container {

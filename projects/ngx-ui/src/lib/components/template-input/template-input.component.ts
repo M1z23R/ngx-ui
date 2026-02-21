@@ -102,6 +102,7 @@ export class TemplateInputComponent implements OnDestroy, AfterViewInit {
   protected readonly suffixPadding = signal(0);
 
   private resizeObserver: ResizeObserver | null = null;
+  private mutationObserver: MutationObserver | null = null;
 
   private static nextId = 0;
   private readonly generatedId = `ui-template-input-${++TemplateInputComponent.nextId}`;
@@ -144,24 +145,39 @@ export class TemplateInputComponent implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.observeSuffix();
+    this.setupSuffixObservers();
   }
 
-  private observeSuffix(): void {
+  private setupSuffixObservers(): void {
     const suffixEl = this.suffixRef()?.nativeElement;
     if (!suffixEl) return;
 
-    this.updateSuffixPadding(suffixEl);
+    // Initial measurement - wait for layout to complete
+    requestAnimationFrame(() => {
+      this.updateSuffixPadding(suffixEl);
+    });
 
+    // Watch for size changes
     this.resizeObserver = new ResizeObserver(() => {
       this.updateSuffixPadding(suffixEl);
     });
     this.resizeObserver.observe(suffixEl);
+
+    // Watch for content projection changes (children being added/removed)
+    this.mutationObserver = new MutationObserver(() => {
+      // Need RAF here too since DOM change doesn't mean layout is done
+      requestAnimationFrame(() => {
+        this.updateSuffixPadding(suffixEl);
+      });
+    });
+    this.mutationObserver.observe(suffixEl, { childList: true, subtree: true });
   }
 
   private updateSuffixPadding(el: HTMLElement): void {
-    const width = el.offsetWidth;
-    if (width > 0) {
+    // Only count width if there are actual children (not just whitespace/comments)
+    const hasContent = el.children.length > 0;
+    if (hasContent) {
+      const width = el.offsetWidth;
       // Add small gap between content and suffix
       this.suffixPadding.set(width + 8);
     } else {
@@ -443,10 +459,14 @@ export class TemplateInputComponent implements OnDestroy, AfterViewInit {
       this.removePositionListeners();
       this.isPortaled = false;
     }
-    // Clean up ResizeObserver
+    // Clean up observers
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
+    }
+    if (this.mutationObserver) {
+      this.mutationObserver.disconnect();
+      this.mutationObserver = null;
     }
   }
 }

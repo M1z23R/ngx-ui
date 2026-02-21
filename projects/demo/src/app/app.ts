@@ -62,6 +62,7 @@ import {
   TemplateInputComponent,
   TemplateVariable,
   VariablePopoverDirective,
+  TemplateInputSuffixDirective,
 } from '@m1z23r/ngx-ui';
 import { ConfirmDialog, ConfirmDialogData } from './confirm-dialog';
 import { SampleTabComponent, SampleTabData } from './sample-tab';
@@ -124,6 +125,7 @@ interface User {
     TreeComponent,
     TemplateInputComponent,
     VariablePopoverDirective,
+    TemplateInputSuffixDirective,
   ],
   template: `
     <ui-shell [variant]="shellVariant()">
@@ -540,6 +542,18 @@ interface User {
             <p class="result-text">Variables: {{ formatPopoverVars() }}</p>
           }
           <p>Template value: {{ templateValue() }}</p>
+
+          <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">With Suffix Buttons (Long Content Test)</h3>
+          <div class="input-grid">
+            <ui-template-input
+              label="Long Template with Actions"
+              [(value)]="templateLong"
+              [(variables)]="longVariables"
+            >
+              <button uiTemplateInputSuffix class="suffix-btn" (click)="copyTemplate()">Copy</button>
+              <button uiTemplateInputSuffix class="suffix-btn" (click)="clearTemplate()">Clear</button>
+            </ui-template-input>
+          </div>
         </section>
 
         <section class="section">
@@ -1914,6 +1928,23 @@ interface User {
     .var-popover__state--unknown {
       color: var(--ui-danger);
     }
+
+    .suffix-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--ui-text);
+      background: var(--ui-bg-secondary);
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-sm);
+      cursor: pointer;
+      transition: background var(--ui-transition-fast), border-color var(--ui-transition-fast);
+    }
+
+    .suffix-btn:hover {
+      background: var(--ui-bg-hover);
+      border-color: var(--ui-border-hover);
+    }
   `],
 })
 export class App {
@@ -2121,6 +2152,24 @@ export class App {
       .filter(v => v.value)
       .map(v => `${v.key}="${v.value}"`)
       .join(', ');
+  }
+
+  // Long template with suffix buttons demo
+  protected readonly templateLong = signal(
+    'This is a very long template with {{variable1}} and {{variable2}} and {{variable3}} that should scroll horizontally when the content overflows the input width'
+  );
+  protected readonly longVariables = signal<TemplateVariable[]>([
+    { key: 'variable1', value: 'value1' },
+    { key: 'variable2', value: '' },
+    { key: 'variable3', value: 'value3' },
+  ]);
+
+  protected copyTemplate(): void {
+    navigator.clipboard.writeText(this.templateLong());
+  }
+
+  protected clearTemplate(): void {
+    this.templateLong.set('');
   }
 
   // Textarea demo
