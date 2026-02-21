@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   inject,
   input,
+  signal,
   HostListener,
   ElementRef,
   OnInit,
@@ -36,6 +37,9 @@ import { DialogRef } from '../../dialog/dialog-ref';
 export class ModalComponent implements OnInit {
   private readonly dialogRef = inject(DIALOG_REF, { optional: true }) as DialogRef | null;
   private readonly elementRef = inject(ElementRef);
+
+  /** Tracks if mousedown started on the backdrop (to prevent close on drag-out) */
+  private readonly mouseDownOnBackdrop = signal(false);
 
   /** Title displayed in the modal header */
   readonly title = input<string>();
@@ -77,10 +81,20 @@ export class ModalComponent implements OnInit {
     }
   }
 
+  onBackdropMouseDown(event: MouseEvent): void {
+    this.mouseDownOnBackdrop.set(event.target === event.currentTarget);
+  }
+
   onBackdropClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget && this.closeOnBackdropClick()) {
+    // Only close if both mousedown AND mouseup happened on the backdrop
+    if (
+      this.mouseDownOnBackdrop() &&
+      event.target === event.currentTarget &&
+      this.closeOnBackdropClick()
+    ) {
       this.close();
     }
+    this.mouseDownOnBackdrop.set(false);
   }
 
   close(): void {

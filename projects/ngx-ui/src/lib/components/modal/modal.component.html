@@ -1,4 +1,4 @@
-<div class="ui-modal__backdrop" (click)="onBackdropClick($event)">
+<div class="ui-modal__backdrop" (mousedown)="onBackdropMouseDown($event)" (click)="onBackdropClick($event)">
   <div
     class="ui-modal__container"
     [class]="containerClasses()"
