@@ -17,6 +17,7 @@ import {
   DialogService,
   SelectComponent,
   OptionComponent,
+  AsyncSelectOption,
   DropdownComponent,
   DropdownItemComponent,
   DropdownDividerComponent,
@@ -584,10 +585,21 @@ interface User {
                 <ui-option [value]="tag">{{ tag }}</ui-option>
               }
             </ui-select>
+            <ui-select
+              [(value)]="asyncSelectedPost"
+              placeholder="Search posts..."
+              label="Async Search (API)"
+              [searchable]="true"
+              [clearable]="true"
+              [asyncSearch]="asyncSearchPosts"
+              [debounceTime]="300"
+              [minSearchLength]="2"
+            />
           </div>
           <p>Selected city: {{ selectedCity()?.name || 'None' }}</p>
           <p>Creatable city: {{ creatableCity()?.name || 'None' }}</p>
           <p>Tags: {{ tags().join(', ') || 'None' }}</p>
+          <p>Async selected post: {{ asyncSelectedPost()?.title || 'None' }}</p>
         </section>
 
         <section class="section">
@@ -1972,6 +1984,25 @@ export class App {
 
   // Tags (creatable + deletable) demo
   protected readonly tags = signal<string[]>(['Angular', 'TypeScript', 'Signals']);
+
+  // Async select demo
+  protected readonly asyncSelectedPost = signal<{ id: number; title: string; userId: number } | null>(null);
+  protected readonly asyncSearchPosts = async (query: string): Promise<AsyncSelectOption<{ id: number; title: string; userId: number }>[]> => {
+    const response = await fetch(
+      `https://jsonplaceholder.typicode.com/posts?_limit=10`,
+      { headers: { 'User-Agent': 'Nikode/1.0' } }
+    );
+    const posts: { id: number; title: string; body: string; userId: number }[] = await response.json();
+
+    const filtered = posts.filter((p) =>
+      p.title.toLowerCase().includes(query.toLowerCase())
+    );
+
+    return filtered.map((p) => ({
+      value: { id: p.id, title: p.title, userId: p.userId },
+      label: p.title,
+    }));
+  };
 
   // Chip input demo
   protected readonly chipTags = signal<string[]>(['Angular', 'TypeScript']);

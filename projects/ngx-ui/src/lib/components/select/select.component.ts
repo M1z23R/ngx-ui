@@ -6,6 +6,7 @@ import {
   signal,
   computed,
   contentChildren,
+  contentChild,
   ChangeDetectionStrategy,
   ElementRef,
   inject,
@@ -16,15 +17,25 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NgTemplateOutlet } from '@angular/common';
 import { OptionComponent } from './option.component';
+import { OptionTemplateDirective } from './option-template.directive';
 
 export type SelectVariant = 'default' | 'outlined' | 'filled';
 export type SelectSize = 'sm' | 'md' | 'lg';
 
+export interface AsyncSelectOption<T = unknown> {
+  value: T;
+  label: string;
+  disabled?: boolean;
+}
+
+export type AsyncSearchFn<T> = (query: string) => Promise<AsyncSelectOption<T>[]>;
+
 @Component({
   selector: 'ui-select',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, NgTemplateOutlet],
   templateUrl: './select.component.html',
   styleUrl: './select.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +56,11 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly deletable = input(false);
   readonly selectable = input(true);
 
+  // Async search inputs
+  readonly asyncSearch = input<AsyncSearchFn<T> | null>(null);
+  readonly debounceTime = input(300);
+  readonly minSearchLength = input(0);
+
   // Two-way binding
   readonly value = model<T | T[] | null>(null);
 
@@ -56,6 +72,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
 
   // Content children
   readonly options = contentChildren(OptionComponent);
+  readonly optionTemplate = contentChild(OptionTemplateDirective);
 
   // View children for dropdown portal
   @ViewChild('triggerRef', { static: true }) triggerRef!: ElementRef<HTMLElement>;
@@ -66,6 +83,13 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly isOpen = signal(false);
   readonly searchQuery = signal('');
   readonly focusedIndex = signal(-1);
+
+  // Async state
+  readonly asyncLoading = signal(false);
+  readonly asyncOptions = signal<AsyncSelectOption<T>[]>([]);
+  readonly asyncError = signal<string | null>(null);
+  private asyncSearchAbortController: AbortController | null = null;
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   private readonly elementRef = inject(ElementRef);
   private positionCleanup: (() => void) | null = null;
@@ -143,6 +167,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
       document.body.removeChild(dropdown);
     }
     this.removePositionListeners();
+    this.cancelAsyncSearch();
   }
 
   protected readonly triggerClasses = computed(() => {
@@ -160,10 +185,16 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   protected readonly displayValue = computed(() => {
     const val = this.value();
     const opts = this.options();
+    const asyncOpts = this.asyncOptions();
+    const isAsync = this.isAsyncMode();
 
     if (this.multiple() && Array.isArray(val)) {
       if (val.length === 0) return '';
       const labels = val.map((v) => {
+        if (isAsync) {
+          const asyncOpt = asyncOpts.find((o) => o.value === v);
+          if (asyncOpt) return asyncOpt.label;
+        }
         const opt = opts.find((o) => o.value() === v);
         return opt?.getLabel() || String(v);
       });
@@ -171,6 +202,11 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     }
 
     if (val === null || val === undefined) return '';
+
+    if (isAsync) {
+      const asyncOpt = asyncOpts.find((o) => o.value === val);
+      if (asyncOpt) return asyncOpt.label;
+    }
     const opt = opts.find((o) => o.value() === val);
     return opt?.getLabel() || String(val);
   });
@@ -186,7 +222,12 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     return this.displayValue() || this.placeholder();
   });
 
+  protected readonly isAsyncMode = computed(() => this.asyncSearch() !== null);
+
   protected readonly visibleOptions = computed(() => {
+    // In async mode, don't filter content children - they're not used
+    if (this.isAsyncMode()) return [];
+
     const query = this.searchQuery().toLowerCase().trim();
     const opts = this.options();
 
@@ -198,10 +239,26 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     });
   });
 
+  protected readonly visibleAsyncOptions = computed(() => {
+    if (!this.isAsyncMode()) return [];
+    return this.asyncOptions();
+  });
+
   protected readonly exactMatchExists = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     if (!query) return true;
+
+    if (this.isAsyncMode()) {
+      return this.asyncOptions().some((opt) => opt.label.toLowerCase() === query);
+    }
     return this.options().some((opt) => opt.getLabel().toLowerCase() === query);
+  });
+
+  protected readonly totalVisibleCount = computed(() => {
+    if (this.isAsyncMode()) {
+      return this.visibleAsyncOptions().length;
+    }
+    return this.visibleOptions().length;
   });
 
   @HostListener('document:click', ['$event'])
@@ -260,6 +317,23 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     this.searchQuery.set('');
     this.focusedIndex.set(-1);
     this.closed.emit();
+
+    // Clean up async state
+    this.cancelAsyncSearch();
+    this.asyncLoading.set(false);
+    this.asyncError.set(null);
+    // Keep asyncOptions so displayValue still works after selection
+  }
+
+  private cancelAsyncSearch(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+    if (this.asyncSearchAbortController) {
+      this.asyncSearchAbortController.abort();
+      this.asyncSearchAbortController = null;
+    }
   }
 
   selectOption(option: OptionComponent<T>, event?: MouseEvent): void {
@@ -304,6 +378,47 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     }
   }
 
+  selectAsyncOption(option: AsyncSelectOption<T>, event?: MouseEvent): void {
+    event?.stopPropagation();
+
+    if (option.disabled) return;
+    if (!this.selectable()) return;
+
+    const optionValue = option.value;
+
+    if (this.multiple()) {
+      const currentValue = (this.value() as T[]) || [];
+      const index = currentValue.indexOf(optionValue);
+
+      let newValue: T[];
+      if (index === -1) {
+        newValue = [...currentValue, optionValue];
+      } else {
+        newValue = currentValue.filter((_, i) => i !== index);
+      }
+
+      this.value.set(newValue);
+      // In multiple+searchable mode, clear search and refocus input
+      if (this.searchable()) {
+        this.searchQuery.set('');
+        this.focusedIndex.set(-1);
+        this.asyncOptions.set([]);
+        setTimeout(() => this.searchInputRef?.nativeElement?.focus());
+      }
+    } else {
+      this.value.set(optionValue);
+      this.close();
+    }
+  }
+
+  isAsyncOptionSelected(option: AsyncSelectOption<T>): boolean {
+    const val = this.value();
+    if (this.multiple() && Array.isArray(val)) {
+      return val.includes(option.value);
+    }
+    return val === option.value;
+  }
+
   deleteOption(optionValue: T): void {
     // Remove from selection if selected
     if (this.multiple()) {
@@ -323,10 +438,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
       case ' ':
         event.preventDefault();
         if (this.isOpen()) {
-          const focused = this.visibleOptions()[this.focusedIndex()];
-          if (focused) {
-            this.selectOption(focused);
-          }
+          this.selectFocusedOption();
         } else {
           this.open();
         }
@@ -377,12 +489,23 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
       case 'Enter':
         event.preventDefault();
         if (this.isOpen()) {
-          const visible = this.visibleOptions();
-          const focused = visible[this.focusedIndex()];
-          if (focused) {
-            this.selectOption(focused);
-          } else if (visible.length === 1) {
-            this.selectOption(visible[0]);
+          const focusedIdx = this.focusedIndex();
+
+          if (focusedIdx >= 0) {
+            this.selectFocusedOption();
+          } else if (this.totalVisibleCount() === 1) {
+            // Auto-select single visible option
+            if (this.isAsyncMode()) {
+              const asyncOpts = this.visibleAsyncOptions();
+              if (asyncOpts.length === 1) {
+                this.selectAsyncOption(asyncOpts[0]);
+              }
+            } else {
+              const visible = this.visibleOptions();
+              if (visible.length === 1) {
+                this.selectOption(visible[0]);
+              }
+            }
           } else if (this.creatable() && this.searchQuery().trim() && !this.exactMatchExists()) {
             this.handleCreate();
           }
@@ -400,17 +523,104 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     }
   }
 
+  private selectFocusedOption(): void {
+    const focusedIdx = this.focusedIndex();
+    if (focusedIdx < 0) return;
+
+    if (this.isAsyncMode()) {
+      const asyncOpts = this.visibleAsyncOptions();
+      const focused = asyncOpts[focusedIdx];
+      if (focused) {
+        this.selectAsyncOption(focused);
+      }
+    } else {
+      const focused = this.visibleOptions()[focusedIdx];
+      if (focused) {
+        this.selectOption(focused);
+      }
+    }
+  }
+
   protected onSearchInput(value: string): void {
     this.searchQuery.set(value);
-    // Auto-highlight when exactly one option is visible
-    const visible = this.visibleOptions();
-    this.focusedIndex.set(visible.length === 1 ? 0 : -1);
+
     if (!this.isOpen()) {
-      // Open without focus/select since user is already typing
       this.isOpen.set(true);
       this.focusedIndex.set(-1);
       this.opened.emit();
       this.portalDropdown();
+    }
+
+    if (this.isAsyncMode()) {
+      this.triggerAsyncSearch(value);
+    } else {
+      // Auto-highlight when exactly one option is visible
+      const visible = this.visibleOptions();
+      this.focusedIndex.set(visible.length === 1 ? 0 : -1);
+    }
+  }
+
+  private triggerAsyncSearch(query: string): void {
+    // Clear previous debounce timer
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+
+    // Cancel previous request
+    if (this.asyncSearchAbortController) {
+      this.asyncSearchAbortController.abort();
+      this.asyncSearchAbortController = null;
+    }
+
+    const trimmedQuery = query.trim();
+
+    // Check minimum search length
+    if (trimmedQuery.length < this.minSearchLength()) {
+      this.asyncOptions.set([]);
+      this.asyncLoading.set(false);
+      this.asyncError.set(null);
+      this.focusedIndex.set(-1);
+      return;
+    }
+
+    // Set loading state immediately for visual feedback
+    this.asyncLoading.set(true);
+    this.asyncError.set(null);
+
+    // Debounce the actual search
+    this.debounceTimer = setTimeout(() => {
+      this.executeAsyncSearch(trimmedQuery);
+    }, this.debounceTime());
+  }
+
+  private async executeAsyncSearch(query: string): Promise<void> {
+    const searchFn = this.asyncSearch();
+    if (!searchFn) return;
+
+    this.asyncSearchAbortController = new AbortController();
+    const signal = this.asyncSearchAbortController.signal;
+
+    try {
+      const results = await searchFn(query);
+
+      // Check if request was aborted
+      if (signal.aborted) return;
+
+      this.asyncOptions.set(results);
+      this.asyncLoading.set(false);
+      this.asyncError.set(null);
+
+      // Auto-highlight first option if results exist
+      this.focusedIndex.set(results.length > 0 ? 0 : -1);
+    } catch (error) {
+      // Ignore abort errors
+      if (signal.aborted) return;
+
+      this.asyncOptions.set([]);
+      this.asyncLoading.set(false);
+      this.asyncError.set(error instanceof Error ? error.message : 'Search failed');
+      this.focusedIndex.set(-1);
     }
   }
 
@@ -423,32 +633,62 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   }
 
   private focusNext(): void {
-    const opts = this.visibleOptions();
     const current = this.focusedIndex();
-    let next = current + 1;
 
-    while (next < opts.length && opts[next].disabled()) {
-      next++;
-    }
+    if (this.isAsyncMode()) {
+      const opts = this.visibleAsyncOptions();
+      let next = current + 1;
 
-    if (next < opts.length) {
-      this.focusedIndex.set(next);
-      this.scrollToFocused();
+      while (next < opts.length && opts[next].disabled) {
+        next++;
+      }
+
+      if (next < opts.length) {
+        this.focusedIndex.set(next);
+        this.scrollToFocusedAsync(next);
+      }
+    } else {
+      const opts = this.visibleOptions();
+      let next = current + 1;
+
+      while (next < opts.length && opts[next].disabled()) {
+        next++;
+      }
+
+      if (next < opts.length) {
+        this.focusedIndex.set(next);
+        this.scrollToFocused();
+      }
     }
   }
 
   private focusPrevious(): void {
-    const opts = this.visibleOptions();
     const current = this.focusedIndex();
-    let prev = current - 1;
 
-    while (prev >= 0 && opts[prev].disabled()) {
-      prev--;
-    }
+    if (this.isAsyncMode()) {
+      const opts = this.visibleAsyncOptions();
+      let prev = current - 1;
 
-    if (prev >= 0) {
-      this.focusedIndex.set(prev);
-      this.scrollToFocused();
+      while (prev >= 0 && opts[prev].disabled) {
+        prev--;
+      }
+
+      if (prev >= 0) {
+        this.focusedIndex.set(prev);
+        this.scrollToFocusedAsync(prev);
+      }
+    } else {
+      const opts = this.visibleOptions();
+      let prev = current - 1;
+
+      while (prev >= 0 && opts[prev].disabled()) {
+        prev--;
+      }
+
+      if (prev >= 0) {
+        this.focusedIndex.set(prev);
+        this.scrollToFocused();
+      }
     }
   }
 
@@ -456,6 +696,17 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     const focused = this.visibleOptions()[this.focusedIndex()];
     if (focused) {
       focused.elementRef.nativeElement.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  private scrollToFocusedAsync(index: number): void {
+    const dropdown = this.dropdownRef?.nativeElement;
+    if (!dropdown) return;
+
+    const optionElements = dropdown.querySelectorAll('.ui-async-option');
+    const focusedElement = optionElements[index] as HTMLElement | undefined;
+    if (focusedElement) {
+      focusedElement.scrollIntoView({ block: 'nearest' });
     }
   }
 
@@ -486,7 +737,6 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     dropdown.style.left = '';
     dropdown.style.bottom = '';
     dropdown.style.width = '';
-    dropdown.style.minWidth = '';
     dropdown.style.zIndex = '';
     dropdown.style.margin = '';
 
@@ -506,7 +756,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     const openAbove = spaceBelow < dropdownHeight + gap && spaceAbove > spaceBelow;
 
     dropdown.style.position = 'fixed';
-    dropdown.style.minWidth = `${triggerRect.width}px`;
+    dropdown.style.width = `${triggerRect.width}px`;
     dropdown.style.left = `${triggerRect.left}px`;
     dropdown.style.zIndex = '99999';
     dropdown.style.margin = '0';

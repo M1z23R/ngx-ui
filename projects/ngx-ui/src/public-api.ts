@@ -40,7 +40,7 @@ export type { TableColumn, SortDirection, SortState } from './lib/components/tab
 export { CellValuePipe } from './lib/components/table/cell-value.pipe';
 
 export { SelectComponent } from './lib/components/select/select.component';
-export type { SelectVariant, SelectSize } from './lib/components/select/select.component';
+export type { SelectVariant, SelectSize, AsyncSelectOption, AsyncSearchFn } from './lib/components/select/select.component';
 export { OptionComponent } from './lib/components/select/option.component';
 export { OptionTemplateDirective } from './lib/components/select/option-template.directive';
 export type { OptionTemplateContext } from './lib/components/select/option-template.directive';

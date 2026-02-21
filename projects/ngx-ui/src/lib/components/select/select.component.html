@@ -82,9 +82,64 @@
     [attr.aria-multiselectable]="multiple()"
   >
     <div class="ui-select__options">
-      <ng-content />
-      @if (visibleOptions().length === 0 && !(creatable() && searchQuery().trim())) {
-        <div class="ui-select__empty">No options found</div>
+      @if (isAsyncMode()) {
+        <!-- Async mode: render options from asyncSearch results -->
+        @if (asyncLoading()) {
+          <div class="ui-select__loading">
+            <svg class="ui-select__spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+              <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
+            </svg>
+            <span>Searching...</span>
+          </div>
+        } @else if (asyncError()) {
+          <div class="ui-select__error-message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ asyncError() }}</span>
+          </div>
+        } @else {
+          @for (option of visibleAsyncOptions(); track option.value; let i = $index) {
+            <div
+              class="ui-async-option"
+              [class.ui-async-option--selected]="isAsyncOptionSelected(option)"
+              [class.ui-async-option--disabled]="option.disabled"
+              [class.ui-async-option--focused]="focusedIndex() === i"
+              [attr.role]="'option'"
+              [attr.aria-selected]="isAsyncOptionSelected(option)"
+              [attr.aria-disabled]="option.disabled"
+              (click)="selectAsyncOption(option, $event)"
+            >
+              @if (multiple() && isAsyncOptionSelected(option)) {
+                <svg class="ui-async-option__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              }
+              <span class="ui-async-option__content">
+                @if (optionTemplate(); as tpl) {
+                  <ng-container *ngTemplateOutlet="tpl.templateRef; context: { $implicit: option.value, option: option.value, selected: isAsyncOptionSelected(option), disabled: !!option.disabled }"></ng-container>
+                } @else {
+                  {{ option.label }}
+                }
+              </span>
+            </div>
+          }
+          @if (visibleAsyncOptions().length === 0 && searchQuery().trim().length >= minSearchLength()) {
+            <div class="ui-select__empty">No results found</div>
+          }
+          @if (searchQuery().trim().length < minSearchLength() && minSearchLength() > 0) {
+            <div class="ui-select__empty">Type at least {{ minSearchLength() }} characters to search</div>
+          }
+        }
+      } @else {
+        <!-- Static mode: render content children -->
+        <ng-content />
+        @if (visibleOptions().length === 0 && !(creatable() && searchQuery().trim())) {
+          <div class="ui-select__empty">No options found</div>
+        }
       }
     </div>
     @if (creatable() && searchQuery().trim() && !exactMatchExists()) {

@@ -141,6 +141,7 @@
   opacity: 0;
   transform: translateY(-8px);
   transition: opacity var(--ui-transition-fast), transform var(--ui-transition-fast);
+  box-sizing: border-box;
 }
 
 .ui-select__dropdown--open {
@@ -219,4 +220,88 @@
 .ui-select__hint {
   font-size: var(--ui-font-sm);
   color: var(--ui-text-muted);
+}
+
+/* Async options */
+.ui-async-option {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-spacing-sm);
+  padding: var(--ui-spacing-sm) var(--ui-spacing-md);
+  cursor: pointer;
+  transition: background-color var(--ui-transition-fast);
+}
+
+.ui-async-option:hover:not(.ui-async-option--disabled) {
+  background-color: var(--ui-bg-hover);
+}
+
+.ui-async-option--selected {
+  background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+}
+
+.ui-async-option--selected:hover:not(.ui-async-option--disabled) {
+  background-color: color-mix(in srgb, var(--ui-primary) 15%, transparent);
+}
+
+.ui-async-option--focused {
+  background-color: var(--ui-bg-hover);
+  outline: none;
+}
+
+.ui-async-option--focused.ui-async-option--selected {
+  background-color: color-mix(in srgb, var(--ui-primary) 15%, transparent);
+}
+
+.ui-async-option--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-async-option__check {
+  flex-shrink: 0;
+  color: var(--ui-primary);
+}
+
+.ui-async-option__content {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Loading state */
+.ui-select__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-spacing-sm);
+  padding: var(--ui-spacing-lg) var(--ui-spacing-md);
+  color: var(--ui-text-muted);
+  font-size: var(--ui-font-sm);
+}
+
+.ui-select__spinner {
+  animation: ui-select-spin 1s linear infinite;
+}
+
+@keyframes ui-select-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error message in dropdown */
+.ui-select__error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-spacing-sm);
+  padding: var(--ui-spacing-md);
+  color: var(--ui-danger);
+  font-size: var(--ui-font-sm);
 }
