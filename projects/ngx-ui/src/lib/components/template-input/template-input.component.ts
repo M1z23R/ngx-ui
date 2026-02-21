@@ -4,6 +4,7 @@ import {
   ChangeDetectionStrategy,
   computed,
   contentChild,
+  contentChildren,
   inject,
   input,
   model,
@@ -13,6 +14,7 @@ import {
   ElementRef,
   Renderer2,
   OnDestroy,
+  AfterViewInit,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -47,6 +49,13 @@ export interface VariablePopoverContext {
 })
 export class VariablePopoverDirective {}
 
+/** Directive to mark suffix content (buttons, icons, etc.) */
+@Directive({
+  selector: '[uiTemplateInputSuffix]',
+  standalone: true,
+})
+export class TemplateInputSuffixDirective {}
+
 @Component({
   selector: 'ui-template-input',
   standalone: true,
@@ -55,7 +64,7 @@ export class VariablePopoverDirective {}
   styleUrl: './template-input.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TemplateInputComponent implements OnDestroy {
+export class TemplateInputComponent implements OnDestroy, AfterViewInit {
   readonly label = input<string>('');
   readonly placeholder = input<string>('');
   readonly hint = input<string>('');
@@ -83,6 +92,16 @@ export class TemplateInputComponent implements OnDestroy {
 
   /** Custom popover template for variables. Receives VariablePopoverContext. */
   readonly popoverTemplate = contentChild(VariablePopoverDirective, { read: TemplateRef });
+
+  /** Detect if suffix content is projected */
+  readonly hasSuffix = contentChildren(TemplateInputSuffixDirective);
+
+  protected readonly suffixRef = viewChild<ElementRef<HTMLDivElement>>('suffixEl');
+
+  /** Computed padding-right based on suffix width */
+  protected readonly suffixPadding = signal(0);
+
+  private resizeObserver: ResizeObserver | null = null;
 
   private static nextId = 0;
   private readonly generatedId = `ui-template-input-${++TemplateInputComponent.nextId}`;
@@ -122,6 +141,32 @@ export class TemplateInputComponent implements OnDestroy {
 
   constructor(private readonly renderer: Renderer2) {
     this.injectStyles();
+  }
+
+  ngAfterViewInit(): void {
+    this.observeSuffix();
+  }
+
+  private observeSuffix(): void {
+    const suffixEl = this.suffixRef()?.nativeElement;
+    if (!suffixEl) return;
+
+    this.updateSuffixPadding(suffixEl);
+
+    this.resizeObserver = new ResizeObserver(() => {
+      this.updateSuffixPadding(suffixEl);
+    });
+    this.resizeObserver.observe(suffixEl);
+  }
+
+  private updateSuffixPadding(el: HTMLElement): void {
+    const width = el.offsetWidth;
+    if (width > 0) {
+      // Add small gap between content and suffix
+      this.suffixPadding.set(width + 8);
+    } else {
+      this.suffixPadding.set(0);
+    }
   }
 
   protected readonly highlightedHtml = computed(() => {
@@ -397,6 +442,11 @@ export class TemplateInputComponent implements OnDestroy {
       el.remove();
       this.removePositionListeners();
       this.isPortaled = false;
+    }
+    // Clean up ResizeObserver
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
     }
   }
 }

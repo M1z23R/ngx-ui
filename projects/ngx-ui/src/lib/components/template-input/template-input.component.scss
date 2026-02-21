@@ -43,8 +43,15 @@
   font-size: var(--ui-font-md);
   color: var(--ui-text);
   white-space: pre;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   pointer-events: none;
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE/Edge
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome/Safari
+  }
 }
 
 .ui-template-input__input {
@@ -68,6 +75,22 @@
 
   &:disabled {
     cursor: not-allowed;
+  }
+}
+
+.ui-template-input__suffix {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-spacing-xs);
+  padding-right: var(--ui-spacing-sm);
+  pointer-events: auto;
+
+  &:empty {
+    display: none;
   }
 }
 

@@ -19,6 +19,7 @@
     <div
       class="ui-template-input__mirror"
       #mirror
+      [style.padding-right.px]="suffixPadding() || null"
       [innerHTML]="highlightedHtml()"
     ></div>
     <input
@@ -26,6 +27,7 @@
       #inputEl
       [id]="inputId()"
       type="text"
+      [style.padding-right.px]="suffixPadding() || null"
       [placeholder]="placeholder()"
       [disabled]="disabled()"
       [readonly]="readonly()"
@@ -36,6 +38,9 @@
       (click)="syncScroll()"
       (keydown)="onKeyDown()"
     />
+    <div class="ui-template-input__suffix" #suffixEl>
+      <ng-content select="[uiTemplateInputSuffix]" />
+    </div>
   </div>
   @if (error()) {
     <span class="ui-template-input__error">{{ error() }}</span>

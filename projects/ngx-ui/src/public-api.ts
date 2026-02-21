@@ -145,5 +145,5 @@ export type { TreeNode, TreeDropPosition, TreeNodeDropEvent } from './lib/compon
 export { TreeNodeComponent } from './lib/components/tree/tree-node.component';
 
 // Template Input
-export { TemplateInputComponent, VariablePopoverDirective } from './lib/components/template-input/template-input.component';
+export { TemplateInputComponent, VariablePopoverDirective, TemplateInputSuffixDirective } from './lib/components/template-input/template-input.component';
 export type { TemplateVariable, VariablePopoverContext, VariableState } from './lib/components/template-input/template-input.component';
