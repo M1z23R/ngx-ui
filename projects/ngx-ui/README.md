@@ -45,12 +45,20 @@ import { ButtonComponent } from '@m1z23r/ngx-ui';
 @Component({
   imports: [ButtonComponent],
   template: `
-    <ui-button variant="primary" size="md" (clicked)="handleClick($event)">
+    <ui-button color="primary" size="md" (clicked)="handleClick($event)">
       Click me
     </ui-button>
 
-    <ui-button variant="outline" [loading]="isLoading">
-      Submit
+    <ui-button variant="outline" color="danger" [loading]="isLoading">
+      Delete
+    </ui-button>
+
+    <ui-button variant="ghost" color="secondary">
+      Cancel
+    </ui-button>
+
+    <ui-button variant="elevated" color="success">
+      Save
     </ui-button>
   `
 })
@@ -60,7 +68,8 @@ import { ButtonComponent } from '@m1z23r/ngx-ui';
 
 | Input | Type | Default | Description |
 |-------|------|---------|-------------|
-| `variant` | `'primary' \| 'secondary' \| 'outline' \| 'ghost'` | `'primary'` | Button style variant |
+| `variant` | `'default' \| 'outline' \| 'ghost' \| 'elevated'` | `'default'` | Button style variant |
+| `color` | `'primary' \| 'secondary' \| 'danger' \| 'success' \| 'warning'` | `'primary'` | Button color |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size |
 | `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | HTML button type |
 | `disabled` | `boolean` | `false` | Disable the button |
@@ -109,12 +118,35 @@ import { InputComponent } from '@m1z23r/ngx-ui';
 | `readonly` | `boolean` | `false` | Make input read-only |
 | `required` | `boolean` | `false` | Mark as required (shows asterisk) |
 | `id` | `string` | auto-generated | Custom input ID |
+| `validators` | `ValidatorFn[]` | `[]` | Array of validator functions |
+| `validatorFn` | `ValidatorFn \| null` | `null` | Single validator function |
+| `showErrorsOn` | `'touched' \| 'dirty' \| 'always'` | `'touched'` | When to show validation errors |
 
 #### Two-way Binding
 
 | Model | Type | Description |
 |-------|------|-------------|
 | `value` | `string \| number` | The input value |
+
+#### Validation
+
+The input component has built-in validation support:
+
+```typescript
+// Computed properties
+errors: Signal<ValidationError[]>    // All current validation errors
+isValid: Signal<boolean>             // Whether input passes validation
+isInvalid: Signal<boolean>           // Whether input fails validation
+errorMessage: Signal<string | null>  // First error message
+validationState: Signal<ValidationState>  // Full validation state
+
+// Methods
+reset(): void                        // Reset value and validation state
+markAsTouched(): void                // Mark as touched
+markAsDirty(): void                  // Mark as dirty
+hasError(key: string): boolean       // Check for specific error
+getError(key: string): ValidationError | undefined  // Get specific error
+```
 
 ---
 
@@ -399,7 +431,7 @@ import { ButtonComponent, LoadingDirective, LoadingService } from '@m1z23r/ngx-u
     <!-- These buttons automatically show loading when their identifier is active -->
     <ui-button uiLoading="login" (clicked)="login()">Login</ui-button>
     <ui-button uiLoading="submit" (clicked)="submit()">Submit</ui-button>
-    <ui-button uiLoading="delete" variant="outline">Delete</ui-button>
+    <ui-button uiLoading="delete" variant="outline" color="danger">Delete</ui-button>
   `
 })
 export class MyComponent {
@@ -569,7 +601,7 @@ import { CircularProgressComponent } from '@m1z23r/ngx-ui';
 |-------|------|---------|-------------|
 | `value` | `number` | `0` | Progress value (0-100) |
 | `variant` | `'primary' \| 'success' \| 'warning' \| 'danger'` | `'primary'` | Color variant |
-| `size` | `'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Circle size |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Circle size |
 | `strokeWidth` | `number` | `4` | Stroke width in pixels |
 | `showLabel` | `boolean` | `false` | Show percentage in center |
 | `indeterminate` | `boolean` | `false` | Spinning animation |
@@ -791,18 +823,13 @@ import { TabsComponent, TabComponent } from '@m1z23r/ngx-ui';
 | `variant` | `'default' \| 'pills' \| 'underline'` | `'default'` | Tab style |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size |
 | `ariaLabel` | `string` | `''` | Accessibility label |
+| `renderMode` | `'conditional' \| 'persistent'` | `'conditional'` | Tab content rendering strategy |
 
 ### Tabs Two-way Binding
 
 | Model | Type | Description |
 |-------|------|-------------|
 | `activeTab` | `string \| number` | Active tab ID or index |
-
-### Tabs Outputs
-
-| Output | Type | Description |
-|--------|------|-------------|
-| `changed` | `string \| number` | Emitted when active tab changes |
 
 ### Tab Inputs
 
@@ -876,10 +903,10 @@ export class MyComponent {
 | Method | Parameters | Returns | Description |
 |--------|------------|---------|-------------|
 | `show(config)` | `ToastConfig` | `ToastRef` | Show toast with full config |
-| `success(message, title?)` | `string, string?` | `ToastRef` | Success toast |
-| `error(message, title?)` | `string, string?` | `ToastRef` | Error toast |
-| `warning(message, title?)` | `string, string?` | `ToastRef` | Warning toast |
-| `info(message, title?)` | `string, string?` | `ToastRef` | Info toast |
+| `success(message, title?, duration?)` | `string, string?, number?` | `ToastRef` | Success toast |
+| `error(message, title?, duration?)` | `string, string?, number?` | `ToastRef` | Error toast |
+| `warning(message, title?, duration?)` | `string, string?, number?` | `ToastRef` | Warning toast |
+| `info(message, title?, duration?)` | `string, string?, number?` | `ToastRef` | Info toast |
 | `dismiss(id)` | `string` | `void` | Dismiss specific toast |
 | `dismissAll()` | - | `void` | Dismiss all toasts |
 
@@ -894,6 +921,7 @@ export class MyComponent {
 | `position` | `ToastPosition` | `'top-right'` | Screen position |
 | `dismissible` | `boolean` | `true` | Show close button |
 | `showProgress` | `boolean` | `true` | Show countdown bar |
+| `maxVisible` | `number` | - | Max visible toasts at once |
 
 ### ToastPosition Values
 
@@ -927,7 +955,6 @@ import { PaginationComponent } from '@m1z23r/ngx-ui';
   [maxPages]="7"
   [showFirstLast]="true"
   size="md"
-  (changed)="onPageChange($event)"
 />
 ```
 
@@ -946,12 +973,6 @@ import { PaginationComponent } from '@m1z23r/ngx-ui';
 | Model | Type | Description |
 |-------|------|-------------|
 | `page` | `number` | Current page (1-indexed) |
-
-### Outputs
-
-| Output | Type | Description |
-|--------|------|-------------|
-| `changed` | `number` | Emitted when page changes |
 
 ### Features
 
@@ -981,7 +1002,7 @@ import { DialogService, DIALOG_DATA, DIALOG_REF, DialogRef, ModalComponent, Butt
       <p>{{ data.message }}</p>
 
       <ng-container footer>
-        <ui-button variant="outline" (clicked)="dialogRef.close(false)">Cancel</ui-button>
+        <ui-button variant="outline" color="secondary" (clicked)="dialogRef.close(false)">Cancel</ui-button>
         <ui-button (clicked)="dialogRef.close(true)">Confirm</ui-button>
       </ng-container>
     </ui-modal>
@@ -1021,7 +1042,7 @@ A wrapper component that provides the modal UI with backdrop, header, body, and 
 
   <!-- Footer content (named slot) -->
   <ng-container footer>
-    <ui-button variant="outline" (clicked)="cancel()">Cancel</ui-button>
+    <ui-button variant="outline" color="secondary" (clicked)="cancel()">Cancel</ui-button>
     <ui-button (clicked)="save()">Save</ui-button>
   </ng-container>
 </ui-modal>
@@ -1109,8 +1130,17 @@ All components use CSS custom properties for styling. Override these in your glo
 
   // Semantic colors
   --ui-success: #22c55e;
+  --ui-success-hover: #16a34a;
+  --ui-success-active: #15803d;
+  --ui-success-text: #ffffff;
   --ui-danger: #ef4444;
+  --ui-danger-hover: #dc2626;
+  --ui-danger-active: #b91c1c;
+  --ui-danger-text: #ffffff;
   --ui-warning: #f59e0b;
+  --ui-warning-hover: #d97706;
+  --ui-warning-active: #b45309;
+  --ui-warning-text: #ffffff;
 
   // Background colors
   --ui-bg: #ffffff;
@@ -1132,6 +1162,7 @@ All components use CSS custom properties for styling. Override these in your glo
   --ui-radius-sm: 0.25rem;
   --ui-radius-md: 0.375rem;
   --ui-radius-lg: 0.5rem;
+  --ui-radius-xl: 0.75rem;
 
   // Spacing
   --ui-spacing-xs: 0.25rem;
@@ -1146,10 +1177,13 @@ All components use CSS custom properties for styling. Override these in your glo
   --ui-navbar-height: 4rem;
   --ui-footer-height: 3rem;
 
+  // Breakpoints
+  --ui-breakpoint-mobile: 768px;
+
   // Shadows
   --ui-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --ui-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --ui-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --ui-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --ui-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
   // Transitions
   --ui-transition-fast: 150ms ease;
@@ -1161,6 +1195,19 @@ All components use CSS custom properties for styling. Override these in your glo
   --ui-font-sm: 0.875rem;
   --ui-font-md: 1rem;
   --ui-font-lg: 1.125rem;
+  --ui-font-xl: 1.25rem;
+
+  // Dropdown & Select
+  --ui-dropdown-bg: var(--ui-bg);
+  --ui-dropdown-border: var(--ui-border);
+  --ui-dropdown-shadow: var(--ui-shadow-lg);
+  --ui-dropdown-radius: var(--ui-radius-md);
+  --ui-dropdown-max-height: 300px;
+
+  // Option/Item states
+  --ui-option-hover-bg: var(--ui-bg-hover);
+  --ui-option-selected-bg: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  --ui-option-selected-text: var(--ui-primary);
 }
 ```
 
