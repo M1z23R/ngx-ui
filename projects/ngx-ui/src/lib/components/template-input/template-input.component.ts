@@ -9,6 +9,7 @@ import {
   input,
   model,
   output,
+  PLATFORM_ID,
   signal,
   viewChild,
   ElementRef,
@@ -19,7 +20,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgTemplateOutlet } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 
 export interface TemplateVariable {
   key: string;
@@ -114,6 +115,8 @@ export class TemplateInputComponent implements OnDestroy, AfterViewInit {
   @ViewChild('popoverRef', { static: true }) popoverRef!: ElementRef<HTMLElement>;
 
   private readonly hostRef = inject(ElementRef);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
   private positionCleanup: (() => void) | null = null;
   private currentSpanRect: DOMRect | null = null;
   private isPortaled = false;
@@ -338,7 +341,9 @@ export class TemplateInputComponent implements OnDestroy, AfterViewInit {
 
   private injectStyles(): void {
     const styleId = 'ui-tmpl-styles';
-    let existing = document.getElementById(styleId);
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    let existing = this.document.getElementById(styleId);
 
     // Always replace to handle HMR / version upgrades
     if (existing) {
@@ -349,12 +354,12 @@ export class TemplateInputComponent implements OnDestroy, AfterViewInit {
     const style = this.renderer.createElement('style');
     this.renderer.setProperty(style, 'id', styleId);
     this.renderer.setProperty(style, 'textContent', TemplateInputComponent.STYLE_CONTENT);
-    this.renderer.appendChild(document.head, style);
+    this.renderer.appendChild(this.document.head, style);
   }
 
   private portalPopover(): void {
     const el = this.popoverRef.nativeElement;
-    document.body.appendChild(el);
+    this.document.body.appendChild(el);
     el.style.display = 'block';
     this.isPortaled = true;
     requestAnimationFrame(() => this.updatePopoverPosition());

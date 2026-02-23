@@ -5,8 +5,10 @@ import {
   EnvironmentInjector,
   inject,
   Injectable,
+  PLATFORM_ID,
   signal,
 } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { ToastContainerComponent } from './toast-container.component';
 import { ToastRef } from './toast-ref';
 import {
@@ -51,6 +53,8 @@ import {
 export class ToastService {
   private readonly appRef = inject(ApplicationRef);
   private readonly injector = inject(EnvironmentInjector);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
 
   private containerRef: ComponentRef<ToastContainerComponent> | null = null;
   private readonly toasts = signal<ToastData[]>([]);
@@ -177,7 +181,9 @@ export class ToastService {
 
     this.updateContainer();
     this.appRef.attachView(this.containerRef.hostView);
-    document.body.appendChild(this.containerRef.location.nativeElement);
+    if (isPlatformBrowser(this.platformId)) {
+      this.document.body.appendChild(this.containerRef.location.nativeElement);
+    }
   }
 
   private updateContainer(): void {

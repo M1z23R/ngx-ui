@@ -1,4 +1,5 @@
-import { Directive, ElementRef, input, OnDestroy, Renderer2, signal, effect, HostListener } from '@angular/core';
+import { Directive, ElementRef, inject, input, OnDestroy, PLATFORM_ID, Renderer2, signal, effect, HostListener } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
@@ -11,6 +12,9 @@ export class TooltipDirective implements OnDestroy {
   readonly tooltipPosition = input<TooltipPosition>('top');
   readonly tooltipDelay = input(200);
   readonly tooltipDisabled = input(false);
+
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
 
   private tooltipElement: HTMLElement | null = null;
   private showTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -93,7 +97,7 @@ export class TooltipDirective implements OnDestroy {
     this.renderer.addClass(arrow, 'ui-tooltip__arrow');
     this.renderer.appendChild(this.tooltipElement, arrow);
 
-    this.renderer.appendChild(document.body, this.tooltipElement);
+    this.renderer.appendChild(this.document.body, this.tooltipElement);
     this.injectStyles();
   }
 
@@ -138,14 +142,14 @@ export class TooltipDirective implements OnDestroy {
 
   private destroyTooltip(): void {
     if (this.tooltipElement) {
-      this.renderer.removeChild(document.body, this.tooltipElement);
+      this.renderer.removeChild(this.document.body, this.tooltipElement);
       this.tooltipElement = null;
     }
   }
 
   private injectStyles(): void {
     const styleId = 'ui-tooltip-styles';
-    if (document.getElementById(styleId)) return;
+    if (!isPlatformBrowser(this.platformId) || this.document.getElementById(styleId)) return;
 
     const style = this.renderer.createElement('style');
     this.renderer.setProperty(style, 'id', styleId);
@@ -208,7 +212,7 @@ export class TooltipDirective implements OnDestroy {
         margin-top: -4px;
       }
     `);
-    this.renderer.appendChild(document.head, style);
+    this.renderer.appendChild(this.document.head, style);
   }
 
   ngOnDestroy(): void {

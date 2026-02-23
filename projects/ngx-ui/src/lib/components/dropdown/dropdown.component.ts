@@ -12,6 +12,7 @@ import {
   OnDestroy,
   ViewChild,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { DropdownTriggerDirective } from './dropdown-trigger.directive';
 import { DropdownItemComponent } from './dropdown-item.component';
 
@@ -37,6 +38,7 @@ export class DropdownComponent implements OnDestroy {
   @ViewChild('menuRef', { static: true }) menuRef!: ElementRef<HTMLElement>;
 
   private readonly elementRef = inject(ElementRef);
+  private readonly document = inject(DOCUMENT);
   private positionCleanup: (() => void) | null = null;
   private contextMenuPosition: { x: number; y: number } | null = null;
 
@@ -77,8 +79,8 @@ export class DropdownComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     const menu = this.menuRef?.nativeElement;
-    if (menu?.parentElement === document.body) {
-      document.body.removeChild(menu);
+    if (menu?.parentElement === this.document.body) {
+      this.document.body.removeChild(menu);
     }
     this.removePositionListeners();
   }
@@ -193,7 +195,7 @@ export class DropdownComponent implements OnDestroy {
     if (!menu) return;
 
     menu.style.display = 'block';
-    document.body.appendChild(menu);
+    this.document.body.appendChild(menu);
     this.updateMenuPosition();
     this.addPositionListeners();
   }
@@ -202,7 +204,7 @@ export class DropdownComponent implements OnDestroy {
     const menu = this.menuRef?.nativeElement;
     if (!menu) return;
 
-    if (menu.parentElement === document.body) {
+    if (menu.parentElement === this.document.body) {
       const wrapper = this.elementRef.nativeElement.querySelector('.ui-dropdown');
       if (wrapper) {
         wrapper.appendChild(menu);

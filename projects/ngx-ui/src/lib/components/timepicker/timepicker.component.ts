@@ -12,6 +12,7 @@ import {
   OnDestroy,
   ViewChild,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 
 export type TimepickerSize = 'sm' | 'md' | 'lg';
 export type TimepickerVariant = 'default' | 'outlined' | 'filled';
@@ -69,6 +70,7 @@ export class TimepickerComponent implements OnDestroy {
   readonly selectedPeriod = signal<'AM' | 'PM'>('AM');
 
   private readonly elementRef = inject(ElementRef);
+  private readonly document = inject(DOCUMENT);
   private positionCleanup: (() => void) | null = null;
 
   private static nextId = 0;
@@ -147,8 +149,8 @@ export class TimepickerComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     const dropdown = this.dropdownRef?.nativeElement;
-    if (dropdown?.parentElement === document.body) {
-      document.body.removeChild(dropdown);
+    if (dropdown?.parentElement === this.document.body) {
+      this.document.body.removeChild(dropdown);
     }
     this.removePositionListeners();
   }
@@ -325,7 +327,7 @@ export class TimepickerComponent implements OnDestroy {
     if (!dropdown) return;
 
     dropdown.style.display = 'block';
-    document.body.appendChild(dropdown);
+    this.document.body.appendChild(dropdown);
     this.updateDropdownPosition();
     this.addPositionListeners();
   }
@@ -334,7 +336,7 @@ export class TimepickerComponent implements OnDestroy {
     const dropdown = this.dropdownRef?.nativeElement;
     if (!dropdown) return;
 
-    if (dropdown.parentElement === document.body) {
+    if (dropdown.parentElement === this.document.body) {
       const wrapper = this.elementRef.nativeElement.querySelector('.ui-timepicker-wrapper');
       if (wrapper) {
         wrapper.appendChild(dropdown);

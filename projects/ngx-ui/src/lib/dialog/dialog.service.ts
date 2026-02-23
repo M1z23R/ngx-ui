@@ -6,9 +6,11 @@ import {
   inject,
   Injectable,
   Injector,
+  PLATFORM_ID,
   StaticProvider,
   Type,
 } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { DialogRef } from './dialog-ref';
 import { DIALOG_DATA, DIALOG_REF, DialogConfig, DEFAULT_DIALOG_CONFIG } from './dialog.config';
 
@@ -40,6 +42,8 @@ import { DIALOG_DATA, DIALOG_REF, DialogConfig, DEFAULT_DIALOG_CONFIG } from './
 export class DialogService {
   private readonly appRef = inject(ApplicationRef);
   private readonly injector = inject(EnvironmentInjector);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
 
   /**
    * Opens a dialog with the specified component.
@@ -66,7 +70,9 @@ export class DialogService {
     hostElement.dataset['dialogConfig'] = JSON.stringify(mergedConfig);
 
     this.appRef.attachView(componentRef.hostView);
-    document.body.appendChild(hostElement);
+    if (isPlatformBrowser(this.platformId)) {
+      this.document.body.appendChild(hostElement);
+    }
 
     return dialogRef;
   }
