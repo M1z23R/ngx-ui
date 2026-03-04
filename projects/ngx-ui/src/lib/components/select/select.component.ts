@@ -63,6 +63,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly initialLoad = input(false);
   readonly initialOptions = input<AsyncSelectOption<T>[]>([]);
   readonly defaultOptions = input<AsyncSelectOption<T>[]>([]);
+  readonly cacheAsyncResults = input(false);
 
   // Two-way binding
   readonly value = model<T | T[] | null>(null);
@@ -93,6 +94,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly asyncError = signal<string | null>(null);
   private asyncSearchAbortController: AbortController | null = null;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private asyncCache = new Map<string, AsyncSelectOption<T>[]>();
 
   private readonly elementRef = inject(ElementRef);
   private readonly document = inject(DOCUMENT);
@@ -361,6 +363,10 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     }
   }
 
+  clearAsyncCache(): void {
+    this.asyncCache.clear();
+  }
+
   selectOption(option: OptionComponent<T>, event?: MouseEvent): void {
     event?.stopPropagation();
 
@@ -623,6 +629,16 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     const searchFn = this.asyncSearch();
     if (!searchFn) return;
 
+    // Check cache first if caching is enabled
+    if (this.cacheAsyncResults() && this.asyncCache.has(query)) {
+      const cachedResults = this.asyncCache.get(query)!;
+      this.asyncOptions.set(cachedResults);
+      this.asyncLoading.set(false);
+      this.asyncError.set(null);
+      this.focusedIndex.set(cachedResults.length > 0 ? 0 : -1);
+      return;
+    }
+
     this.asyncSearchAbortController = new AbortController();
     const signal = this.asyncSearchAbortController.signal;
 
@@ -631,6 +647,11 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
 
       // Check if request was aborted
       if (signal.aborted) return;
+
+      // Store in cache if caching is enabled
+      if (this.cacheAsyncResults()) {
+        this.asyncCache.set(query, results);
+      }
 
       this.asyncOptions.set(results);
       this.asyncLoading.set(false);
