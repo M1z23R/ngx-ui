@@ -62,6 +62,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly minSearchLength = input(0);
   readonly initialLoad = input(false);
   readonly initialOptions = input<AsyncSelectOption<T>[]>([]);
+  readonly defaultOptions = input<AsyncSelectOption<T>[]>([]);
 
   // Two-way binding
   readonly value = model<T | T[] | null>(null);
@@ -259,7 +260,13 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
 
   protected readonly visibleAsyncOptions = computed(() => {
     if (!this.isAsyncMode()) return [];
-    return this.asyncOptions();
+    const asyncOpts = this.asyncOptions();
+    const query = this.searchQuery().trim();
+    // Show default options when no search query and no async results
+    if (!query && asyncOpts.length === 0) {
+      return this.defaultOptions();
+    }
+    return asyncOpts;
   });
 
   protected readonly exactMatchExists = computed(() => {
