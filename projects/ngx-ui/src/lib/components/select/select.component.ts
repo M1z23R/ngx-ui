@@ -60,6 +60,7 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
   readonly asyncSearch = input<AsyncSearchFn<T> | null>(null);
   readonly debounceTime = input(300);
   readonly minSearchLength = input(0);
+  readonly initialLoad = input(false);
 
   // Two-way binding
   readonly value = model<T | T[] | null>(null);
@@ -140,6 +141,13 @@ export class SelectComponent<T = unknown> implements AfterContentInit, OnDestroy
     effect(() => {
       this.options(); // track changes
       this.setupOptionHandlers();
+    });
+
+    // Initial load for async search
+    effect(() => {
+      if (this.initialLoad() && this.asyncSearch()) {
+        this.executeAsyncSearch('');
+      }
     });
   }
 
