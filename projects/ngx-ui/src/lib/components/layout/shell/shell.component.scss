@@ -27,6 +27,11 @@
     "footer  footer";
 }
 
+.ui-shell--simple {
+  grid-template-areas: "sidebar content";
+  grid-template-rows: 1fr;
+}
+
 /* Mobile layout - sidebar is removed from grid flow */
 .ui-shell--mobile {
   grid-template-areas:
@@ -34,6 +39,11 @@
     "content"
     "footer";
   grid-template-columns: 1fr;
+}
+
+.ui-shell--simple.ui-shell--mobile {
+  grid-template-areas: "content";
+  grid-template-rows: 1fr;
 }
 
 .ui-shell__backdrop {

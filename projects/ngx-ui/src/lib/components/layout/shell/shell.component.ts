@@ -1,7 +1,7 @@
 import { Component, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { SidebarService } from '../../../services/sidebar.service';
 
-export type ShellVariant = 'default' | 'header';
+export type ShellVariant = 'default' | 'header' | 'simple';
 
 @Component({
   selector: 'ui-shell',
