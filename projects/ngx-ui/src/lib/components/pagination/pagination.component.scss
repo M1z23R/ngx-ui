@@ -60,6 +60,12 @@
   user-select: none;
 }
 
+/* Page select */
+.ui-pagination__select {
+  min-width: 80px;
+  max-width: 100px;
+}
+
 /* Sizes */
 .ui-pagination--sm .ui-pagination__btn {
   min-width: 28px;

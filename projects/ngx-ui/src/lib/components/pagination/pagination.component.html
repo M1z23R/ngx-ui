@@ -26,19 +26,34 @@
     </svg>
   </button>
 
-  @for (item of visiblePages(); track item.value) {
-    @if (item.type === 'ellipsis') {
-      <span class="ui-pagination__ellipsis">...</span>
-    } @else {
-      <button
-        type="button"
-        class="ui-pagination__btn ui-pagination__btn--page"
-        [class.ui-pagination__btn--active]="item.value === page()"
-        [attr.aria-current]="item.value === page() ? 'page' : null"
-        (click)="goToPage(item.value)"
-      >
-        {{ item.value }}
-      </button>
+  @if (pageSelect()) {
+    <ui-select
+      class="ui-pagination__select"
+      [searchable]="true"
+      [value]="page()"
+      (valueChange)="onPageSelect($any($event))"
+      [size]="size()"
+      [placeholder]="'Page...'"
+    >
+      @for (p of pageOptions(); track p) {
+        <ui-option [value]="p">{{ p }}</ui-option>
+      }
+    </ui-select>
+  } @else {
+    @for (item of visiblePages(); track item.value) {
+      @if (item.type === 'ellipsis') {
+        <span class="ui-pagination__ellipsis">...</span>
+      } @else {
+        <button
+          type="button"
+          class="ui-pagination__btn ui-pagination__btn--page"
+          [class.ui-pagination__btn--active]="item.value === page()"
+          [attr.aria-current]="item.value === page() ? 'page' : null"
+          (click)="goToPage(item.value)"
+        >
+          {{ item.value }}
+        </button>
+      }
     }
   }
 

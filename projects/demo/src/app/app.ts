@@ -1066,6 +1066,15 @@ interface User {
                 [showFirstLast]="false"
               />
             </div>
+            <div>
+              <h3>Page Select</h3>
+              <ui-pagination
+                [(page)]="currentPage"
+                [total]="500"
+                [pageSize]="10"
+                [pageSelect]="true"
+              />
+            </div>
           </div>
           <p>Current page: {{ currentPage() }}, Page 2: {{ currentPage2() }}</p>
         </section>

@@ -1,10 +1,13 @@
 import { Component, input, model, computed, ChangeDetectionStrategy } from '@angular/core';
+import { SelectComponent } from '../select/select.component';
+import { OptionComponent } from '../select/option.component';
 
 export type PaginationSize = 'sm' | 'md' | 'lg';
 
 @Component({
   selector: 'ui-pagination',
   standalone: true,
+  imports: [SelectComponent, OptionComponent],
   templateUrl: './pagination.component.html',
   styleUrl: './pagination.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,11 +18,17 @@ export class PaginationComponent {
   readonly maxPages = input(5);
   readonly showFirstLast = input(true);
   readonly size = input<PaginationSize>('md');
+  readonly pageSelect = input(false);
 
   readonly page = model(1);
 
   protected readonly totalPages = computed(() => {
     return Math.max(1, Math.ceil(this.total() / this.pageSize()));
+  });
+
+  protected readonly pageOptions = computed(() => {
+    const total = this.totalPages();
+    return Array.from({ length: total }, (_, i) => i + 1);
   });
 
   protected readonly paginationClasses = computed(() => {
@@ -87,6 +96,12 @@ export class PaginationComponent {
 
     if (newPage !== this.page()) {
       this.page.set(newPage);
+    }
+  }
+
+  protected onPageSelect(value: number | null): void {
+    if (value !== null) {
+      this.goToPage(value);
     }
   }
 }
