@@ -91,7 +91,7 @@ Plus async plumbing mirrored from select:
 2. If `option.label !== String(option.value)`, `labelCache.set(option.value, option.label)`.
 3. If `autoAdd()`, push `option.value` onto `value()`.
 4. Clear `inputValue`, keep focus in input, recompute `focusedIndex` against the now-smaller visible list.
-5. Emit `added` with `option.label` (so consumers see the same string shape they already handle) — **open question flagged below**.
+5. Emit `added` with `option.label`. Rationale: for free-text chips, the emitted string is what the user typed (effectively the label). For suggestion picks, the label is the user-facing string and is what `autoAdd=false` consumers will want when building their own chip.
 
 ### Async search
 
@@ -164,10 +164,6 @@ Add a "Chip input with suggestions" section in `projects/demo/src/app/app.ts` sh
 - Extracting a shared dropdown/portal utility used by both chip-input and select (deferred until a third consumer appears).
 - Caching async results (`cacheAsyncResults` exists in select; not pulled over unless requested).
 - Default options / initial options inputs from select (`defaultOptions`, `initialOptions`, `initialLoad`). Can be added later if needed.
-
-## Open Question (flagged, to resolve in planning)
-
-The existing `added` output emits `string`. When a suggestion with separate label/value is picked, is the emitted string the `label` or `String(value)`? Default proposal: emit `option.label` for user-facing consistency with the free-text path. Confirm during implementation planning.
 
 ## File Touch List
 
