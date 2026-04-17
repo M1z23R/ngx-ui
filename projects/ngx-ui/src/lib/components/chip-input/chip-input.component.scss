@@ -148,3 +148,116 @@
   font-size: 0.75rem;
   color: var(--ui-danger);
 }
+
+.ui-chip-input__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  margin-top: var(--ui-spacing-xs);
+  background-color: var(--ui-dropdown-bg, var(--ui-bg));
+  border: 1px solid var(--ui-dropdown-border, var(--ui-border));
+  border-radius: var(--ui-dropdown-radius, var(--ui-radius-md));
+  box-shadow: var(--ui-dropdown-shadow, var(--ui-shadow-lg));
+  overflow: hidden;
+  display: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity var(--ui-transition-fast), transform var(--ui-transition-fast);
+  box-sizing: border-box;
+}
+
+.ui-chip-input__dropdown--open {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ui-chip-input__options {
+  max-height: var(--ui-dropdown-max-height, 300px);
+  overflow-y: auto;
+}
+
+.ui-chip-input__suggestion {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-spacing-sm);
+  padding: var(--ui-spacing-sm) var(--ui-spacing-md);
+  cursor: pointer;
+  transition: background-color var(--ui-transition-fast);
+}
+
+.ui-chip-input__suggestion:hover:not(.ui-chip-input__suggestion--disabled) {
+  background-color: var(--ui-bg-hover);
+}
+
+.ui-chip-input__suggestion--focused {
+  background-color: var(--ui-bg-hover);
+  outline: none;
+}
+
+.ui-chip-input__suggestion--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-chip-input__suggestion-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-chip-input__create {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-spacing-sm);
+  padding: var(--ui-spacing-sm) var(--ui-spacing-md);
+  font-size: 0.875rem;
+  color: var(--ui-primary);
+  cursor: pointer;
+  border-top: 1px solid var(--ui-border);
+  transition: background-color var(--ui-transition-fast);
+}
+
+.ui-chip-input__create:hover {
+  background-color: var(--ui-bg-hover);
+}
+
+.ui-chip-input__empty {
+  padding: var(--ui-spacing-md);
+  text-align: center;
+  color: var(--ui-text-muted);
+  font-size: 0.875rem;
+}
+
+.ui-chip-input__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-spacing-sm);
+  padding: var(--ui-spacing-lg) var(--ui-spacing-md);
+  color: var(--ui-text-muted);
+  font-size: 0.875rem;
+}
+
+.ui-chip-input__spinner {
+  animation: ui-chip-input-spin 1s linear infinite;
+}
+
+@keyframes ui-chip-input-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.ui-chip-input__error-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-spacing-sm);
+  padding: var(--ui-spacing-md);
+  color: var(--ui-danger);
+  font-size: 0.875rem;
+}
