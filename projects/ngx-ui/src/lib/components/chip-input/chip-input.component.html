@@ -4,6 +4,7 @@
   }
 
   <div
+    #triggerRef
     class="ui-chip-input"
     [class]="containerClasses()"
     (click)="onContainerClick()"
@@ -39,11 +40,81 @@
       class="ui-chip-input__input"
       [placeholder]="value().length === 0 ? placeholder() : ''"
       [disabled]="disabled()"
-      [(ngModel)]="inputValue"
+      [value]="inputValue()"
+      (input)="onInputChange($any($event.target).value)"
       (keydown)="onInputKeydown($event)"
       (focus)="onFocus()"
       (blur)="onBlur()"
+      autocomplete="off"
     />
+  </div>
+
+  <div
+    #dropdownRef
+    class="ui-chip-input__dropdown"
+    [class.ui-chip-input__dropdown--open]="isOpen()"
+    [attr.role]="'listbox'"
+    (mousedown)="onDropdownMousedown($event)"
+  >
+    <div class="ui-chip-input__options">
+      @if (isAsyncMode() && asyncLoading()) {
+        <div class="ui-chip-input__loading">
+          <svg class="ui-chip-input__spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
+          </svg>
+          <span>Searching...</span>
+        </div>
+      } @else if (isAsyncMode() && asyncError()) {
+        <div class="ui-chip-input__error-message">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ asyncError() }}</span>
+        </div>
+      } @else {
+        @for (option of visibleSuggestions(); track option.value; let i = $index) {
+          <div
+            class="ui-chip-input__suggestion"
+            [class.ui-chip-input__suggestion--focused]="focusedIndex() === i"
+            [class.ui-chip-input__suggestion--disabled]="option.disabled"
+            [attr.role]="'option'"
+            [attr.aria-disabled]="option.disabled"
+            (click)="addSuggestion(option)"
+          >
+            @if (optionTemplate(); as tpl) {
+              <ng-container
+                [ngTemplateOutlet]="tpl.templateRef"
+                [ngTemplateOutletContext]="{ $implicit: option.value, option: option.value, selected: false, disabled: !!option.disabled }"
+              />
+            } @else {
+              <span class="ui-chip-input__suggestion-label">{{ option.label }}</span>
+            }
+          </div>
+        }
+        @if (visibleSuggestions().length === 0 && !showCreateRow()) {
+          @if (isAsyncMode() && inputValue().trim().length < minSearchLength() && minSearchLength() > 0) {
+            <div class="ui-chip-input__empty">Type at least {{ minSearchLength() }} characters to search</div>
+          } @else {
+            <div class="ui-chip-input__empty">No suggestions</div>
+          }
+        }
+      }
+    </div>
+    @if (showCreateRow()) {
+      <div
+        class="ui-chip-input__create"
+        (click)="addChip(inputValue().trim())"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Create "{{ inputValue().trim() }}"
+      </div>
+    }
   </div>
 
   @if (error()) {
