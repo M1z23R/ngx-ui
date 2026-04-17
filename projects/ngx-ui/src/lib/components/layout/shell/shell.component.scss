@@ -49,6 +49,6 @@
 .ui-shell__backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--ui-backdrop-bg);
   z-index: 40;
 }

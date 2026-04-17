@@ -59,8 +59,8 @@
 }
 
 .ui-badge--info {
-  background: color-mix(in srgb, var(--ui-info, #3b82f6) 15%, transparent);
-  color: var(--ui-info, #3b82f6);
+  background: color-mix(in srgb, var(--ui-info) 15%, transparent);
+  color: var(--ui-info);
 }
 
 .ui-badge__remove {

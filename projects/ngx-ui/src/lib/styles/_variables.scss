@@ -25,12 +25,17 @@
   --ui-warning-hover: #d97706;
   --ui-warning-active: #b45309;
   --ui-warning-text: #ffffff;
+  --ui-info: #3b82f6;
+  --ui-info-hover: #2563eb;
+  --ui-info-active: #1d4ed8;
+  --ui-info-text: #ffffff;
 
   // Background colors
   --ui-bg: #ffffff;
   --ui-bg-secondary: #f8fafc;
   --ui-bg-tertiary: #f1f5f9;
   --ui-bg-hover: rgba(0, 0, 0, 0.05);
+  --ui-backdrop-bg: rgba(0, 0, 0, 0.5);
 
   // Text colors
   --ui-text: #1e293b;
@@ -54,6 +59,7 @@
   --ui-spacing-md: 1rem;
   --ui-spacing-lg: 1.5rem;
   --ui-spacing-xl: 2rem;
+  --ui-spacing-2xl: 3rem;
 
   // Layout dimensions
   --ui-sidebar-width: 16rem;
@@ -73,6 +79,9 @@
   --ui-transition-fast: 150ms ease;
   --ui-transition-normal: 200ms ease;
   --ui-transition-slow: 300ms ease;
+
+  // Progress
+  --ui-progress-stripe-color: rgba(255, 255, 255, 0.15);
 
   // Font sizes
   --ui-font-xs: 0.75rem;

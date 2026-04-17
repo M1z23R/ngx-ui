@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--ui-spacing-md);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--ui-backdrop-bg);
   animation: fadeIn var(--ui-transition-fast);
 }
 

@@ -12,9 +12,9 @@
 }
 
 .ui-alert--info {
-  background: color-mix(in srgb, var(--ui-info, #3b82f6) 10%, var(--ui-bg));
-  border-color: color-mix(in srgb, var(--ui-info, #3b82f6) 30%, transparent);
-  color: var(--ui-info, #3b82f6);
+  background: color-mix(in srgb, var(--ui-info) 10%, var(--ui-bg));
+  border-color: color-mix(in srgb, var(--ui-info) 30%, transparent);
+  color: var(--ui-info);
 }
 
 .ui-alert--success {
