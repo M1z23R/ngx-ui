@@ -54,6 +54,7 @@ import {
   ShellVariant,
   ChipInputComponent,
   ChipTemplateDirective,
+  OptionTemplateDirective,
   SplitComponent,
   SplitPaneComponent,
   TreeComponent,
@@ -120,6 +121,7 @@ interface User {
     DatetimepickerComponent,
     ChipInputComponent,
     ChipTemplateDirective,
+    OptionTemplateDirective,
     SplitComponent,
     SplitPaneComponent,
     TreeComponent,
@@ -673,6 +675,55 @@ interface User {
             </ui-chip-input>
           </div>
           <p>Filters: {{ formatFilters() }}</p>
+
+          <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">With Suggestions (Creatable)</h3>
+          <div class="input-grid">
+            <ui-chip-input
+              label="Tags"
+              placeholder="Add or pick a tag..."
+              [(value)]="chipTagsCreatable"
+              [suggestions]="['angular', 'typescript', 'signals', 'rxjs', 'vitest']"
+              hint="Type to filter, Enter to create"
+            />
+            <ui-chip-input
+              label="Color (strict)"
+              placeholder="Pick a color..."
+              [(value)]="chipTagsStrict"
+              [suggestions]="['red', 'green', 'blue', 'yellow', 'purple']"
+              [strict]="true"
+              hint="Only suggestions allowed"
+            />
+          </div>
+          <p>Creatable: {{ chipTagsCreatable().join(', ') || 'None' }}</p>
+          <p>Strict: {{ chipTagsStrict().join(', ') || 'None' }}</p>
+
+          <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">With Async Search</h3>
+          <div class="input-grid">
+            <ui-chip-input
+              label="Users"
+              placeholder="Search users..."
+              [(value)]="chipTagsAsync"
+              [asyncSearch]="chipUserSearch"
+              [minSearchLength]="2"
+            />
+          </div>
+          <p>Users: {{ chipTagsAsync().join(', ') || 'None' }}</p>
+
+          <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">With Custom Option Template</h3>
+          <div class="input-grid">
+            <ui-chip-input
+              label="Colors"
+              placeholder="Pick a color..."
+              [(value)]="chipTagsCustom"
+              [suggestions]="colorOptions"
+            >
+              <ng-template uiOptionTemplate let-color>
+                <span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:8px;border:1px solid var(--ui-border)" [style.background]="color"></span>
+                <span>{{ color }}</span>
+              </ng-template>
+            </ui-chip-input>
+          </div>
+          <p>Colors: {{ chipTagsCustom().join(', ') || 'None' }}</p>
         </section>
 
         <section class="section">
@@ -2055,6 +2106,24 @@ export class App {
     { label: 'Manager', included: true },
     { label: 'Intern', included: false },
   ]);
+
+  // Chip input with suggestions
+  protected readonly chipTagsCreatable = signal<string[]>([]);
+  protected readonly chipTagsStrict = signal<string[]>([]);
+  protected readonly chipTagsAsync = signal<string[]>([]);
+  protected readonly chipTagsCustom = signal<string[]>([]);
+  protected readonly colorOptions = [
+    { label: 'Red', value: 'red' },
+    { label: 'Green', value: 'green' },
+    { label: 'Blue', value: 'blue' },
+  ];
+  protected readonly chipUserSearch = async (query: string) => {
+    await new Promise((r) => setTimeout(r, 400));
+    const pool = ['alice', 'bob', 'carol', 'dave', 'eve', 'frank'];
+    return pool
+      .filter((u) => u.toLowerCase().includes(query.toLowerCase()))
+      .map((u) => ({ label: u, value: u }));
+  };
 
   // Dropdown demo
   protected readonly lastAction = signal<string>('');
