@@ -46,6 +46,8 @@ import {
   AccordionItemComponent,
   AccordionHeaderDirective,
   SliderComponent,
+  RangeSliderComponent,
+  DateRangeValue,
   DatepickerComponent,
   DateRange,
   TimepickerComponent,
@@ -116,6 +118,7 @@ interface User {
     AccordionItemComponent,
     AccordionHeaderDirective,
     SliderComponent,
+    RangeSliderComponent,
     DatepickerComponent,
     TimepickerComponent,
     DatetimepickerComponent,
@@ -1169,6 +1172,96 @@ interface User {
         </section>
 
         <section class="section">
+          <h2>Range Slider</h2>
+          <div class="range-slider-grid">
+            <div>
+              <h3>Time range (15-min step)</h3>
+              <ui-range-slider
+                mode="time"
+                [min]="timeRangeMin"
+                [max]="timeRangeMax"
+                [(value)]="timeRangeValue"
+                [showRange]="true"
+              />
+              <p class="slider-value-text">
+                Selected: {{ formatRange(timeRangeValue(), 'time') }}
+              </p>
+            </div>
+            <div>
+              <h3>Date range (last 90 days)</h3>
+              <ui-range-slider
+                mode="date"
+                [min]="dateRangeMin"
+                [max]="dateRangeMax"
+                [(value)]="dateRangeValue"
+                [showRange]="true"
+              />
+              <p class="slider-value-text">
+                Selected: {{ formatRange(dateRangeValue(), 'date') }}
+              </p>
+            </div>
+            <div>
+              <h3>Datetime range (next 7 days, 30-min step)</h3>
+              <ui-range-slider
+                mode="datetime"
+                [min]="datetimeRangeMin"
+                [max]="datetimeRangeMax"
+                [(value)]="datetimeRangeValue"
+                [showRange]="true"
+              />
+              <p class="slider-value-text">
+                Selected: {{ formatRange(datetimeRangeValue(), 'datetime') }}
+              </p>
+            </div>
+            <div>
+              <h3>Custom step (5-min)</h3>
+              <ui-range-slider
+                mode="time"
+                [min]="timeRangeMin"
+                [max]="timeRangeMax"
+                [step]="5 * 60 * 1000"
+                [(value)]="customStepRangeValue"
+                label="Working hours"
+                [showRange]="true"
+              />
+            </div>
+            <div>
+              <h3>Sizes</h3>
+              <div class="slider-stack">
+                <ui-range-slider
+                  mode="time"
+                  size="sm"
+                  [min]="timeRangeMin"
+                  [max]="timeRangeMax"
+                />
+                <ui-range-slider
+                  mode="time"
+                  size="md"
+                  [min]="timeRangeMin"
+                  [max]="timeRangeMax"
+                />
+                <ui-range-slider
+                  mode="time"
+                  size="lg"
+                  [min]="timeRangeMin"
+                  [max]="timeRangeMax"
+                />
+              </div>
+            </div>
+            <div>
+              <h3>Disabled</h3>
+              <ui-range-slider
+                mode="time"
+                [min]="timeRangeMin"
+                [max]="timeRangeMax"
+                [disabled]="true"
+                label="Locked"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
           <h2>Datepicker</h2>
           <div class="input-grid">
             <ui-datepicker
@@ -1708,6 +1801,11 @@ interface User {
       gap: 1rem;
     }
 
+    .range-slider-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--ui-spacing-lg, 1.5rem);
+    }
     .slider-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -2262,6 +2360,65 @@ export class App {
   protected readonly sliderLg = signal(75);
   protected readonly sliderLabeled = signal(60);
   protected readonly sliderCustom = signal(500);
+
+  // Range slider demo
+  private readonly today = new Date();
+  protected readonly timeRangeMin = (() => {
+    const d = new Date(this.today);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+  protected readonly timeRangeMax = (() => {
+    const d = new Date(this.today);
+    d.setHours(23, 59, 0, 0);
+    return d;
+  })();
+  protected readonly dateRangeMin = (() => {
+    const d = new Date(this.today);
+    d.setDate(d.getDate() - 90);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+  protected readonly dateRangeMax = (() => {
+    const d = new Date(this.today);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+  protected readonly datetimeRangeMin = (() => {
+    const d = new Date(this.today);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+  protected readonly datetimeRangeMax = (() => {
+    const d = new Date(this.today);
+    d.setDate(d.getDate() + 7);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+  protected readonly timeRangeValue = signal<DateRangeValue | null>(null);
+  protected readonly dateRangeValue = signal<DateRangeValue | null>(null);
+  protected readonly datetimeRangeValue = signal<DateRangeValue | null>(null);
+  protected readonly customStepRangeValue = signal<DateRangeValue | null>(null);
+
+  protected formatRange(value: DateRangeValue | null, mode: 'time' | 'date' | 'datetime'): string {
+    if (!value) return 'None';
+    const fmt = (d: Date) => {
+      switch (mode) {
+        case 'time':
+          return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        case 'date':
+          return d.toLocaleDateString();
+        case 'datetime':
+          return d.toLocaleString([], {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+      }
+    };
+    return `${fmt(value.start)} → ${fmt(value.end)}`;
+  }
 
   // Datepicker demo
   protected readonly selectedDate = signal<Date | null>(null);

@@ -1,0 +1,82 @@
+@let isDisabled = disabled();
+@let bubbles = showBubbles();
+@let rangeOn = showRange();
+@let startPct = startPercent();
+@let endPct = endPercent();
+@let fill = fillStyle();
+
+<div [class]="rootClasses()">
+  @if (label()) {
+    <label class="ui-range-slider__label">{{ label() }}</label>
+  }
+
+  <div
+    #track
+    class="ui-range-slider__track"
+    (pointerdown)="onTrackPointerDown($event)"
+  >
+    <div class="ui-range-slider__fill" [style.left]="fill.left" [style.width]="fill.width"></div>
+
+    <div
+      class="ui-range-slider__thumb ui-range-slider__thumb--start"
+      role="slider"
+      tabindex="0"
+      data-thumb="start"
+      [attr.aria-valuemin]="minMs()"
+      [attr.aria-valuemax]="endMs()"
+      [attr.aria-valuenow]="startMs()"
+      [attr.aria-valuetext]="startLabel()"
+      [attr.aria-disabled]="isDisabled"
+      aria-label="Start"
+      aria-orientation="horizontal"
+      [style.left.%]="startPct"
+      (pointerdown)="onThumbPointerDown($event, 'start')"
+      (pointermove)="onThumbPointerMove($event, 'start')"
+      (pointerup)="onThumbPointerUp($event, 'start')"
+      (pointercancel)="onThumbPointerUp($event, 'start')"
+      (keydown)="onThumbKeyDown($event, 'start')"
+      (keyup)="onThumbKeyUp($event)"
+      (focus)="onThumbFocus('start')"
+      (blur)="onThumbBlur()"
+    >
+      @if (bubbles) {
+        <span class="ui-range-slider__bubble">{{ startLabel() }}</span>
+      }
+    </div>
+
+    <div
+      class="ui-range-slider__thumb ui-range-slider__thumb--end"
+      role="slider"
+      tabindex="0"
+      data-thumb="end"
+      [attr.aria-valuemin]="startMs()"
+      [attr.aria-valuemax]="maxMs()"
+      [attr.aria-valuenow]="endMs()"
+      [attr.aria-valuetext]="endLabel()"
+      [attr.aria-disabled]="isDisabled"
+      aria-label="End"
+      aria-orientation="horizontal"
+      [style.left.%]="endPct"
+      (pointerdown)="onThumbPointerDown($event, 'end')"
+      (pointermove)="onThumbPointerMove($event, 'end')"
+      (pointerup)="onThumbPointerUp($event, 'end')"
+      (pointercancel)="onThumbPointerUp($event, 'end')"
+      (keydown)="onThumbKeyDown($event, 'end')"
+      (keyup)="onThumbKeyUp($event)"
+      (focus)="onThumbFocus('end')"
+      (blur)="onThumbBlur()"
+    >
+      @if (bubbles) {
+        <span class="ui-range-slider__bubble">{{ endLabel() }}</span>
+      }
+    </div>
+  </div>
+
+  @if (rangeOn) {
+    <div class="ui-range-slider__range">
+      <span>{{ startLabel() }}</span>
+      <span class="ui-range-slider__range-arrow" aria-hidden="true">→</span>
+      <span>{{ endLabel() }}</span>
+    </div>
+  }
+</div>

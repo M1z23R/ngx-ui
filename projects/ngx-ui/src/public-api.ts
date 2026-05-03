@@ -113,6 +113,13 @@ export { FilePreviewPipe } from './lib/components/file-chooser/file-preview.pipe
 export { SliderComponent } from './lib/components/slider/slider.component';
 export type { SliderSize } from './lib/components/slider/slider.component';
 
+export { RangeSliderComponent } from './lib/components/range-slider/range-slider.component';
+export type {
+  RangeSliderMode,
+  RangeSliderSize,
+  DateRangeValue,
+} from './lib/components/range-slider/range-slider.component';
+
 export { ChipInputComponent, ChipTemplateDirective } from './lib/components/chip-input/chip-input.component';
 export type { ChipInputVariant, ChipInputSize, ChipTemplateContext } from './lib/components/chip-input/chip-input.component';
 
