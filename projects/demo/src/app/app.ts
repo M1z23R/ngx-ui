@@ -1226,6 +1226,26 @@ interface User {
               />
             </div>
             <div>
+              <h3>Bubbles on hover/drag/focus</h3>
+              <ui-range-slider
+                mode="time"
+                bubbles="active"
+                [min]="timeRangeMin"
+                [max]="timeRangeMax"
+                [showRange]="true"
+              />
+            </div>
+            <div>
+              <h3>Bubbles disabled</h3>
+              <ui-range-slider
+                mode="time"
+                bubbles="never"
+                [min]="timeRangeMin"
+                [max]="timeRangeMax"
+                [showRange]="true"
+              />
+            </div>
+            <div>
               <h3>Sizes</h3>
               <div class="slider-stack">
                 <ui-range-slider

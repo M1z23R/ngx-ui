@@ -13,6 +13,7 @@ import {
 
 export type RangeSliderMode = 'time' | 'date' | 'datetime';
 export type RangeSliderSize = 'sm' | 'md' | 'lg';
+export type RangeSliderBubbles = 'always' | 'active' | 'never';
 
 export interface DateRangeValue {
   start: Date;
@@ -48,7 +49,7 @@ export class RangeSliderComponent {
 
   readonly step = input<number | null>(null);
 
-  readonly showBubbles = input(true);
+  readonly bubbles = input<RangeSliderBubbles>('always');
   readonly showRange = input(false);
   readonly format = input<string | null>(null);
 
@@ -61,6 +62,7 @@ export class RangeSliderComponent {
   protected readonly endMs = signal(0);
   protected readonly dragging = signal<ThumbId | null>(null);
   protected readonly focusedThumb = signal<ThumbId | null>(null);
+  protected readonly hoveredThumb = signal<ThumbId | null>(null);
 
   private lastEmitted: DateRangeValue | null = null;
 
@@ -84,6 +86,16 @@ export class RangeSliderComponent {
 
   protected readonly startLabel = computed(() => this.formatMs(this.startMs()));
   protected readonly endLabel = computed(() => this.formatMs(this.endMs()));
+
+  protected readonly bubbleVisible = computed(() => {
+    const mode = this.bubbles();
+    if (mode === 'never') return { start: false, end: false };
+    if (mode === 'always') return { start: true, end: true };
+    // 'active' — visible when dragged, hovered, or focused
+    const active = (t: ThumbId) =>
+      this.dragging() === t || this.focusedThumb() === t || this.hoveredThumb() === t;
+    return { start: active('start'), end: active('end') };
+  });
 
   protected readonly rootClasses = computed(() => {
     const classes = ['ui-range-slider', `ui-range-slider--${this.size()}`];
@@ -214,6 +226,14 @@ export class RangeSliderComponent {
 
   protected onThumbBlur(): void {
     this.focusedThumb.set(null);
+  }
+
+  protected onThumbEnter(thumb: ThumbId): void {
+    this.hoveredThumb.set(thumb);
+  }
+
+  protected onThumbLeave(): void {
+    this.hoveredThumb.set(null);
   }
 
   // -- Internal helpers -------------------------------------------------

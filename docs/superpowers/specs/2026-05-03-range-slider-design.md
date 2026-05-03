@@ -20,6 +20,7 @@ mode trio, but in a single unified component.
 ```ts
 export type RangeSliderMode = 'time' | 'date' | 'datetime';
 export type RangeSliderSize = 'sm' | 'md' | 'lg';
+export type RangeSliderBubbles = 'always' | 'active' | 'never';
 export interface DateRangeValue { start: Date; end: Date; }
 
 @Component({ selector: 'ui-range-slider', standalone: true, changeDetection: OnPush })
@@ -35,7 +36,7 @@ export class RangeSliderComponent {
   // Step in milliseconds. null → mode default.
   readonly step = input<number | null>(null);
 
-  readonly showBubbles = input(true);
+  readonly bubbles     = input<RangeSliderBubbles>('always');
   readonly showRange   = input(false);
   readonly format      = input<string | null>(null); // override display format
 
@@ -93,8 +94,12 @@ helper for time — no extra dependencies.
   Same diameters as `ui-slider` (14 / 18 / 24 px). Hover scale 1.1, active
   scale 1.15 with focus ring.
 - Bubbles: small chip with downward arrow. `--ui-bg` background,
-  `--ui-border` border, `--ui-text` text, `--ui-radius-sm`. Always visible
-  while `showBubbles` is true (default).
+  `--ui-border` border, `--ui-text` text, `--ui-radius-sm`. Visibility
+  controlled by `bubbles`:
+  - `'always'` (default) — always visible above each thumb.
+  - `'active'` — visible only on a per-thumb basis when that thumb is being
+    dragged, hovered, or has keyboard focus.
+  - `'never'` — never rendered.
 - Range line: muted text below the track, only when `showRange` is true.
 
 ## Interaction
@@ -188,6 +193,7 @@ export { RangeSliderComponent } from './lib/components/range-slider/range-slider
 export type {
   RangeSliderMode,
   RangeSliderSize,
+  RangeSliderBubbles,
   DateRangeValue,
 } from './lib/components/range-slider/range-slider.component';
 ```

@@ -83,6 +83,7 @@
   white-space: nowrap;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
+  animation: ui-range-slider-bubble-in var(--ui-transition-fast) ease-out;
 
   &::after {
     content: '';
@@ -167,5 +168,16 @@
   .ui-range-slider__thumb:active {
     transform: translate(-50%, -50%);
     box-shadow: var(--ui-shadow-sm);
+  }
+}
+
+@keyframes ui-range-slider-bubble-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }

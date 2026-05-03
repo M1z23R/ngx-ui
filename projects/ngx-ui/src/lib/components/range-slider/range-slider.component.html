@@ -1,5 +1,5 @@
 @let isDisabled = disabled();
-@let bubbles = showBubbles();
+@let bubbleVis = bubbleVisible();
 @let rangeOn = showRange();
 @let startPct = startPercent();
 @let endPct = endPercent();
@@ -34,12 +34,14 @@
       (pointermove)="onThumbPointerMove($event, 'start')"
       (pointerup)="onThumbPointerUp($event, 'start')"
       (pointercancel)="onThumbPointerUp($event, 'start')"
+      (pointerenter)="onThumbEnter('start')"
+      (pointerleave)="onThumbLeave()"
       (keydown)="onThumbKeyDown($event, 'start')"
       (keyup)="onThumbKeyUp($event)"
       (focus)="onThumbFocus('start')"
       (blur)="onThumbBlur()"
     >
-      @if (bubbles) {
+      @if (bubbleVis.start) {
         <span class="ui-range-slider__bubble">{{ startLabel() }}</span>
       }
     </div>
@@ -61,12 +63,14 @@
       (pointermove)="onThumbPointerMove($event, 'end')"
       (pointerup)="onThumbPointerUp($event, 'end')"
       (pointercancel)="onThumbPointerUp($event, 'end')"
+      (pointerenter)="onThumbEnter('end')"
+      (pointerleave)="onThumbLeave()"
       (keydown)="onThumbKeyDown($event, 'end')"
       (keyup)="onThumbKeyUp($event)"
       (focus)="onThumbFocus('end')"
       (blur)="onThumbBlur()"
     >
-      @if (bubbles) {
+      @if (bubbleVis.end) {
         <span class="ui-range-slider__bubble">{{ endLabel() }}</span>
       }
     </div>

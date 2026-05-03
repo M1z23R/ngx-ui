@@ -117,6 +117,7 @@ export { RangeSliderComponent } from './lib/components/range-slider/range-slider
 export type {
   RangeSliderMode,
   RangeSliderSize,
+  RangeSliderBubbles,
   DateRangeValue,
 } from './lib/components/range-slider/range-slider.component';
 
