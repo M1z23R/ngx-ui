@@ -20,18 +20,20 @@
       [(ngModel)]="value"
     ></textarea>
   </div>
-  <div class="ui-textarea__footer">
-    @if (error()) {
-      <span class="ui-textarea__error">{{ error() }}</span>
-    } @else if (hint()) {
-      <span class="ui-textarea__hint">{{ hint() }}</span>
-    } @else {
-      <span></span>
-    }
-    @if (maxlength()) {
-      <span class="ui-textarea__counter" [class.ui-textarea__counter--limit]="isAtLimit()">
-        {{ value().toString().length }} / {{ maxlength() }}
-      </span>
-    }
-  </div>
+  @if (error() || hint() || maxlength()) {
+    <div class="ui-textarea__footer">
+      @if (error()) {
+        <span class="ui-textarea__error">{{ error() }}</span>
+      } @else if (hint()) {
+        <span class="ui-textarea__hint">{{ hint() }}</span>
+      } @else {
+        <span></span>
+      }
+      @if (maxlength()) {
+        <span class="ui-textarea__counter" [class.ui-textarea__counter--limit]="isAtLimit()">
+          {{ value().toString().length }} / {{ maxlength() }}
+        </span>
+      }
+    </div>
+  }
 </div>
