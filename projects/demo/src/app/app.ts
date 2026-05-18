@@ -63,6 +63,7 @@ import {
   TreeNode,
   TreeNodeDropEvent,
   TreeNodeContextAction,
+  JsonTreeComponent,
   TemplateInputComponent,
   TemplateVariable,
   VariablePopoverDirective,
@@ -129,6 +130,7 @@ interface User {
     SplitComponent,
     SplitPaneComponent,
     TreeComponent,
+    JsonTreeComponent,
     TemplateInputComponent,
     VariablePopoverDirective,
     TemplateInputSuffixDirective,
@@ -1459,6 +1461,25 @@ interface User {
         </section>
 
         <section class="section">
+          <h2>JSON Tree</h2>
+          <p class="section-description">
+            Inspect arbitrary JSON payloads like a Chrome DevTools response.
+            Right-click any node — "Copy value" returns the primitive
+            (unquoted) or pretty JSON; "Copy path" returns a JSON path like
+            <code>response.positions[0].companyName</code>; "Copy object"
+            returns the pretty-printed value at that node.
+          </p>
+          <div class="tree-container">
+            <ui-json-tree
+              [json]="samplePayload"
+              rootLabel="response"
+              [expandDepth]="2"
+              (nodeContextAction)="onTreeNodeContextAction($event)"
+            />
+          </div>
+        </section>
+
+        <section class="section">
           <h2>Split Panes</h2>
           <div class="split-demo-grid">
             <div>
@@ -2471,6 +2492,32 @@ export class App {
 
   // Tree demo
   protected readonly lastTreeAction = signal<string>('');
+
+  protected readonly samplePayload: unknown = {
+    status: 'ok',
+    count: 17,
+    positions: [
+      {
+        id: 1,
+        title: 'Senior Angular Engineer',
+        companyName: 'Vega IT Niš',
+        remote: true,
+        salaryRange: { min: 4000, max: 6500, currency: 'EUR' },
+        tags: ['angular', 'typescript', 'frontend'],
+        postedAt: '2026-05-10T09:00:00Z',
+      },
+      {
+        id: 2,
+        title: 'Backend Engineer',
+        companyName: 'Microsoft',
+        remote: false,
+        salaryRange: { min: 5000, max: 8000, currency: 'USD' },
+        tags: ['dotnet', 'azure'],
+        postedAt: '2026-05-12T14:30:00Z',
+      },
+    ],
+    meta: { page: 1, perPage: 20, hasMore: false },
+  };
   protected apiTreeNodes: TreeNode[] = [
     {
       label: 'Users API',

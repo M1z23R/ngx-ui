@@ -155,8 +155,12 @@ export type {
   TreeNodeDropEvent,
   TreeNodeActionType,
   TreeNodeContextAction,
+  TreeFormatter,
 } from './lib/components/tree/tree.component';
 export { TreeNodeComponent } from './lib/components/tree/tree-node.component';
+export { JsonTreeComponent } from './lib/components/tree/json-tree.component';
+export type { JsonKind, JsonNodeMeta, JsonToTreeOptions } from './lib/components/tree/json-utils';
+export { jsonToTreeNodes } from './lib/components/tree/json-utils';
 
 // Template Input
 export { TemplateInputComponent, VariablePopoverDirective, TemplateInputSuffixDirective } from './lib/components/template-input/template-input.component';

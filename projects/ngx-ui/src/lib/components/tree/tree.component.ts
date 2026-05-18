@@ -44,6 +44,8 @@ export interface TreeNodeContextAction {
   action: TreeNodeActionType;
 }
 
+export type TreeFormatter = (node: TreeNode, path: TreeNode[]) => string | null | undefined;
+
 export const TREE_HOST = new InjectionToken<TreeComponent>('TREE_HOST');
 
 @Component({
@@ -62,6 +64,9 @@ export class TreeComponent {
   readonly expandOnClick = input(false);
   readonly contextMenu = input(false);
   readonly pathSeparator = input(' / ');
+  readonly valueFormatter = input<TreeFormatter | null>(null);
+  readonly pathFormatter = input<TreeFormatter | null>(null);
+  readonly objectFormatter = input<TreeFormatter | null>(null);
 
   readonly nodeClick = output<TreeNode>();
   readonly nodeExpand = output<TreeNode>();
@@ -171,15 +176,23 @@ export class TreeComponent {
     if (!node) return;
 
     switch (action) {
-      case 'copyValue':
-        this.copyToClipboard(node.label);
+      case 'copyValue': {
+        const text = this.valueFormatter()?.(node, path) ?? node.label;
+        this.copyToClipboard(text);
         break;
-      case 'copyPath':
-        this.copyToClipboard(path.map((n) => n.label).join(this.pathSeparator()));
+      }
+      case 'copyPath': {
+        const text =
+          this.pathFormatter()?.(node, path) ??
+          path.map((n) => n.label).join(this.pathSeparator());
+        this.copyToClipboard(text);
         break;
-      case 'copyObject':
-        this.copyToClipboard(this.serializeNode(node));
+      }
+      case 'copyObject': {
+        const text = this.objectFormatter()?.(node, path) ?? this.serializeNode(node);
+        this.copyToClipboard(text);
         break;
+      }
       case 'expandAll':
         this.expandSubtree(node, true);
         break;
