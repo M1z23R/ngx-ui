@@ -4,9 +4,28 @@
       [node]="node"
       [level]="0"
       [indent]="indent()"
+      [parentPath]="[]"
       (nodeClick)="_onNodeClick($event)"
       (nodeExpand)="_onNodeExpand($event)"
       (nodeCollapse)="_onNodeCollapse($event)"
     />
   }
 </div>
+
+@if (contextMenu()) {
+  <ui-dropdown #treeMenu>
+    <ui-dropdown-item (clicked)="_runAction('copyValue')">Copy value</ui-dropdown-item>
+    <ui-dropdown-item (clicked)="_runAction('copyPath')">Copy path</ui-dropdown-item>
+    <ui-dropdown-item (clicked)="_runAction('copyObject')">Copy object</ui-dropdown-item>
+    @if (_menuHasChildren()) {
+      <ui-dropdown-divider />
+      <ui-dropdown-item (clicked)="_runAction('expandAll')">Expand all</ui-dropdown-item>
+      <ui-dropdown-item (clicked)="_runAction('collapseAll')">Collapse all</ui-dropdown-item>
+    }
+    @if (_menuHasParent()) {
+      <ui-dropdown-divider />
+      <ui-dropdown-item (clicked)="_runAction('goToParent')">Go to parent</ui-dropdown-item>
+      <ui-dropdown-item (clicked)="_runAction('collapseParent')">Collapse parent</ui-dropdown-item>
+    }
+  </ui-dropdown>
+}

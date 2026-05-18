@@ -147,3 +147,16 @@
   outline-offset: -1px;
   border-radius: var(--ui-radius-sm);
 }
+
+.ui-tree-node__content--flash {
+  animation: ui-tree-node-flash 1s ease-out;
+}
+
+@keyframes ui-tree-node-flash {
+  0% {
+    background-color: color-mix(in srgb, var(--ui-primary) 40%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}

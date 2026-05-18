@@ -1,4 +1,15 @@
-import { Component, input, output, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  computed,
+  inject,
+  viewChild,
+  ElementRef,
+  AfterViewInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import type { TreeNode, TreeDropPosition } from './tree.component';
 import { TREE_HOST } from './tree.component';
 
@@ -17,30 +28,26 @@ function isDescendantOf(target: TreeNode, potentialAncestor: TreeNode): boolean 
   styleUrl: './tree-node.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TreeNodeComponent {
+export class TreeNodeComponent implements AfterViewInit, OnDestroy {
   readonly node = input.required<TreeNode>();
   readonly level = input(0);
   readonly indent = input(16);
+  readonly parentPath = input<TreeNode[]>([]);
 
   readonly nodeClick = output<TreeNode>();
   readonly nodeExpand = output<TreeNode>();
   readonly nodeCollapse = output<TreeNode>();
 
   private readonly treeHost = inject(TREE_HOST);
+  private readonly contentRef = viewChild<ElementRef<HTMLElement>>('contentRef');
 
-  private readonly _expanded = signal<boolean | null>(null);
+  readonly path = computed<TreeNode[]>(() => [...this.parentPath(), this.node()]);
 
-  readonly isExpanded = computed(() => {
-    const manualState = this._expanded();
-    if (manualState !== null) {
-      return manualState;
-    }
-    return this.node().expanded ?? false;
-  });
+  readonly isExpanded = computed(() => this.treeHost.isExpanded(this.node()));
 
   readonly hasChildren = computed(() => {
     const children = this.node().children;
-    return children && children.length > 0;
+    return !!children && children.length > 0;
   });
 
   readonly indentGuides = computed(() => {
@@ -52,6 +59,8 @@ export class TreeNodeComponent {
 
   readonly isDragging = computed(() => this.treeHost._dragNode() === this.node());
 
+  readonly isFlashing = computed(() => this.treeHost._flashNode() === this.node());
+
   readonly dropPosition = computed<TreeDropPosition | null>(() => {
     if (this.treeHost._dragOverNode() === this.node()) {
       return this.treeHost._dropPosition();
@@ -59,18 +68,19 @@ export class TreeNodeComponent {
     return null;
   });
 
+  ngAfterViewInit(): void {
+    const el = this.contentRef()?.nativeElement;
+    if (el) this.treeHost._registerNode(this.node(), el);
+  }
+
+  ngOnDestroy(): void {
+    this.treeHost._unregisterNode(this.node());
+  }
+
   toggle(event: MouseEvent): void {
     event.stopPropagation();
     if (!this.hasChildren()) return;
-
-    const newState = !this.isExpanded();
-    this._expanded.set(newState);
-
-    if (newState) {
-      this.nodeExpand.emit(this.node());
-    } else {
-      this.nodeCollapse.emit(this.node());
-    }
+    this.treeHost.setExpanded(this.node(), !this.isExpanded());
   }
 
   onClick(event: MouseEvent): void {
@@ -86,6 +96,13 @@ export class TreeNodeComponent {
     if (this.hasChildren()) {
       this.toggle(event);
     }
+  }
+
+  onContextMenu(event: MouseEvent): void {
+    if (!this.treeHost.contextMenu()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.treeHost._openContextMenu(this.node(), this.path(), event.clientX, event.clientY);
   }
 
   onDragStart(event: DragEvent): void {
@@ -107,7 +124,6 @@ export class TreeNodeComponent {
     const dragNode = this.treeHost._dragNode();
     if (!dragNode) return;
 
-    // Prevent dropping on self or own descendants
     if (dragNode === this.node() || isDescendantOf(this.node(), dragNode)) {
       return;
     }

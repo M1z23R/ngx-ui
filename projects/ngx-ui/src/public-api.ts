@@ -149,7 +149,13 @@ export { SplitPaneComponent } from './lib/components/split-pane/split-pane.compo
 
 // Tree
 export { TreeComponent, TREE_HOST } from './lib/components/tree/tree.component';
-export type { TreeNode, TreeDropPosition, TreeNodeDropEvent } from './lib/components/tree/tree.component';
+export type {
+  TreeNode,
+  TreeDropPosition,
+  TreeNodeDropEvent,
+  TreeNodeActionType,
+  TreeNodeContextAction,
+} from './lib/components/tree/tree.component';
 export { TreeNodeComponent } from './lib/components/tree/tree-node.component';
 
 // Template Input

@@ -14,14 +14,17 @@
     }
   </div>
   <div
+    #contentRef
     class="ui-tree-node__content"
     [class.ui-tree-node__content--selected]="false"
+    [class.ui-tree-node__content--flash]="isFlashing()"
     [class.ui-tree-node__content--drop-before]="dropPosition() === 'before'"
     [class.ui-tree-node__content--drop-after]="dropPosition() === 'after'"
     [class.ui-tree-node__content--drop-inside]="dropPosition() === 'inside'"
     [style.padding-left.px]="level() * indent() + 8"
     (click)="onClick($event)"
     (dblclick)="onDoubleClick($event)"
+    (contextmenu)="onContextMenu($event)"
   >
     @if (hasChildren()) {
       <button
@@ -62,6 +65,7 @@
       [node]="child"
       [level]="level() + 1"
       [indent]="indent()"
+      [parentPath]="path()"
       (nodeClick)="_onChildNodeClick($event)"
       (nodeExpand)="_onChildNodeExpand($event)"
       (nodeCollapse)="_onChildNodeCollapse($event)"

@@ -62,6 +62,7 @@ import {
   TreeComponent,
   TreeNode,
   TreeNodeDropEvent,
+  TreeNodeContextAction,
   TemplateInputComponent,
   TemplateVariable,
   VariablePopoverDirective,
@@ -1421,6 +1422,9 @@ interface User {
           <h2>Tree View</h2>
           <p class="section-description">
             Display hierarchical data with expand/collapse functionality.
+            Right-click a node in the first tree for a Chrome DevTools-style
+            context menu (copy value/path/object, expand/collapse subtree, go
+            to or collapse parent).
           </p>
           <div class="tree-demo-grid">
             <div>
@@ -1429,10 +1433,12 @@ interface User {
                 <ui-tree
                   [nodes]="apiTreeNodes"
                   [draggable]="true"
+                  [contextMenu]="true"
                   (nodeClick)="onTreeNodeClick($event)"
                   (nodeExpand)="onTreeNodeExpand($event)"
                   (nodeCollapse)="onTreeNodeCollapse($event)"
                   (nodeDrop)="onTreeNodeDrop($event)"
+                  (nodeContextAction)="onTreeNodeContextAction($event)"
                 />
               </div>
             </div>
@@ -2634,6 +2640,10 @@ export class App {
 
   protected onTreeNodeCollapse(node: TreeNode): void {
     this.lastTreeAction.set(`Collapsed: ${node.label}`);
+  }
+
+  protected onTreeNodeContextAction(event: TreeNodeContextAction): void {
+    this.lastTreeAction.set(`Context: ${event.action} on "${event.node.label}"`);
   }
 
   protected onTreeNodeDrop(event: TreeNodeDropEvent): void {
