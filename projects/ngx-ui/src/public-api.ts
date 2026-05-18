@@ -151,6 +151,7 @@ export { SplitPaneComponent } from './lib/components/split-pane/split-pane.compo
 export { TreeComponent, TREE_HOST } from './lib/components/tree/tree.component';
 export type {
   TreeNode,
+  TreeLabelToken,
   TreeDropPosition,
   TreeNodeDropEvent,
   TreeNodeActionType,

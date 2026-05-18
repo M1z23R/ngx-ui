@@ -13,8 +13,15 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 import { DropdownItemComponent } from '../dropdown/dropdown-item.component';
 import { DropdownDividerComponent } from '../dropdown/dropdown-divider.component';
 
+export interface TreeLabelToken {
+  text: string;
+  class?: string;
+}
+
 export interface TreeNode {
   label: string;
+  /** Optional structured label. When present, rendered in place of `label` as a sequence of styled spans. */
+  labelTokens?: TreeLabelToken[];
   icon?: string;
   expanded?: boolean;
   children?: TreeNode[];

@@ -101,4 +101,13 @@
   --ui-option-hover-bg: var(--ui-bg-hover);
   --ui-option-selected-bg: color-mix(in srgb, var(--ui-primary) 10%, transparent);
   --ui-option-selected-text: var(--ui-primary);
+
+  // JSON tree value highlighting
+  --ui-json-string: #16a34a;
+  --ui-json-number: #2563eb;
+  --ui-json-boolean: #9333ea;
+  --ui-json-bigint: var(--ui-json-number);
+  --ui-json-null: var(--ui-text-muted);
+  --ui-json-size: var(--ui-text-muted);
+  --ui-json-punct: var(--ui-text-muted);
 }

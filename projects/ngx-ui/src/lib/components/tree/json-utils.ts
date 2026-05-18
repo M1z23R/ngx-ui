@@ -1,4 +1,4 @@
-import type { TreeNode } from './tree.component';
+import type { TreeNode, TreeLabelToken } from './tree.component';
 
 export type JsonKind = 'object' | 'array' | 'primitive';
 
@@ -75,14 +75,43 @@ function sizeLabel(kind: JsonKind, value: unknown): string {
   return prettyPrimitive(value);
 }
 
-function makeLabel(keyPart: string, kind: JsonKind, value: unknown, isRoot: boolean): string {
-  const size = sizeLabel(kind, value);
+function primitiveValueToken(v: unknown): TreeLabelToken {
+  if (v === null) return { text: 'null', class: 'ui-json-null' };
+  if (v === undefined) return { text: 'undefined', class: 'ui-json-null' };
+  if (typeof v === 'string') return { text: JSON.stringify(v), class: 'ui-json-string' };
+  if (typeof v === 'number') return { text: String(v), class: 'ui-json-number' };
+  if (typeof v === 'boolean') return { text: String(v), class: 'ui-json-boolean' };
+  if (typeof v === 'bigint') return { text: String(v), class: 'ui-json-bigint' };
+  if (v instanceof Date) return { text: JSON.stringify(v.toISOString()), class: 'ui-json-string' };
+  return { text: String(v) };
+}
+
+function makeLabelTokens(keyPart: string, kind: JsonKind, value: unknown): TreeLabelToken[] {
+  const tokens: TreeLabelToken[] = [];
+
   if (kind === 'primitive') {
-    if (isRoot) return keyPart ? `${keyPart}: ${size}` : size;
-    return keyPart ? `${keyPart}: ${size}` : size;
+    if (keyPart) {
+      tokens.push({ text: keyPart });
+      tokens.push({ text: ': ', class: 'ui-json-punct' });
+    }
+    tokens.push(primitiveValueToken(value));
+    return tokens;
   }
+
   // object / array
-  return keyPart ? `${keyPart} ${size}` : size;
+  const size = sizeLabel(kind, value);
+  if (keyPart) {
+    tokens.push({ text: keyPart });
+    tokens.push({ text: ' ', class: 'ui-json-punct' });
+  }
+  tokens.push({ text: size, class: 'ui-json-size' });
+  return tokens;
+}
+
+function joinTokens(tokens: TreeLabelToken[]): string {
+  let out = '';
+  for (const t of tokens) out += t.text;
+  return out;
 }
 
 /**
@@ -114,8 +143,15 @@ function build(
   // Detect cycles: only if `value` is one of our ancestors in this DFS path.
   if (value !== null && typeof value === 'object' && ancestors.has(value as object)) {
     const placeholder = '[Circular]';
+    const tokens: TreeLabelToken[] = [];
+    if (keyPart) {
+      tokens.push({ text: keyPart });
+      tokens.push({ text: ': ', class: 'ui-json-punct' });
+    }
+    tokens.push({ text: `"${placeholder}"`, class: 'ui-json-null' });
     return {
-      label: keyPart ? `${keyPart}: "${placeholder}"` : `"${placeholder}"`,
+      label: joinTokens(tokens),
+      labelTokens: tokens,
       data: {
         key,
         value: placeholder,
@@ -126,11 +162,12 @@ function build(
   }
 
   const kind = kindOf(value);
-  const label = makeLabel(keyPart, kind, value, isRoot);
+  const tokens = makeLabelTokens(keyPart, kind, value);
   const expanded = isRoot ? true : depth <= expandDepth;
 
   const node: TreeNode = {
-    label,
+    label: joinTokens(tokens),
+    labelTokens: tokens,
     expanded,
     data: { key, value, kind, jsonPath: path } satisfies JsonNodeMeta,
   };

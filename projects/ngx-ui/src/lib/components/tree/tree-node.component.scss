@@ -101,7 +101,21 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   line-height: 1.4;
+
+  // Preserve any whitespace inside tokens (e.g. the " " / ": " separators).
+  span {
+    white-space: pre;
+  }
 }
+
+// JSON tree value highlighting (applied via `labelTokens` from `jsonToTreeNodes`).
+.ui-json-string  { color: var(--ui-json-string); }
+.ui-json-number  { color: var(--ui-json-number); }
+.ui-json-boolean { color: var(--ui-json-boolean); }
+.ui-json-bigint  { color: var(--ui-json-bigint); }
+.ui-json-null    { color: var(--ui-json-null); font-style: italic; }
+.ui-json-size    { color: var(--ui-json-size); }
+.ui-json-punct   { color: var(--ui-json-punct); }
 
 // Drag & drop states
 
