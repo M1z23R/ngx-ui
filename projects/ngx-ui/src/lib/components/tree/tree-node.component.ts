@@ -76,6 +76,9 @@ export class TreeNodeComponent {
   onClick(event: MouseEvent): void {
     event.stopPropagation();
     this.nodeClick.emit(this.node());
+    if (this.treeHost.expandOnClick() && this.hasChildren()) {
+      this.toggle(event);
+    }
   }
 
   onDoubleClick(event: MouseEvent): void {

@@ -32,6 +32,7 @@ export class TreeComponent {
   readonly nodes = input<TreeNode[]>([]);
   readonly indent = input(16);
   readonly draggable = input(false);
+  readonly expandOnClick = input(false);
 
   readonly nodeClick = output<TreeNode>();
   readonly nodeExpand = output<TreeNode>();
