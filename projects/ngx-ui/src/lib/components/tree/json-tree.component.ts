@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+  computed,
+  viewChild,
+} from '@angular/core';
 import { TreeComponent } from './tree.component';
 import type { TreeNode, TreeNodeContextAction, TreeFormatter } from './tree.component';
 import { jsonToTreeNodes, safeStringify, type JsonNodeMeta } from './json-utils';
@@ -19,7 +26,9 @@ import { jsonToTreeNodes, safeStringify, type JsonNodeMeta } from './json-utils'
       [objectFormatter]="objectFmt"
       (nodeClick)="nodeClick.emit($event)"
       (nodeContextAction)="nodeContextAction.emit($event)"
-    />
+    >
+      <ng-content select="[slot=context-menu]" />
+    </ui-tree>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -35,6 +44,17 @@ export class JsonTreeComponent {
 
   readonly nodeClick = output<TreeNode>();
   readonly nodeContextAction = output<TreeNodeContextAction>();
+
+  private readonly tree = viewChild(TreeComponent);
+
+  /** Node currently targeted by the context menu (null when the menu is closed). */
+  readonly menuNode = computed<TreeNode | null>(() => this.tree()?.menuNode() ?? null);
+  /** Path from root to the targeted node, inclusive. Empty when the menu is closed. */
+  readonly menuPath = computed<TreeNode[]>(() => this.tree()?.menuPath() ?? []);
+  /** JsonNodeMeta of the targeted node — value/kind/jsonPath, etc. */
+  readonly menuMeta = computed<JsonNodeMeta | null>(
+    () => (this.menuNode()?.data as JsonNodeMeta | undefined) ?? null,
+  );
 
   readonly nodes = computed<TreeNode[]>(() =>
     jsonToTreeNodes(this.json(), {

@@ -91,10 +91,13 @@ export class TreeComponent {
   /** @internal */
   readonly _flashNode = signal<TreeNode | null>(null);
 
-  /** @internal context-menu target — node and its path (root → node, inclusive) */
-  readonly _menuNode = signal<TreeNode | null>(null);
-  /** @internal */
-  readonly _menuPath = signal<TreeNode[]>([]);
+  private readonly _menuNode = signal<TreeNode | null>(null);
+  private readonly _menuPath = signal<TreeNode[]>([]);
+
+  /** Node currently targeted by the context menu (null when the menu is closed). */
+  readonly menuNode = this._menuNode.asReadonly();
+  /** Path from root to the targeted node, inclusive. Empty when the menu is closed. */
+  readonly menuPath = this._menuPath.asReadonly();
 
   /** @internal whether the targeted node has children (drives expand/collapse-all visibility) */
   readonly _menuHasChildren = computed(() => {

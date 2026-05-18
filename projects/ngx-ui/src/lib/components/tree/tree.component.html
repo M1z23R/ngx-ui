@@ -27,5 +27,6 @@
       <ui-dropdown-item (clicked)="_runAction('goToParent')">Go to parent</ui-dropdown-item>
       <ui-dropdown-item (clicked)="_runAction('collapseParent')">Collapse parent</ui-dropdown-item>
     }
+    <ng-content select="[slot=context-menu]" />
   </ui-dropdown>
 }

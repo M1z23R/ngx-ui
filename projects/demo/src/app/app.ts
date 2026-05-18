@@ -64,6 +64,7 @@ import {
   TreeNodeDropEvent,
   TreeNodeContextAction,
   JsonTreeComponent,
+  JsonNodeMeta,
   TemplateInputComponent,
   TemplateVariable,
   VariablePopoverDirective,
@@ -1467,15 +1468,26 @@ interface User {
             Right-click any node — "Copy value" returns the primitive
             (unquoted) or pretty JSON; "Copy path" returns a JSON path like
             <code>response.positions[0].companyName</code>; "Copy object"
-            returns the pretty-printed value at that node.
+            returns the pretty-printed value at that node. Extra menu items
+            can be projected via <code>slot="context-menu"</code>; they receive
+            the active node through <code>menuMeta()</code> / <code>menuNode()</code>.
           </p>
           <div class="tree-container">
             <ui-json-tree
+              #jtree
               [json]="samplePayload"
               rootLabel="response"
               [expandDepth]="2"
               (nodeContextAction)="onTreeNodeContextAction($event)"
-            />
+            >
+              <ui-dropdown-divider slot="context-menu" />
+              <ui-dropdown-item
+                slot="context-menu"
+                (clicked)="onToastJsonValue(jtree.menuMeta())"
+              >
+                Toast value
+              </ui-dropdown-item>
+            </ui-json-tree>
           </div>
         </section>
 
@@ -2691,6 +2703,15 @@ export class App {
 
   protected onTreeNodeContextAction(event: TreeNodeContextAction): void {
     this.lastTreeAction.set(`Context: ${event.action} on "${event.node.label}"`);
+  }
+
+  protected onToastJsonValue(meta: JsonNodeMeta | null): void {
+    if (!meta) return;
+    const preview =
+      meta.kind === 'primitive'
+        ? String(meta.value)
+        : `${meta.kind} (${meta.jsonPath || 'root'})`;
+    this.toastService.show({ message: preview, variant: 'info', duration: 2500 });
   }
 
   protected onTreeNodeDrop(event: TreeNodeDropEvent): void {
