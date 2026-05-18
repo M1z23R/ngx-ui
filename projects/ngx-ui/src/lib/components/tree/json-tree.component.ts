@@ -65,6 +65,17 @@ export class JsonTreeComponent {
 
   protected readonly objectFmt: TreeFormatter = (node) => {
     const meta = node.data as JsonNodeMeta | undefined;
-    return meta ? safeStringify(meta.value) : null;
+    if (!meta) return null;
+
+    if (meta.key === null) {
+      const label = this.rootLabel();
+      return label ? safeStringify({ [label]: meta.value }) : safeStringify(meta.value);
+    }
+
+    if (typeof meta.key === 'string') {
+      return safeStringify({ [meta.key]: meta.value });
+    }
+
+    return safeStringify([meta.value]);
   };
 }
