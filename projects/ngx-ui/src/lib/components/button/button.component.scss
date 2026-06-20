@@ -9,7 +9,7 @@ button {
   justify-content: center;
   gap: var(--ui-spacing-sm);
   font-family: inherit;
-  font-weight: 500;
+  font-weight: var(--ui-button-font-weight);
   border: 1px solid transparent;
   cursor: pointer;
   transition: all var(--ui-transition-fast);
@@ -129,6 +129,9 @@ button:focus-visible {
 
 /* ── Sizes ── */
 
+// sm keeps the smaller radius (--ui-radius-sm, visually 4px) by design; only
+// md/lg honor --ui-button-radius. --ui-button-padding-y is applied to the
+// default (md) size, whose vertical padding matches the token default.
 .ui-button--sm {
   padding: var(--ui-spacing-xs) var(--ui-spacing-sm);
   font-size: var(--ui-font-sm);
@@ -136,15 +139,15 @@ button:focus-visible {
 }
 
 .ui-button--md {
-  padding: var(--ui-spacing-sm) var(--ui-spacing-md);
+  padding: var(--ui-button-padding-y) var(--ui-spacing-md);
   font-size: var(--ui-font-md);
-  border-radius: var(--ui-radius-md);
+  border-radius: var(--ui-button-radius);
 }
 
 .ui-button--lg {
   padding: var(--ui-spacing-md) var(--ui-spacing-lg);
   font-size: var(--ui-font-lg);
-  border-radius: var(--ui-radius-md);
+  border-radius: var(--ui-button-radius);
 }
 
 /* ── Loading spinner ── */

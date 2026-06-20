@@ -23,7 +23,7 @@
   width: 100%;
   background-color: var(--ui-bg);
   border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-md);
+  border-radius: var(--ui-input-radius);
   cursor: pointer;
   transition: border-color var(--ui-transition-fast), box-shadow var(--ui-transition-fast);
 }
@@ -35,7 +35,7 @@
 .ui-select__trigger:focus {
   outline: none;
   border-color: var(--ui-border-focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary) 20%, transparent);
+  box-shadow: var(--ui-input-focus-shadow);
 }
 
 .ui-select__trigger[aria-disabled="true"] {
@@ -51,7 +51,7 @@
 }
 
 .ui-select__trigger--md {
-  padding: var(--ui-spacing-sm) var(--ui-spacing-md);
+  padding: var(--ui-input-padding-y) var(--ui-spacing-md);
   font-size: var(--ui-font-md);
 }
 
@@ -88,7 +88,7 @@
 }
 
 .ui-select__placeholder {
-  color: var(--ui-text-muted);
+  color: var(--ui-input-placeholder-color);
 }
 
 .ui-select__icons {
@@ -165,7 +165,7 @@
 }
 
 .ui-select__input::placeholder {
-  color: var(--ui-text-muted);
+  color: var(--ui-input-placeholder-color);
 }
 
 .ui-select__input:focus {

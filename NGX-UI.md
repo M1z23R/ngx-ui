@@ -1192,9 +1192,32 @@ Override these at `:root` or on any container to theme the library.
 |----------|---------|
 | `--ui-spacing-xs` | `0.25rem` |
 | `--ui-spacing-sm` | `0.5rem` |
+| `--ui-spacing-smd` | `0.75rem` |
 | `--ui-spacing-md` | `1rem` |
+| `--ui-spacing-mlg` | `1.25rem` |
 | `--ui-spacing-lg` | `1.5rem` |
 | `--ui-spacing-xl` | `2rem` |
+
+### Button
+
+| Variable | Default |
+|----------|---------|
+| `--ui-button-radius` | `var(--ui-radius-md)` |
+| `--ui-button-font-weight` | `500` |
+| `--ui-button-padding-y` | `var(--ui-spacing-sm)` |
+
+> `--ui-button-radius` applies to the `md`/`lg` sizes. The `sm` size keeps `--ui-radius-sm` (4px) by design. `--ui-button-padding-y` controls the vertical padding of the default (`md`) size.
+
+### Input / Controls
+
+Shared by `ui-input` and the `ui-select` trigger.
+
+| Variable | Default |
+|----------|---------|
+| `--ui-input-radius` | `var(--ui-radius-md)` |
+| `--ui-input-padding-y` | `var(--ui-spacing-sm)` |
+| `--ui-input-placeholder-color` | `var(--ui-text-muted)` |
+| `--ui-input-focus-shadow` | `0 0 0 3px color-mix(in srgb, var(--ui-primary) 20%, transparent)` |
 
 ### Shadows
 

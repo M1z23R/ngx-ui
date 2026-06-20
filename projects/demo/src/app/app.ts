@@ -216,6 +216,23 @@ interface User {
             </ui-button>
             <ui-button (clicked)="toggleLoading()">Toggle Loading</ui-button>
           </div>
+          <h3>Per-component theming</h3>
+          <p class="section-description">
+            Override <code>--ui-button-radius</code>, <code>--ui-button-font-weight</code>
+            and <code>--ui-input-radius</code> on any scope — defaults reference existing
+            tokens, so nothing changes until you opt in.
+          </p>
+          <div
+            class="button-row"
+            style="--ui-button-radius: 9999px; --ui-button-font-weight: 700;"
+          >
+            <ui-button color="primary">Pill</ui-button>
+            <ui-button color="secondary" variant="outline">Pill Outline</ui-button>
+            <ui-button color="success" size="lg">Bold &amp; Round</ui-button>
+          </div>
+          <div style="--ui-input-radius: 1rem; max-width: 280px; margin-top: 0.75rem;">
+            <ui-input label="Rounded input" placeholder="--ui-input-radius: 1rem" />
+          </div>
         </section>
 
         <section class="section">

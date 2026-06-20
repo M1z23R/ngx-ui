@@ -33,17 +33,17 @@
 
 .ui-input {
   width: 100%;
-  padding: var(--ui-spacing-sm) var(--ui-spacing-md);
+  padding: var(--ui-input-padding-y) var(--ui-spacing-md);
   font-family: inherit;
   font-size: var(--ui-font-md);
   color: var(--ui-text);
   background-color: var(--ui-bg);
   border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius-md);
+  border-radius: var(--ui-input-radius);
   transition: border-color var(--ui-transition-fast), box-shadow var(--ui-transition-fast);
 
   &::placeholder {
-    color: var(--ui-text-muted);
+    color: var(--ui-input-placeholder-color);
   }
 
   &:hover:not(:disabled):not(:read-only) {
@@ -53,7 +53,7 @@
   &:focus {
     outline: none;
     border-color: var(--ui-border-focus);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-primary) 20%, transparent);
+    box-shadow: var(--ui-input-focus-shadow);
   }
 
   &:disabled {
